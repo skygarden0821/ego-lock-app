@@ -1,0 +1,19 @@
+{
+  "name": "Xector1 EGO LOCK",
+  "short_name": "EGO LOCK",
+  "description": "毎日勝負し、自分の限界を超える。経営者専用の自己成長・KPI管理OS。",
+  "lang": "ja",
+  "dir": "ltr",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#05070E",
+  "theme_color": "#05070E",
+  "categories": ["productivity", "business", "lifestyle"],
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

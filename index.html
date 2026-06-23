@@ -1,0 +1,1721 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#05070E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="EGO LOCK">
+<title>Xector1 EGO LOCK</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="favicon-64.png">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#05070E; --bg2:#080C18; --bg3:#0A1020;
+  --surface:rgba(16,23,44,.55); --surface2:rgba(20,28,52,.72); --solid:#0B1122;
+  --line:rgba(120,160,255,.13); --line2:rgba(120,160,255,.22);
+  --blue:#2D6BFF; --blue2:#4D8BFF; --cyan:#00E5FF; --ice:#9FD4FF;
+  --red:#FF3358; --green:#00E68A; --gold:#FFD23F; --purple:#9B6BFF;
+  --text:#EAF0FF; --muted:#8A99BF; --dim:#5A6890;
+  --glow:0 0 24px rgba(45,120,255,.45); --glowc:0 0 24px rgba(0,229,255,.4);
+  --r:18px; --rs:13px;
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue","Hiragino Sans","Yu Gothic","Noto Sans JP",sans-serif;
+  --mono:"SF Mono","SFMono-Regular",ui-monospace,"Roboto Mono","DejaVu Sans Mono",monospace;
+  --safe-t:env(safe-area-inset-top,0px); --safe-b:env(safe-area-inset-bottom,0px);
+}
+html,body{height:100%}
+body{
+  font-family:var(--font); background:var(--bg); color:var(--text);
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  overflow-x:hidden; line-height:1.5; letter-spacing:.01em;
+  overscroll-behavior-y:none;
+}
+/* ambient background */
+#bgfx{position:fixed;inset:0;z-index:-2;pointer-events:none;
+  background:
+   radial-gradient(1100px 700px at 50% -10%, rgba(35,90,220,.28), transparent 60%),
+   radial-gradient(900px 600px at 100% 10%, rgba(0,160,255,.13), transparent 55%),
+   radial-gradient(800px 700px at -10% 90%, rgba(120,60,255,.12), transparent 55%),
+   linear-gradient(180deg,#070A14,#05070E 60%,#04060C);
+}
+#grid{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.5;
+  background-image:linear-gradient(rgba(110,150,255,.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(110,150,255,.05) 1px,transparent 1px);
+  background-size:46px 46px; mask-image:radial-gradient(120% 80% at 50% 0%,#000 35%,transparent 78%);
+  -webkit-mask-image:radial-gradient(120% 80% at 50% 0%,#000 35%,transparent 78%);}
+
+#app{max-width:520px;margin:0 auto;min-height:100%;position:relative;
+  padding-top:calc(56px + var(--safe-t)); padding-bottom:calc(78px + var(--safe-b));}
+
+/* ===== HEADER HUD ===== */
+header{position:fixed;top:0;left:0;right:0;z-index:40;
+  max-width:520px;margin:0 auto;padding:calc(var(--safe-t) + 8px) 14px 8px;
+  display:flex;align-items:center;gap:9px;
+  background:linear-gradient(180deg,rgba(7,10,20,.92),rgba(7,10,20,.55) 80%,transparent);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);}
+.lvchip{display:flex;align-items:center;gap:9px;padding:5px 12px 5px 6px;
+  background:var(--surface2);border:1px solid var(--line2);border-radius:30px;
+  box-shadow:var(--glow);min-width:0;}
+.lvring{width:34px;height:34px;flex:0 0 34px;position:relative;display:grid;place-items:center}
+.lvring svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.lvring b{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--cyan);font-variant-numeric:tabular-nums}
+.lvchip .meta{display:flex;flex-direction:column;line-height:1.05;min-width:0}
+.lvchip .meta .t{font-size:9px;letter-spacing:.18em;color:var(--dim);text-transform:uppercase}
+.lvchip .meta .n{font-size:12.5px;font-weight:650;color:var(--ice);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:118px}
+.rankpill{margin-left:auto;display:flex;flex-direction:column;align-items:center;
+  padding:3px 12px;border-radius:12px;border:1px solid var(--line2);background:var(--surface);}
+.rankpill .t{font-size:8px;letter-spacing:.2em;color:var(--dim)}
+.rankpill .g{font-family:var(--mono);font-weight:800;font-size:18px;line-height:1;letter-spacing:.03em}
+.streak{display:flex;align-items:center;gap:3px;padding:6px 10px;border-radius:12px;
+  border:1px solid var(--line);background:var(--surface);font-family:var(--mono);font-weight:700;font-size:13px}
+.streak svg{width:14px;height:14px}
+.gear{width:38px;height:38px;flex:0 0 38px;display:grid;place-items:center;border-radius:12px;
+  border:1px solid var(--line);background:var(--surface);color:var(--muted)}
+.gear:active{transform:scale(.92)}
+
+/* ===== BOTTOM NAV ===== */
+nav{position:fixed;bottom:0;left:0;right:0;z-index:40;max-width:520px;margin:0 auto;
+  padding:7px 8px calc(7px + var(--safe-b));display:grid;grid-template-columns:repeat(5,1fr);gap:2px;
+  background:linear-gradient(0deg,rgba(7,10,20,.96),rgba(7,10,20,.7));
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border-top:1px solid var(--line);}
+.nav-i{display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 0 4px;border-radius:14px;
+  color:var(--dim);position:relative;transition:color .2s}
+.nav-i svg{width:23px;height:23px;stroke-width:1.9}
+.nav-i span{font-size:9.5px;letter-spacing:.04em;font-weight:600}
+.nav-i.on{color:var(--cyan)}
+.nav-i.on svg{filter:drop-shadow(0 0 8px rgba(0,229,255,.7))}
+.nav-i.on::before{content:"";position:absolute;top:0;width:26px;height:3px;border-radius:3px;
+  background:var(--cyan);box-shadow:0 0 10px var(--cyan)}
+.nav-i:active{transform:scale(.9)}
+
+/* ===== GENERIC ===== */
+main{padding:14px}
+.view{animation:fadeUp .42s cubic-bezier(.2,.7,.2,1)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.eyebrow{font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--dim);font-weight:700}
+.h1{font-size:23px;font-weight:750;letter-spacing:-.01em}
+.sub{color:var(--muted);font-size:13px}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+  padding:16px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);position:relative;overflow:hidden}
+.card.glow{box-shadow:var(--glow);border-color:var(--line2)}
+.card .sheen{position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(120,180,255,.6),transparent)}
+.row{display:flex;align-items:center;gap:12px}
+.between{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.muted{color:var(--muted)} .dim{color:var(--dim)}
+.mt8{margin-top:8px}.mt12{margin-top:12px}.mt16{margin-top:16px}.mt20{margin-top:20px}.mt24{margin-top:24px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.section-title{display:flex;align-items:center;gap:8px;margin:22px 2px 12px}
+.section-title h2{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--ice);font-weight:700}
+.section-title .line{flex:1;height:1px;background:linear-gradient(90deg,var(--line2),transparent)}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  padding:13px 18px;border-radius:14px;border:1px solid var(--line2);background:var(--surface2);
+  color:var(--text);font-family:var(--font);font-size:15px;font-weight:650;cursor:pointer;transition:transform .1s,box-shadow .2s}
+.btn:active{transform:scale(.96)}
+.btn.primary{background:linear-gradient(135deg,var(--blue),#1746C8);border-color:rgba(120,180,255,.5);
+  box-shadow:0 6px 26px rgba(45,120,255,.45)}
+.btn.cyan{background:linear-gradient(135deg,#0098B8,#005E7A);border-color:rgba(0,229,255,.5);box-shadow:var(--glowc)}
+.btn.red{background:linear-gradient(135deg,#C81E3C,#8A1228);border-color:rgba(255,80,110,.5);box-shadow:0 6px 26px rgba(255,51,88,.35)}
+.btn.ghost{background:transparent;border-color:var(--line)}
+.btn.block{display:flex;width:100%}
+.btn.sm{padding:9px 13px;font-size:13px;border-radius:11px}
+
+/* toggle / done */
+.tog{padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:var(--surface);
+  color:var(--muted);font-weight:650;font-size:14px;cursor:pointer;transition:all .18s;white-space:nowrap}
+.tog.on{background:linear-gradient(135deg,rgba(0,229,255,.18),rgba(45,120,255,.16));
+  border-color:var(--cyan);color:var(--ice);box-shadow:0 0 16px rgba(0,229,255,.25)}
+.tog:active{transform:scale(.95)}
+
+/* inputs */
+input,select,textarea{font-family:var(--font);color:var(--text);background:rgba(8,12,24,.7);
+  border:1px solid var(--line);border-radius:12px;padding:12px 13px;font-size:16px;width:100%;outline:none;transition:border .2s,box-shadow .2s}
+input:focus,select,textarea:focus{border-color:var(--blue2);box-shadow:0 0 0 3px rgba(45,120,255,.18)}
+input.num-in{font-family:var(--mono);font-variant-numeric:tabular-nums}
+textarea{resize:vertical;min-height:80px;line-height:1.55}
+label.fld{display:block}
+label.fld .lab{font-size:11px;letter-spacing:.05em;color:var(--muted);margin-bottom:6px;display:flex;justify-content:space-between}
+select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238A99BF' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:34px}
+::placeholder{color:var(--dim)}
+
+/* linear gauge */
+.lgauge{height:8px;border-radius:6px;background:rgba(120,150,255,.1);overflow:hidden;position:relative}
+.lgauge>i{display:block;height:100%;border-radius:6px;transition:width .7s cubic-bezier(.2,.8,.2,1)}
+
+/* mission row */
+.mrow{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--line)}
+.mrow:last-child{border-bottom:0}
+.mrow .ico{width:38px;height:38px;flex:0 0 38px;border-radius:11px;display:grid;place-items:center;
+  background:rgba(45,120,255,.1);border:1px solid var(--line);color:var(--blue2)}
+.mrow .ico svg{width:20px;height:20px}
+.mrow .info{flex:1;min-width:0}
+.mrow .info .nm{font-weight:600;font-size:14.5px}
+.mrow .info .meta{font-size:11px;color:var(--dim);margin-top:3px}
+.mrow .ctrl{flex:0 0 auto;display:flex;align-items:center;gap:7px}
+.mrow .mini-in{width:62px;text-align:center;padding:9px 6px;font-size:15px}
+.pct{font-family:var(--mono);font-size:12px;color:var(--muted);min-width:34px;text-align:right}
+
+/* KPI grid */
+.kgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.kfield{background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:11px 12px}
+.kfield .kl{font-size:10.5px;letter-spacing:.04em;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+.kfield .kl .u{color:var(--dim);font-size:9px}
+.kfield input{border:0;background:transparent;padding:5px 0 0;font-family:var(--mono);font-size:18px;font-weight:600}
+.kfield input:focus{box-shadow:none}
+.kfield.full{grid-column:1/-1}
+
+/* radial ego gauge */
+.egowrap{display:grid;place-items:center;padding:6px 0 2px}
+.ego{position:relative;width:240px;height:240px;display:grid;place-items:center}
+.ego svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.ego .core{text-align:center;z-index:2}
+.ego .core .lab{font-size:11px;letter-spacing:.34em;color:var(--cyan);text-transform:uppercase;font-weight:700;
+  text-shadow:0 0 12px rgba(0,229,255,.6)}
+.ego .core .val{font-family:var(--mono);font-size:78px;font-weight:800;line-height:.9;
+  background:linear-gradient(180deg,#fff,#7FC4FF);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 20px rgba(45,140,255,.45))}
+.ego .core .max{font-family:var(--mono);font-size:14px;color:var(--dim);margin-top:2px}
+.ego .core .rk{margin-top:6px;font-family:var(--mono);font-weight:800;font-size:15px;letter-spacing:.1em}
+
+/* quote */
+.quote{text-align:center;padding:4px 6px 2px;font-size:16px;font-weight:600;color:var(--ice);
+  line-height:1.6;letter-spacing:.01em}
+.quote .q{color:var(--blue2);font-size:20px}
+
+/* stat chips */
+.chips{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.chip{background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:11px 10px;text-align:center}
+.chip .cv{font-family:var(--mono);font-size:19px;font-weight:700}
+.chip .cl{font-size:9.5px;color:var(--dim);letter-spacing:.05em;margin-top:2px}
+
+/* coach */
+.coach{background:linear-gradient(135deg,rgba(20,28,52,.8),rgba(12,16,32,.8));
+  border:1px solid var(--line2);border-radius:var(--r);padding:15px;position:relative;overflow:hidden}
+.coach::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(var(--cyan),var(--blue))}
+.coach .ch{display:flex;align-items:center;gap:9px;margin-bottom:10px}
+.coach .av{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;
+  background:linear-gradient(135deg,#0E3A6B,#061B33);border:1px solid var(--line2);color:var(--cyan)}
+.coach .ct{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--cyan);font-weight:700}
+.coach .cs{font-size:10px;color:var(--dim)}
+.coach .block{margin-top:11px}
+.coach .block .bt{font-size:10px;letter-spacing:.12em;color:var(--gold);text-transform:uppercase;font-weight:700;margin-bottom:4px}
+.coach .block .bx{font-size:13.5px;color:var(--text);line-height:1.55}
+
+/* hub cards */
+.hub{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.hub-c{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:15px;position:relative;overflow:hidden;cursor:pointer;transition:transform .12s,border .2s}
+.hub-c:active{transform:scale(.97)}
+.hub-c .hi{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;margin-bottom:11px}
+.hub-c .ht{font-size:15px;font-weight:700}
+.hub-c .hs{font-size:11px;color:var(--dim);margin-top:3px}
+.hub-c .hb{position:absolute;top:13px;right:13px;font-family:var(--mono);font-size:11px;font-weight:700;
+  padding:2px 8px;border-radius:20px;background:rgba(45,120,255,.16);color:var(--blue2);border:1px solid var(--line)}
+
+/* timer */
+.timer-ring{position:relative;width:260px;height:260px;display:grid;place-items:center;margin:8px auto}
+.timer-ring svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.timer-ring .tt{text-align:center;z-index:2}
+.timer-ring .tt .time{font-family:var(--mono);font-size:56px;font-weight:800;letter-spacing:.02em}
+.timer-ring .tt .st{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--cyan);font-weight:700;margin-top:4px}
+
+/* list items */
+.li{background:var(--surface);border:1px solid var(--line);border-radius:var(--rs);padding:13px;margin-bottom:9px}
+.li .lh{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.li .tag{font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(45,120,255,.14);color:var(--blue2);border:1px solid var(--line)}
+.li .when{font-size:10px;color:var(--dim);font-family:var(--mono)}
+
+/* achievements */
+.ach{display:flex;gap:12px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:var(--rs);
+  margin-bottom:9px;background:var(--surface);opacity:.5;transition:opacity .3s}
+.ach.un{opacity:1;border-color:var(--line2);background:linear-gradient(135deg,rgba(20,28,52,.7),rgba(12,16,32,.6))}
+.ach .am{width:42px;height:42px;flex:0 0 42px;border-radius:12px;display:grid;place-items:center;font-size:20px;
+  background:rgba(120,150,255,.08);border:1px solid var(--line)}
+.ach.un .am{background:linear-gradient(135deg,rgba(255,210,63,.18),rgba(255,160,40,.1));border-color:rgba(255,210,63,.4)}
+.ach .ai{flex:1;min-width:0}
+.ach .ai .an{font-weight:650;font-size:14px}
+.ach .ai .ad{font-size:11px;color:var(--dim);margin-top:2px}
+.ach .ai .ap{margin-top:7px}
+.ach .lock{color:var(--dim)} .ach.un .lock{color:var(--gold)}
+
+/* stages */
+.stage{display:flex;gap:13px;padding:14px;border:1px solid var(--line);border-radius:var(--r);margin-bottom:10px;
+  background:var(--surface);position:relative;opacity:.55}
+.stage.open{opacity:1;border-color:var(--line2)}
+.stage.cur{border-color:var(--cyan);box-shadow:var(--glowc)}
+.stage .sn{width:46px;height:46px;flex:0 0 46px;border-radius:13px;display:grid;place-items:center;
+  font-family:var(--mono);font-weight:800;font-size:18px;background:rgba(45,120,255,.12);border:1px solid var(--line2);color:var(--blue2)}
+.stage.open .sn{background:linear-gradient(135deg,#0E3A6B,#061B33);color:var(--cyan)}
+.stage .si{flex:1}
+.stage .si .stt{font-weight:700;font-size:15px}
+.stage .si .ssub{font-size:11px;color:var(--dim);margin-top:2px}
+.stage .si .scond{font-size:11px;color:var(--muted);margin-top:6px}
+
+/* boss */
+.boss-vs{display:flex;align-items:center;justify-content:center;gap:14px;padding:14px 0}
+.boss-side{text-align:center;flex:1}
+.boss-side .bn{font-size:12px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+.boss-side .bsub{font-size:10px;color:var(--dim)}
+.vs{font-family:var(--mono);font-weight:800;font-size:22px;color:var(--red);text-shadow:0 0 16px rgba(255,51,88,.5)}
+.bcompare{display:flex;align-items:center;padding:11px 4px;border-bottom:1px solid var(--line);gap:8px}
+.bcompare:last-child{border-bottom:0}
+.bcompare .bl{flex:0 0 96px;font-size:12px;color:var(--muted)}
+.bcompare .bv{flex:1;text-align:center;font-family:var(--mono);font-weight:700;font-size:15px}
+.bcompare .res{flex:0 0 44px;text-align:center;font-family:var(--mono);font-weight:800;font-size:12px}
+.win{color:var(--green)} .lose{color:var(--red)} .draw{color:var(--muted)}
+
+/* charts */
+.chart-wrap{width:100%;overflow:hidden}
+.chart-wrap svg{width:100%;display:block}
+.empty{padding:30px 10px;text-align:center;color:var(--dim);font-size:13px}
+.seg{display:flex;gap:4px;background:rgba(8,12,24,.6);border:1px solid var(--line);border-radius:11px;padding:3px}
+.seg button{flex:1;padding:7px 4px;border:0;background:transparent;color:var(--muted);font-size:12px;font-weight:600;border-radius:8px;cursor:pointer}
+.seg button.on{background:var(--blue);color:#fff;box-shadow:0 2px 12px rgba(45,120,255,.4)}
+.hmap{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.hmap .d{aspect-ratio:1;border-radius:4px;background:rgba(120,150,255,.07)}
+
+/* back */
+.back{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:14px;font-weight:600;margin-bottom:6px;cursor:pointer}
+.back svg{width:18px;height:18px}
+
+/* saved toast */
+#saved{position:fixed;bottom:calc(86px + var(--safe-b));left:50%;transform:translateX(-50%) translateY(20px);
+  background:rgba(0,230,138,.16);border:1px solid var(--green);color:var(--green);padding:8px 16px;border-radius:30px;
+  font-size:12px;font-weight:650;opacity:0;transition:all .3s;z-index:60;pointer-events:none;backdrop-filter:blur(10px)}
+#saved.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* message overlay (blue lock) */
+#msg{position:fixed;inset:0;z-index:80;display:none;align-items:center;justify-content:center;padding:30px;
+  background:radial-gradient(circle at 50% 50%,rgba(5,12,28,.86),rgba(2,4,10,.95))}
+#msg.show{display:flex;animation:fadeUp .4s}
+#msg .mcard{max-width:380px;text-align:center}
+#msg .mline{font-size:12px;letter-spacing:.3em;color:var(--cyan);text-transform:uppercase;margin-bottom:16px;font-weight:700}
+#msg .mtxt{font-size:25px;font-weight:750;line-height:1.5;color:#fff;text-shadow:0 0 30px rgba(45,140,255,.5)}
+#msg .mbar{width:60px;height:3px;background:var(--cyan);margin:22px auto 0;box-shadow:0 0 14px var(--cyan)}
+#msg .mtap{margin-top:24px;font-size:11px;color:var(--dim);letter-spacing:.1em}
+
+/* levelup / fx canvas */
+#fxc{position:fixed;inset:0;z-index:90;pointer-events:none;display:none}
+#lvup{position:fixed;inset:0;z-index:91;display:none;align-items:center;justify-content:center;flex-direction:column;
+  background:radial-gradient(circle,rgba(45,120,255,.2),rgba(2,4,10,.9))}
+#lvup.show{display:flex;animation:fadeUp .5s}
+#lvup .lt{font-size:13px;letter-spacing:.4em;color:var(--cyan);text-transform:uppercase;font-weight:700}
+#lvup .ln{font-family:var(--mono);font-size:96px;font-weight:800;line-height:1;
+  background:linear-gradient(180deg,#fff,#4D8BFF);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 36px rgba(45,140,255,.7));animation:pop .6s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{0%{transform:scale(.3);opacity:0}60%{transform:scale(1.12)}100%{transform:scale(1)}}
+#lvup .ld{font-size:18px;color:var(--ice);margin-top:8px;font-weight:650}
+#lvup .lq{font-size:13px;color:var(--muted);margin-top:18px;max-width:300px;text-align:center}
+
+/* toast (achievement) */
+#toast{position:fixed;top:calc(var(--safe-t) + 64px);left:50%;transform:translateX(-50%) translateY(-30px);
+  z-index:70;opacity:0;transition:all .4s;max-width:340px;width:90%}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast .tcard{display:flex;align-items:center;gap:12px;padding:12px 15px;border-radius:15px;
+  background:linear-gradient(135deg,rgba(255,210,63,.16),rgba(20,28,52,.92));border:1px solid rgba(255,210,63,.45);
+  box-shadow:0 8px 30px rgba(0,0,0,.5);backdrop-filter:blur(14px)}
+#toast .ti{font-size:24px}
+#toast .tt{font-size:10px;letter-spacing:.16em;color:var(--gold);text-transform:uppercase;font-weight:700}
+#toast .tn{font-size:14px;font-weight:700;margin-top:1px}
+
+/* install banner */
+#install{position:fixed;left:0;right:0;bottom:calc(72px + var(--safe-b));margin:0 12px;z-index:70;padding:13px 15px;border-radius:15px;display:none;align-items:center;gap:12px;
+  background:linear-gradient(135deg,rgba(10,30,55,.96),rgba(20,28,52,.96));border:1px solid var(--line2);backdrop-filter:blur(14px);box-shadow:0 10px 40px rgba(0,0,0,.5)}
+#install.show{display:flex}
+#install .ii{font-size:22px}
+#install .it{flex:1;font-size:12px;color:var(--muted);line-height:1.45}
+#install .ix{color:var(--dim);font-size:20px;padding:4px;cursor:pointer}
+
+hr.sep{border:0;height:1px;background:var(--line);margin:16px 0}
+.pill-row{display:flex;gap:7px;flex-wrap:wrap}
+.tagpill{font-size:11px;padding:4px 10px;border-radius:20px;background:rgba(45,120,255,.12);border:1px solid var(--line);color:var(--blue2)}
+.center{text-align:center}
+.tabbar-spacer{height:4px}
+.mt4{margin-top:4px}
+/* KPI metric chips */
+.metric-row{display:flex;gap:7px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.metric-row::-webkit-scrollbar{display:none}
+.mchip{flex:0 0 auto;padding:8px 14px;border-radius:20px;border:1px solid var(--line);background:var(--surface);
+  color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:.2s}
+.mchip.on{background:linear-gradient(135deg,#0E3A6B,#08203B);border-color:var(--blue2);color:var(--cyan)}
+/* settings */
+.srow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0;border-bottom:1px solid var(--line)}
+.srow:last-child{border-bottom:0}
+.srow .sl{font-size:14px;font-weight:600}
+.srow .sd{font-size:11px;color:var(--dim);margin-top:2px}
+.sw{width:50px;height:30px;border-radius:30px;background:rgba(120,150,255,.16);border:1px solid var(--line);
+  position:relative;cursor:pointer;flex:0 0 auto;transition:.25s}
+.sw.on{background:linear-gradient(90deg,#2D6BFF,#00E5FF);border-color:transparent}
+.sw i{position:absolute;top:2px;left:2px;width:24px;height:24px;border-radius:50%;background:#fff;transition:.25s cubic-bezier(.2,.8,.2,1);box-shadow:0 2px 6px rgba(0,0,0,.4)}
+.sw.on i{left:22px}
+.tinput{width:104px;text-align:right;padding:9px 11px;font-family:var(--mono);font-size:15px;font-weight:600}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001s!important;transition-duration:.05s!important}
+}
+@media (min-width:560px){
+  body{background:radial-gradient(1000px 800px at 50% 0%,#0A1226,#05070E)}
+  #app{box-shadow:0 0 80px rgba(0,0,0,.6)}
+}
+</style>
+</head>
+<body>
+<div id="bgfx"></div>
+<div id="grid"></div>
+
+<header id="hdr"></header>
+<div id="app"><main id="main"></main></div>
+<nav id="nav"></nav>
+
+<div id="saved">保存済み</div>
+<div id="install"><span class="ii">📲</span><div class="it"><b style="color:var(--ice)">ホーム画面に追加</b><br>共有ボタン → 「ホーム画面に追加」で全画面アプリとして使える。</div><span class="ix" onclick="document.getElementById('install').classList.remove('show')">✕</span></div>
+
+<div id="msg" onclick="hideMsg()"><div class="mcard"><div class="mline" id="msgLine">EGO LOCK</div><div class="mtxt" id="msgTxt"></div><div class="mbar"></div><div class="mtap">タップして閉じる</div></div></div>
+
+<canvas id="fxc"></canvas>
+<div id="lvup" onclick="this.classList.remove('show')"><div class="lt">LEVEL UP</div><div class="ln" id="lvNum">2</div><div class="ld" id="lvTitle"></div><div class="lq" id="lvQuote"></div></div>
+
+<div id="toast"><div class="tcard"><div class="ti" id="toastIco">🏆</div><div><div class="tt">ACHIEVEMENT UNLOCKED</div><div class="tn" id="toastName"></div></div></div></div>
+
+<script>
+"use strict";
+/* ============================================================
+   Xector1 EGO LOCK  —  single-file offline PWA
+   ============================================================ */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const todayKey=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const dateKey=(d)=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const fmt=(n)=>{if(n==null||isNaN(n))return'0';n=Math.round(n);return n.toLocaleString('en-US')};
+const fmtY=(n)=>'¥'+fmt(n);
+const SS='egolock.v1';
+
+/* ---------- DEFAULT TARGETS ---------- */
+const DEFAULT_TARGETS={
+  sleepH:7, wake:'06:00', exerciseMin:30, deepMin:180, sales:5, meetings:2,
+  revenueDay:30000, readingMin:20, waterMl:2500, proteinG:140
+};
+
+/* ---------- STATE ---------- */
+let S=load();
+function freshDay(){return{
+  missions:{}, // id:{v} raw input
+  kpi:{}, body:{}, deepwork:{sessions:[],totalMin:0,active:null},
+  journal:{win:'',lose:'',improve:''}, improvements:[]
+}}
+function load(){
+  try{const r=JSON.parse(localStorage.getItem(SS));if(r&&r.days)return migrate(r)}catch(e){}
+  return{meta:{created:Date.now(),version:1},
+    settings:{sound:true,name:'YOSHI',targets:{...DEFAULT_TARGETS}},
+    cache:{level:1,unlocked:{}}, days:{}};
+}
+function migrate(r){
+  r.settings=r.settings||{};r.settings.targets={...DEFAULT_TARGETS,...(r.settings.targets||{})};
+  if(r.settings.sound===undefined)r.settings.sound=true;
+  r.cache=r.cache||{level:1,unlocked:{}};r.cache.unlocked=r.cache.unlocked||{};
+  return r;
+}
+let saveTimer=null;
+function save(quiet){
+  localStorage.setItem(SS,JSON.stringify(S));
+  if(!quiet){clearTimeout(saveTimer);const e=$('#saved');e.classList.add('show');saveTimer=setTimeout(()=>e.classList.remove('show'),1100)}
+}
+function day(k){k=k||todayKey();if(!S.days[k])S.days[k]=freshDay();const d=S.days[k];
+  d.missions=d.missions||{};d.kpi=d.kpi||{};d.body=d.body||{};
+  d.deepwork=d.deepwork||{sessions:[],totalMin:0,active:null};
+  d.journal=d.journal||{win:'',lose:'',improve:''};d.improvements=d.improvements||[];return d}
+const T=()=>S.settings.targets;
+
+/* ---------- CONTENT: quotes / messages / titles ---------- */
+const QUOTES=[
+ "昨日のお前に、今日のお前は勝てるか。",
+ "迷うな。エゴを研げ。",
+ "限界は、超えるために置かれている。",
+ "ライバルはもう、走り出している。",
+ "数字は嘘をつかない。お前の今日が、ここに出る。",
+ "凡人で終わるな。",
+ "勝つための1日を、今から始めろ。",
+ "努力は前提だ。差をつけるのは、その先。",
+ "言い訳の数だけ、お前は弱くなる。",
+ "世界一を狙わない者に、価値はない。",
+ "才能は言い訳にならない。今日やるかどうかだ。",
+ "止まった瞬間、お前は抜かれる。",
+ "勝者は、誰も見てない時に動いている。",
+ "感情で動くな。数字で動け。",
+ "今日の1点が、1年後の景色を変える。",
+ "退屈な反復が、化け物を作る。",
+ "決めろ。お前のゴールは、お前にしか決められない。",
+ "強さとは、毎日同じ基準を守れること。",
+ "誰かに勝つな。昨日の自分を殺せ。",
+ "覚悟のない努力は、ただの自己満足だ。",
+ "今日サボる理由は、明日には敵になる。",
+ "結果が出るまで続けた奴だけが、続けたと言える。",
+ "プロは気分でやらない。仕組みでやる。",
+ "お前が寝てる間に、世界は進んでいる。",
+ "勝負は、始める前の準備で8割決まっている。"
+];
+const MSG={
+ morning:["起きろ。ライバルはもう動き出してる。","朝を制する者が、1日を制する。","目を覚ませ。今日の勝負が始まる。","この朝に、お前の覚悟が出る。"],
+ deepStart:["ここからの90分で、お前の価値が決まる。","集中しろ。世界との差は、この時間で開く。","余計なものを捨てろ。今は前だけ見ろ。"],
+ deepEnd:["1本、決めたな。だが、まだ足りない。","積み上げろ。それがいつか怪物になる。","いい集中だった。次はもっと深く潜れ。"],
+ aiDone:["進化した。だが、止まるな。","昨日のシステムを、お前が壊した。いい。","改善した数だけ、お前は前に進む。"],
+ salesZero:["ゴールを狙わないFWに、存在価値はない。","営業ゼロ。それは“今日戦わなかった”という証拠だ。","点を取りに行け。待っていても何も起きない。"],
+ highScore:["化け物の片鱗が見えた。","今日のお前は、悪くない。","この基準を、明日も守れるか。"],
+ lowScore:["この程度で満足するな。","今日のお前は、昨日に負けている。","数字が全てを語っている。やり直せ。"],
+ levelUp:["お前はまた、過去の自分を置き去りにした。","ここで満足するな。化け物はまだ先にいる。","レベルが上がった。だが基準も上げろ。","進化を続けろ。止まった瞬間に終わる。"]
+};
+const pick=(a)=>a[Math.floor(Math.random()*a.length)];
+
+const LEVEL_TITLES=[ // [minLevel,title]
+ [1,"起業家候補"],[10,"挑戦者"],[20,"実行者"],[30,"戦略家"],[40,"経営者"],
+ [50,"統率者"],[60,"CEO"],[70,"覇者"],[80,"市場支配者"],[90,"怪物"],[100,"EGOIST"]
+];
+function levelTitle(lv){let t=LEVEL_TITLES[0][1];for(const[m,n]of LEVEL_TITLES){if(lv>=m)t=n}return t}
+
+const RANKS=[ // [minScore,grade,color]
+ [98,"SSS","#FFD23F"],[93,"SS","#00E5FF"],[85,"S","#4D8BFF"],[73,"A","#00E68A"],
+ [60,"B","#9FD4FF"],[45,"C","#FFB020"],[30,"D","#FF8A5B"],[0,"E","#FF3358"]
+];
+function rankOf(score){for(const[m,g,c]of RANKS){if(score>=m)return{grade:g,color:c}}return{grade:"E",color:"#FF3358"}}
+
+/* ---------- MISSIONS DEFINITION ---------- */
+const ICONS={
+ sleep:'<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>',
+ wake:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4 12H2M22 12h-2M5 5l1.5 1.5M17.5 17.5L19 19M19 5l-1.5 1.5M6.5 17.5L5 19"/>',
+ exercise:'<path d="M6 7v10M18 7v10M4 9v6M20 9v6M6 12h12"/>',
+ training:'<path d="M4 9v6M20 9v6M7 7v10M17 7v10M7 12h10"/>',
+ deep:'<path d="M12 2a7 7 0 0 0-7 7c0 3 2 4 2 7h10c0-3 2-4 2-7a7 7 0 0 0-7-7zM9 21h6"/>',
+ sales:'<path d="M3 3v18h18M7 14l3-3 3 3 5-6"/>',
+ ai:'<path d="M12 2v3M12 19v3M5 12H2M22 12h-3M6 6l2 2M16 16l2 2M18 6l-2 2M8 16l-2 2"/><circle cx="12" cy="12" r="3"/>',
+ meeting:'<circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-3 3-5 6-5s6 2 6 5M14 20c0-2 1.5-3.5 3.5-3.5S21 18 21 20"/>',
+ revenue:'<circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 9.5c0-1 1-1.5 2.5-1.5s2.5.5 2.5 1.5-1 1.5-2.5 1.5-2.5.5-2.5 1.5 1 1.5 2.5 1.5 2.5-.5 2.5-1.5"/>',
+ reading:'<path d="M3 5v14a9 5 0 0 1 9 0 9 5 0 0 1 9 0V5a9 5 0 0 0-9 0 9 5 0 0 0-9 0z"/>',
+ journal:'<path d="M5 3h11l3 3v15H5zM9 8h6M9 12h6M9 16h4"/>',
+ flame:'<path d="M12 2c1 4 5 5 5 9a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 3 3-1-3 0-6 0-8z"/>',
+ bolt:'<path d="M13 2L3 14h7l-1 8 10-12h-7z"/>'
+};
+// kind: bool | num(target,unit,suffix) ; src pulls live from other modules
+const MISSIONS=[
+ {id:'sleep',  name:'睡眠',      icon:'sleep',  kind:'num', unit:'h',  get t(){return T().sleepH},     score:d=>ratio(num(d.body.sleepH),T().sleepH)},
+ {id:'wake',   name:'起床時間',  icon:'wake',   kind:'time',           get t(){return T().wake},       score:d=>wakeScore(d.missions.wake)},
+ {id:'exercise',name:'運動',     icon:'exercise',kind:'num',unit:'分',  get t(){return T().exerciseMin},score:d=>ratio(num(d.missions.exercise),T().exerciseMin)},
+ {id:'training',name:'筋トレ',   icon:'training',kind:'bool',           score:d=>bool(d.missions.training)?100:0},
+ {id:'deep',   name:'Deep Work', icon:'deep',   kind:'auto',unit:'分',  get t(){return T().deepMin},    score:d=>ratio(d.deepwork.totalMin,T().deepMin)},
+ {id:'sales',  name:'営業件数',  icon:'sales',  kind:'num',unit:'件',   get t(){return T().sales},      score:d=>ratio(num(d.missions.sales),T().sales)},
+ {id:'ai',     name:'AI改善',    icon:'ai',     kind:'auto',            score:d=>d.improvements.length>0?100:0},
+ {id:'meeting',name:'面談',      icon:'meeting',kind:'num',unit:'件',   get t(){return T().meetings},   score:d=>ratio(num(d.kpi.meetings),T().meetings)},
+ {id:'revenue',name:'売上',      icon:'revenue',kind:'auto',unit:'円',  get t(){return T().revenueDay}, score:d=>ratio(num(d.kpi.revenue),T().revenueDay)},
+ {id:'reading',name:'読書',      icon:'reading',kind:'num',unit:'分',   get t(){return T().readingMin}, score:d=>ratio(num(d.missions.reading),T().readingMin)},
+ {id:'jrnl',   name:'日記',      icon:'journal',kind:'auto',           score:d=>journalDone(d)?100:0}
+];
+function num(v){const n=parseFloat(v);return isNaN(n)?0:n}
+function bool(v){return v===true||v==='1'||v===1}
+function ratio(v,t){if(!t)return v>0?100:0;return clamp(Math.round(v/t*100),0,100)}
+function wakeScore(t){if(!t)return 0;const[h,m]=String(t).split(':').map(Number);const mins=h*60+(m||0);
+  const[th,tm]=String(T().wake).split(':').map(Number);const tgt=th*60+(tm||0);
+  if(mins<=tgt)return 100; const over=mins-tgt; return clamp(100-Math.round(over/3),0,100)}
+function journalDone(d){return!!(d.journal.win||d.journal.lose||d.journal.improve)}
+
+function egoScore(k){const d=day(k);let sum=0;for(const m of MISSIONS)sum+=m.score(d);return Math.round(sum/MISSIONS.length)}
+function missionsComplete(k){const d=day(k);return MISSIONS.every(m=>m.score(d)>=100)}
+
+/* ---------- XP / LEVEL (deterministic) ---------- */
+function dayXp(d){
+  let x=0;
+  x+=Math.min(d.deepwork.totalMin*0.6,300);
+  x+=d.improvements.length*50;
+  x+=num(d.missions.sales)*12;
+  x+=Math.min(num(d.kpi.revenue)/10000*5,200);
+  x+=num(d.kpi.meetings)*20;
+  x+=bool(d.missions.training)?30:0;
+  x+=num(d.missions.exercise)>=T().exerciseMin?30:Math.round(num(d.missions.exercise));
+  x+=journalDone(d)?20:0;
+  x+=num(d.missions.reading)>=T().readingMin?15:0;
+  return Math.round(x);
+}
+function totalXp(){let t=0;for(const k in S.days)t+=dayXp(S.days[k]);return t}
+function levelInfo(xp){
+  let lvl=1,need=120,floor=0;
+  while(lvl<100){if(xp<floor+need)break;floor+=need;lvl++;need=Math.round(need*1.08)}
+  return{level:lvl,into:xp-floor,need,floor,total:xp,title:levelTitle(lvl),
+    pct:Math.round((xp-floor)/need*100)};
+}
+
+/* ---------- AGGREGATES ---------- */
+function aggregate(){
+  const a={totalDeepMin:0,deepDays:0,totalImpr:0,trainDays:0,earlyDays:0,
+    totalRev:0,maxRevDay:0,journalDays:0,perfectDays:0,active:0,
+    totalSales:0,totalMeetings:0,maxContracts:0,deepStreak:0,perfectStreak:0,
+    revStreak:0, sessions:0};
+  const keys=Object.keys(S.days).sort();
+  for(const k of keys){const d=S.days[k];let touched=false;
+    if(d.deepwork.totalMin>0){a.totalDeepMin+=d.deepwork.totalMin;a.deepDays++;a.sessions+=d.deepwork.sessions.length;touched=true}
+    if(d.improvements.length){a.totalImpr+=d.improvements.length;touched=true}
+    if(bool(d.missions.training)){a.trainDays++;touched=true}
+    if(d.missions.wake&&wakeScore(d.missions.wake)>=100){a.earlyDays++;touched=true}
+    const rev=num(d.kpi.revenue);if(rev>0){a.totalRev+=rev;a.maxRevDay=Math.max(a.maxRevDay,rev);touched=true}
+    if(journalDone(d)){a.journalDays++;touched=true}
+    if(missionsComplete(k)){a.perfectDays++}
+    a.totalSales+=num(d.missions.sales);
+    a.totalMeetings+=num(d.kpi.meetings);
+    a.maxContracts=Math.max(a.maxContracts,num(d.kpi.contracts));
+    if(num(d.kpi.contracts)||num(d.kpi.mrr)||Object.keys(d.kpi).length)touched=true;
+    if(touched)a.active++;
+  }
+  // streaks (consecutive up to today)
+  a.deepStreak=streak(k=>day(k).deepwork.totalMin>0);
+  a.perfectStreak=streak(k=>missionsComplete(k));
+  a.revStreak=streak(k=>num(day(k).kpi.revenue)>0);
+  a.earlyStreak=streak(k=>{const w=day(k).missions.wake;return w&&wakeScore(w)>=100});
+  return a;
+}
+function streak(fn){let c=0,d=new Date();
+  for(let i=0;i<400;i++){const k=dateKey(d);if(S.days[k]&&fn(k)){c++}else{if(i===0){/*today optional*/}else break} d.setDate(d.getDate()-1)}
+  // recount cleanly from today backwards, allow break
+  c=0;d=new Date();
+  while(true){const k=dateKey(d);if(S.days[k]&&fn(k)){c++;d.setDate(d.getDate()-1)}else break}
+  return c;
+}
+
+/* ---------- ACHIEVEMENTS (catalog) ---------- */
+const ACH=[
+ {id:'first_step',ico:'⚡',n:'最初の一歩',d:'初めてミッションを記録',c:a=>a.active>=1},
+ {id:'first_deep',ico:'🧠',n:'集中の入口',d:'初めてDeep Workを完了',c:a=>a.sessions>=1},
+ {id:'first_ai',ico:'🔧',n:'最初の改善',d:'AI改善を1件記録',c:a=>a.totalImpr>=1},
+ {id:'first_journal',ico:'📓',n:'振り返りの習慣',d:'初めて日記を記録',c:a=>a.journalDays>=1},
+ {id:'first_rev',ico:'💴',n:'初収益',d:'売上を初めて記録',c:a=>a.totalRev>=1},
+ // deep work
+ {id:'deep7',ico:'🔥',n:'7日連続集中',d:'Deep Work 7日連続',c:a=>a.deepStreak>=7,p:a=>[a.deepStreak,7]},
+ {id:'deep30',ico:'🌋',n:'30日連続集中',d:'Deep Work 30日連続',c:a=>a.deepStreak>=30,p:a=>[a.deepStreak,30]},
+ {id:'deep_h50',ico:'⏳',n:'50時間の没頭',d:'累計Deep Work 50時間',c:a=>a.totalDeepMin>=3000,p:a=>[Math.floor(a.totalDeepMin/60),50]},
+ {id:'deep_h200',ico:'⌛',n:'200時間の没頭',d:'累計Deep Work 200時間',c:a=>a.totalDeepMin>=12000,p:a=>[Math.floor(a.totalDeepMin/60),200]},
+ {id:'deep_s100',ico:'💎',n:'100セッション',d:'Deep Work 100回',c:a=>a.sessions>=100,p:a=>[a.sessions,100]},
+ // revenue
+ {id:'rev100k',ico:'💰',n:'単日10万円',d:'1日の売上10万円',c:a=>a.maxRevDay>=100000,p:a=>[a.maxRevDay,100000]},
+ {id:'rev1m',ico:'👑',n:'売上100万円',d:'累計売上100万円',c:a=>a.totalRev>=1000000,p:a=>[a.totalRev,1000000]},
+ {id:'rev10m',ico:'🏆',n:'売上1000万円',d:'累計売上1000万円',c:a=>a.totalRev>=10000000,p:a=>[a.totalRev,10000000]},
+ // contracts
+ {id:'con50',ico:'📈',n:'契約50件',d:'契約数50件到達',c:a=>a.maxContracts>=50,p:a=>[a.maxContracts,50]},
+ {id:'con100',ico:'🚀',n:'契約100件',d:'契約数100件到達',c:a=>a.maxContracts>=100,p:a=>[a.maxContracts,100]},
+ // AI
+ {id:'ai30',ico:'🛠️',n:'改善30個',d:'AI改善 累計30件',c:a=>a.totalImpr>=30,p:a=>[a.totalImpr,30]},
+ {id:'ai100',ico:'🤖',n:'改善100個',d:'AI改善 累計100件',c:a=>a.totalImpr>=100,p:a=>[a.totalImpr,100]},
+ // training
+ {id:'train30',ico:'💪',n:'筋トレ30日',d:'筋トレ累計30日',c:a=>a.trainDays>=30,p:a=>[a.trainDays,30]},
+ {id:'train100',ico:'🦾',n:'筋トレ100日',d:'筋トレ累計100日',c:a=>a.trainDays>=100,p:a=>[a.trainDays,100]},
+ // early
+ {id:'early7',ico:'🌅',n:'早起き7日',d:'目標時刻の起床7日連続',c:a=>a.earlyStreak>=7,p:a=>[a.earlyStreak,7]},
+ {id:'early30',ico:'☀️',n:'早起き30日',d:'目標時刻の起床 累計30日',c:a=>a.earlyDays>=30,p:a=>[a.earlyDays,30]},
+ // perfect
+ {id:'perfect1',ico:'✨',n:'完全達成',d:'全ミッション100%を1日',c:a=>a.perfectDays>=1},
+ {id:'perfect7',ico:'⭐',n:'完璧な1週間',d:'全ミッション達成7日連続',c:a=>a.perfectStreak>=7,p:a=>[a.perfectStreak,7]},
+ {id:'perfect30',ico:'🌟',n:'規律の体現',d:'全ミッション達成 累計30日',c:a=>a.perfectDays>=30,p:a=>[a.perfectDays,30]},
+ // journal / sales / meetings / active
+ {id:'jrnl30',ico:'📔',n:'内省30日',d:'日記累計30日',c:a=>a.journalDays>=30,p:a=>[a.journalDays,30]},
+ {id:'sales100',ico:'🎯',n:'営業100件',d:'営業件数 累計100件',c:a=>a.totalSales>=100,p:a=>[a.totalSales,100]},
+ {id:'meet50',ico:'🤝',n:'面談50件',d:'面談 累計50件',c:a=>a.totalMeetings>=50,p:a=>[a.totalMeetings,50]},
+ {id:'active30',ico:'📅',n:'30日稼働',d:'記録を30日積み上げ',c:a=>a.active>=30,p:a=>[a.active,30]},
+ {id:'active100',ico:'🗓️',n:'100日稼働',d:'記録を100日積み上げ',c:a=>a.active>=100,p:a=>[a.active,100]},
+ {id:'rev_streak7',ico:'💵',n:'毎日収益7日',d:'売上を7日連続記録',c:a=>a.revStreak>=7,p:a=>[a.revStreak,7]}
+];
+function checkAchievements(){
+  const a=aggregate();const newly=[];
+  for(const x of ACH){const had=!!S.cache.unlocked[x.id];const now=x.c(a);
+    if(now&&!had){S.cache.unlocked[x.id]=todayKey();newly.push(x)}}
+  return newly;
+}
+
+/* ---------- STAGES ---------- */
+const STAGES=[
+ {n:1,name:'精神',sub:'規律の土台',cond:a=>a.perfectDays>=1,need:'全ミッション100%を1日達成'},
+ {n:2,name:'身体',sub:'動ける器',cond:a=>a.trainDays>=7,need:'筋トレ累計7日'},
+ {n:3,name:'営業',sub:'点を取る力',cond:a=>a.totalSales>=30,need:'営業件数 累計30件'},
+ {n:4,name:'AI',sub:'進化の仕組み',cond:a=>a.totalImpr>=20,need:'AI改善 累計20件'},
+ {n:5,name:'採用',sub:'仲間を増やす',cond:a=>a.totalMeetings>=20,need:'面談 累計20件'},
+ {n:6,name:'組織',sub:'人を動かす',cond:a=>a.active>=30,need:'30日稼働'},
+ {n:7,name:'利益',sub:'残す経営',cond:a=>a.totalRev>=1000000,need:'累計売上100万円'},
+ {n:8,name:'仕組み',sub:'回り続ける装置',cond:a=>a.deepStreak>=14,need:'Deep Work 14日連続'},
+ {n:9,name:'資産',sub:'積み上がる価値',cond:a=>a.totalRev>=5000000,need:'累計売上500万円'},
+ {n:10,name:'EGO',sub:'支配者の領域',cond:a=>a.perfectDays>=60,need:'全ミッション達成 累計60日'}
+];
+
+/* ---------- BOSS (last week comparison) ---------- */
+function weekRange(offset){ // offset 0 = this week (Mon-Sun)
+  const now=new Date();const dow=(now.getDay()+6)%7; // Mon=0
+  const mon=new Date(now);mon.setDate(now.getDate()-dow-offset*7);mon.setHours(0,0,0,0);
+  const days=[];for(let i=0;i<7;i++){const d=new Date(mon);d.setDate(mon.getDate()+i);days.push(dateKey(d))}
+  return days;
+}
+function weekAgg(keys){const r={rev:0,sales:0,deep:0,ai:0,meet:0};
+  for(const k of keys){const d=S.days[k];if(!d)continue;
+    r.rev+=num(d.kpi.revenue);r.sales+=num(d.missions.sales);r.deep+=d.deepwork.totalMin;
+    r.ai+=d.improvements.length;r.meet+=num(d.kpi.meetings)}
+  return r}
+
+/* ---------- COACH (harsh, number-based) ---------- */
+function coach(){
+  const k=todayKey();const d=day(k);const a=aggregate();
+  const scored=MISSIONS.map(m=>({m,s:m.score(d)})).sort((x,y)=>x.s-y.s);
+  const weak=scored.filter(x=>x.s<60).slice(0,3);
+  const score=egoScore(k);
+  // weakness text
+  let weakTxt;
+  if(weak.length===0){weakTxt=`全項目が及第点。${score}点。だが満足した瞬間に落ちる。基準を上げろ。`}
+  else{const top=weak[0];const lines={
+    sleep:`睡眠${num(d.body.sleepH)||0}h。脳が回らなければ全部崩れる。`,
+    wake:`起床が遅い。朝の${minToWake(T().wake)}前を死守しろ。`,
+    exercise:`運動${num(d.missions.exercise)||0}分。身体が止まれば思考も止まる。`,
+    training:`筋トレ未実施。器を鍛えない経営者に説得力はない。`,
+    deep:`Deep Workが${d.deepwork.totalMin}分。話にならん。最低${T().deepMin}分、机に張り付け。`,
+    sales:`営業${num(d.missions.sales)||0}件。点を取りに行かないFWに価値はない。`,
+    ai:`AI改善ゼロ。昨日と同じ自分のまま終わる気か。`,
+    meeting:`面談${num(d.kpi.meetings)||0}件。人と会わなければ何も動かない。`,
+    revenue:`売上${fmtY(num(d.kpi.revenue))}。数字が出てないなら、今日は戦っていない。`,
+    reading:`読書${num(d.missions.reading)||0}分。インプットを止めた瞬間、伸びは止まる。`,
+    jrnl:`日記が空欄。振り返らない奴は、同じミスを繰り返す。`
+  };weakTxt=lines[top.m.id]+(weak.length>1?` 加えて${weak.slice(1).map(x=>x.m.name).join('・')}も赤信号だ。`:'')}
+  // priority
+  const prio=scored.filter(x=>x.s<100).slice(0,3).map(x=>x.m.name);
+  const prioTxt=prio.length?`明日はまず ${prio.join(' → ')}。ここを潰さない限り、点数は上がらない。`:`全項目達成。次は“質”を上げろ。同じ時間で倍の成果を出せ。`;
+  // weekly bottleneck
+  const tw=weekAgg(weekRange(0)),lw=weekAgg(weekRange(1));
+  let bottle;
+  if(tw.deep< T().deepMin*3){bottle=`今週のDeep Workが${Math.round(tw.deep/60*10)/10}h。集中時間が圧倒的に足りない。これが全ての伸び悩みの根だ。`}
+  else if(tw.sales<15){bottle=`今週の営業が${tw.sales}件。行動量が少なすぎる。確率論で負けている。`}
+  else if(tw.ai<3){bottle=`今週の改善が${tw.ai}件。仕組みが進化していない。属人性から抜け出せていない。`}
+  else if(tw.rev<lw.rev){bottle=`今週の売上が先週を下回っている(${fmtY(tw.rev)} < ${fmtY(lw.rev)})。失速の兆候だ。原因を1つ特定しろ。`}
+  else{bottle=`今週は数字が動いている。だが油断は禁物。来週も同じ水準を“当たり前”にできるかが勝負だ。`}
+  // fix
+  const fix=score<50?`今日は負けだ。明日の朝、まず机に座って90分。それができれば流れは変わる。`
+    :score<80?`悪くないが、まだ二流だ。一番低い項目を1つ、明日100%にしろ。それだけでいい。`
+    :`このレベルを“例外”にするな。毎日が今日と同じ基準になった時、お前は本物になる。`;
+  return{score,weak:weakTxt,prio:prioTxt,bottle,fix};
+}
+function minToWake(t){return t}
+
+
+/* ============================================================
+   CHARTS (dependency-free SVG)
+   ============================================================ */
+function svgLine(vals,{h=150,color='#4D8BFF',color2='#00E5FF',labels=null,fmtv=fmt,target=null}={}){
+  vals=vals.filter(v=>v!=null);
+  if(!vals.length||vals.every(v=>v===0))return '<div class="empty">データ蓄積中 — 入力すると推移が表示される</div>';
+  const w=480,pad=8,bottom=labels?22:8;const innerH=h-pad-bottom;
+  let max=Math.max(...vals,target||0),min=Math.min(...vals,0);
+  if(max===min)max=min+1;const rng=max-min;
+  const n=vals.length;const step=n>1?(w-pad*2)/(n-1):0;
+  const X=i=>pad+i*step, Y=v=>pad+innerH-((v-min)/rng)*innerH;
+  let d='',area='';
+  vals.forEach((v,i)=>{const x=X(i),y=Y(v);d+=(i?'L':'M')+x.toFixed(1)+' '+y.toFixed(1)+' '});
+  area=d+`L${X(n-1).toFixed(1)} ${(pad+innerH).toFixed(1)} L${pad} ${(pad+innerH).toFixed(1)} Z`;
+  const id='g'+Math.random().toString(36).slice(2,7);
+  let tline='';if(target!=null&&target>=min&&target<=max){const ty=Y(target).toFixed(1);
+    tline=`<line x1="${pad}" y1="${ty}" x2="${w-pad}" y2="${ty}" stroke="#FFD23F" stroke-width="1" stroke-dasharray="4 4" opacity=".55"/>`}
+  let pts='';vals.forEach((v,i)=>{pts+=`<circle cx="${X(i).toFixed(1)}" cy="${Y(v).toFixed(1)}" r="${i===n-1?3.5:0}" fill="#fff"/>`});
+  if(n<=14)vals.forEach((v,i)=>{pts+=`<circle cx="${X(i).toFixed(1)}" cy="${Y(v).toFixed(1)}" r="2.4" fill="${color2}"/>`});
+  let lab='';if(labels){const skip=Math.ceil(labels.length/6);labels.forEach((l,i)=>{if(i%skip===0||i===labels.length-1)
+    lab+=`<text x="${X(i).toFixed(1)}" y="${h-6}" fill="#5A6890" font-size="9" text-anchor="middle" font-family="monospace">${l}</text>`})}
+  return `<div class="chart-wrap"><svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" style="height:${h}px">
+    <defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="${color}" stop-opacity=".32"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></linearGradient></defs>
+    ${tline}<path d="${area}" fill="url(#${id})"/>
+    <path d="${d}" fill="none" stroke="${color}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>
+    ${pts}${lab}</svg></div>`;
+}
+function svgBar(items,{h=150,color='#2D6BFF',target=null,fmtv=fmt}={}){
+  if(!items.length||items.every(it=>!it.v))return '<div class="empty">データ蓄積中</div>';
+  const w=480,pad=8,bottom=22,top=8;const innerH=h-bottom-top;
+  let max=Math.max(...items.map(i=>i.v),target||0,1);
+  const n=items.length;const bw=(w-pad*2)/n;const gap=bw*0.28;
+  let bars='',lab='';
+  items.forEach((it,i)=>{const bh=(it.v/max)*innerH;const x=pad+i*bw+gap/2;const y=top+innerH-bh;
+    const cur=it.cur;bars+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${(bw-gap).toFixed(1)}" height="${Math.max(bh,1).toFixed(1)}" rx="3" fill="${cur?'#00E5FF':color}" opacity="${cur?1:.85}"/>`;
+    const skip=Math.ceil(n/7);if(i%skip===0||i===n-1)lab+=`<text x="${(x+(bw-gap)/2).toFixed(1)}" y="${h-6}" fill="#5A6890" font-size="9" text-anchor="middle" font-family="monospace">${it.l}</text>`});
+  let tline='';if(target!=null){const ty=(top+innerH-(target/max)*innerH).toFixed(1);
+    tline=`<line x1="${pad}" y1="${ty}" x2="${w-pad}" y2="${ty}" stroke="#FFD23F" stroke-width="1" stroke-dasharray="4 4" opacity=".5"/>`}
+  return `<div class="chart-wrap"><svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" style="height:${h}px">${tline}${bars}${lab}</svg></div>`;
+}
+function heatmap(weeks=13){
+  // last weeks*7 days grid, colored by ego score
+  const cells=[];const today=new Date();const dow=(today.getDay()+6)%7;
+  const start=new Date(today);start.setDate(today.getDate()-dow-(weeks-1)*7);
+  let html='<div style="display:flex;gap:4px">';
+  for(let wk=0;wk<weeks;wk++){html+='<div style="flex:1;display:flex;flex-direction:column;gap:4px">';
+    for(let dd=0;dd<7;dd++){const d=new Date(start);d.setDate(start.getDate()+wk*7+dd);
+      const k=dateKey(d);const future=d>today;
+      let bg='rgba(120,150,255,.06)';let title=k;
+      if(!future&&S.days[k]){const sc=egoScore(k);const al=clamp(sc/100,0,1);
+        if(sc>0){const r=Math.round(0+sc*0.0),g=Math.round(120+al*100),b=Math.round(200+al*40);
+          bg=`rgba(${clamp(20,0,255)},${clamp(150+al*80,0,255)|0},${clamp(220,0,255)},${0.18+al*0.82})`;
+          title=k+' · '+sc;}
+      }
+      if(future)bg='transparent';
+      html+=`<div title="${title}" style="aspect-ratio:1;border-radius:3px;background:${bg}"></div>`}
+    html+='</div>'}
+  html+='</div>';
+  return html;
+}
+function ringSVG(pct,{size=240,stroke=14,color='#2D6BFF',color2='#00E5FF',track='rgba(120,150,255,.1)',glow=true}={}){
+  const r=(size-stroke)/2;const c=2*Math.PI*r;const off=c*(1-clamp(pct,0,100)/100);
+  const id='r'+Math.random().toString(36).slice(2,7);
+  return `<svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}">
+   <defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1">
+   <stop offset="0" stop-color="${color2}"/><stop offset="1" stop-color="${color}"/></linearGradient>
+   ${glow?`<filter id="${id}f" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>`:''}</defs>
+   <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${track}" stroke-width="${stroke}"/>
+   <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="url(#${id})" stroke-width="${stroke}"
+     stroke-linecap="round" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}"
+     ${glow?`filter="url(#${id}f)"`:''} style="transition:stroke-dashoffset 1s cubic-bezier(.2,.8,.2,1)"/></svg>`;
+}
+
+/* ============================================================
+   AUDIO (WebAudio synth — no files, works offline)
+   ============================================================ */
+let AC=null;
+function ac(){if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(AC&&AC.state==='suspended')AC.resume();return AC}
+function tone(freq,dur,type='sine',vol=0.15,delay=0){const a=ac();if(!a||!S.settings.sound)return;
+  const o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.value=freq;
+  const t=a.currentTime+delay;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+0.012);
+  g.gain.exponentialRampToValueAtTime(0.0001,t+dur);o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+dur+0.02)}
+const SFX={
+ tap:()=>tone(420,0.06,'triangle',0.06),
+ on:()=>{tone(660,0.09,'sine',0.1);tone(990,0.12,'sine',0.07,0.04)},
+ success:()=>{[523,659,784].forEach((f,i)=>tone(f,0.18,'sine',0.12,i*0.07))},
+ levelup:()=>{[523,659,784,1046,1318].forEach((f,i)=>tone(f,0.4,'sawtooth',0.1,i*0.09));[523,659,784].forEach((f,i)=>tone(f/2,0.6,'sine',0.08,i*0.09))},
+ boss:()=>{[110,110,146,110].forEach((f,i)=>tone(f,0.22,'square',0.1,i*0.18))},
+ ach:()=>{[784,1046,1318].forEach((f,i)=>tone(f,0.25,'triangle',0.1,i*0.08))},
+ deep:()=>{tone(196,0.5,'sine',0.12);tone(294,0.7,'sine',0.08,0.05)}
+};
+
+/* ============================================================
+   FX — particles, level up, message overlay, toast
+   ============================================================ */
+const fxc=$('#fxc');const fctx=fxc.getContext('2d');let parts=[],fxRaf=null;
+function sizeCanvas(){fxc.width=innerWidth*devicePixelRatio;fxc.height=innerHeight*devicePixelRatio;
+  fxc.style.width=innerWidth+'px';fxc.style.height=innerHeight+'px';fctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0)}
+addEventListener('resize',sizeCanvas);sizeCanvas();
+function burst(x,y,n=80,colors=['#00E5FF','#4D8BFF','#fff','#2D6BFF']){
+  if(matchMedia('(prefers-reduced-motion:reduce)').matches)n=Math.min(n,12);
+  fxc.style.display='block';
+  for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,sp=2+Math.random()*7;
+    parts.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-2,life:1,size:1.5+Math.random()*3,
+      col:colors[i%colors.length],g:0.12+Math.random()*0.1})}
+  if(!fxRaf)loopFx();
+}
+function loopFx(){fctx.clearRect(0,0,innerWidth,innerHeight);let alive=false;
+  for(const p of parts){if(p.life<=0)continue;alive=true;p.vy+=p.g;p.x+=p.vx;p.y+=p.vy;p.vx*=0.99;p.life-=0.016;
+    fctx.globalAlpha=Math.max(p.life,0);fctx.fillStyle=p.col;fctx.shadowColor=p.col;fctx.shadowBlur=8;
+    fctx.beginPath();fctx.arc(p.x,p.y,p.size*p.life,0,7);fctx.fill()}
+  fctx.shadowBlur=0;fctx.globalAlpha=1;
+  if(alive){fxRaf=requestAnimationFrame(loopFx)}else{fxRaf=null;parts=[];fxc.style.display='none'}}
+
+let msgQueue=[],msgShowing=false;
+function showMsg(line,txt){msgQueue.push([line,txt]);if(!msgShowing)nextMsg()}
+function nextMsg(){if(!msgQueue.length){msgShowing=false;return}msgShowing=true;
+  const[line,txt]=msgQueue.shift();$('#msgLine').textContent=line;$('#msgTxt').textContent=txt;$('#msg').classList.add('show')}
+function hideMsg(){$('#msg').classList.remove('show');setTimeout(nextMsg,250)}
+
+function showLevelUp(lv){SFX.levelup();
+  $('#lvNum').textContent=lv.level;$('#lvTitle').textContent=lv.title;
+  $('#lvQuote').textContent=pick(MSG.levelUp);$('#lvup').classList.add('show');
+  setTimeout(()=>burst(innerWidth/2,innerHeight*0.4,120),150);
+  setTimeout(()=>burst(innerWidth*0.3,innerHeight*0.45,50),400);
+  setTimeout(()=>burst(innerWidth*0.7,innerHeight*0.45,50),600);
+}
+let toastQ=[],toastBusy=false;
+function showToast(ach){toastQ.push(ach);if(!toastBusy)nextToast()}
+function nextToast(){if(!toastQ.length){toastBusy=false;return}toastBusy=true;const a=toastQ.shift();
+  SFX.ach();$('#toastIco').textContent=a.ico;$('#toastName').textContent=a.n;
+  const t=$('#toast');t.classList.add('show');burst(innerWidth/2,innerHeight*0.16,40,['#FFD23F','#fff','#FFB020']);
+  setTimeout(()=>{t.classList.remove('show');setTimeout(nextToast,400)},2600)}
+
+
+/* ============================================================
+   RENDER CORE / ROUTER
+   ============================================================ */
+let route={tab:'home',sub:null};
+function go(tab){if(route.tab===tab&&!route.sub){return}SFX.tap();route={tab,sub:null};render();$('#main').scrollTo?.(0,0);window.scrollTo(0,0)}
+function goSub(sub){SFX.tap();route.sub=sub;render();window.scrollTo(0,0)}
+function back(){SFX.tap();route.sub=null;render();window.scrollTo(0,0)}
+
+const NAV=[
+ {id:'home', label:'ホーム', svg:'<path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10"/>'},
+ {id:'mission',label:'ミッション',svg:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/>'},
+ {id:'kpi',  label:'KPI',  svg:'<path d="M3 3v18h18M7 14l3-3 3 3 5-6"/>'},
+ {id:'focus',label:'FOCUS',svg:'<path d="M13 2L3 14h7l-1 8 10-12h-7z"/>'},
+ {id:'log',  label:'記録',  svg:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>'}
+];
+function renderNav(){$('#nav').innerHTML=NAV.map(n=>
+  `<div class="nav-i ${route.tab===n.id?'on':''}" onclick="go('${n.id}')">
+   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">${n.svg}</svg>
+   <span>${n.label}</span></div>`).join('')}
+
+function renderHeader(){
+  const lv=levelInfo(totalXp());const sc=egoScore();const rk=rankOf(sc);const a=aggregate();
+  const st=Math.max(a.deepStreak,a.perfectStreak);
+  $('#hdr').innerHTML=`
+   <div class="lvchip" onclick="goSub('levels');route.tab='log';render()">
+     <div class="lvring">${ringSVG(lv.pct,{size:34,stroke:3,glow:false,track:'rgba(120,150,255,.15)'})}<b>${lv.level}</b></div>
+     <div class="meta"><span class="t">LV ${lv.level}</span><span class="n">${lv.title}</span></div>
+   </div>
+   <div class="streak" title="連続日数"><svg viewBox="0 0 24 24" fill="${st>0?'#FF8A3D':'#3A4660'}" stroke="none"><path d="M12 2c1 4 5 5 5 9a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 3 3-1-3 0-6 0-8z"/></svg>${st}</div>
+   <div class="rankpill"><span class="t">RANK</span><span class="g" style="color:${rk.color};text-shadow:0 0 12px ${rk.color}88">${rk.grade}</span></div>
+   <div class="gear" onclick="goSub('settings');route.tab='log';render()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 0 1-4 0v-.2a1.6 1.6 0 0 0-2.7-1.1l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.6 1.6 0 0 0 4.6 15H4a2 2 0 0 1 0-4h.2a1.6 1.6 0 0 0 1.1-2.7l-.1-.1A2 2 0 1 1 8 5.4l.1.1A1.6 1.6 0 0 0 10 5.6V5a2 2 0 0 1 4 0v.2a1.6 1.6 0 0 0 2.7 1.1l.1-.1A2 2 0 1 1 19.6 9l-.1.1a1.6 1.6 0 0 0-1.1 2.7V12a2 2 0 0 1 0 4z"/></svg></div>`;
+}
+
+function render(){renderHeader();renderNav();
+  const v={home:viewHome,mission:viewMission,kpi:viewKpi,focus:viewFocus,log:viewLog}[route.tab];
+  if(route.sub){const sv={journal:viewJournal,body:viewBody,ailog:viewAiLog,levels:viewLevels,stages:viewStages,boss:viewBoss,settings:viewSettings}[route.sub];
+    $('#main').innerHTML=sv?sv():v();}
+  else $('#main').innerHTML=v();
+  afterRender();
+}
+let afterFns=[];
+function onMount(fn){afterFns.push(fn)}
+function afterRender(){const fns=afterFns;afterFns=[];fns.forEach(f=>{try{f()}catch(e){console.error(e)}})}
+
+/* ---------- input handlers ---------- */
+function liveRefresh(){
+  renderHeader();
+  $$('[data-bar]').forEach(el=>{const id=el.dataset.bar;const m=MISSIONS.find(x=>x.id===id);
+    if(m){const s=m.score(day());el.style.width=s+'%';el.style.background=barColor(s)}});
+  $$('[data-pct]').forEach(el=>{const id=el.dataset.pct;const m=MISSIONS.find(x=>x.id===id);if(m)el.textContent=m.score(day())+'%'});
+  const eg=$('[data-ego]');if(eg){const sc=egoScore();eg.textContent=sc;const rg=$('[data-egoring]');
+    if(rg)rg.querySelectorAll('circle')[1].style.strokeDashoffset=ringOffset(sc);
+    const rkel=$('[data-egorank]');if(rkel){const r=rankOf(sc);rkel.textContent='RANK '+r.grade;rkel.style.color=r.color}}
+  $$('[data-egochip]').forEach(el=>el.textContent=egoScore());
+}
+function ringOffset(pct){const r=(220-16)/2;const c=2*Math.PI*r;return (c*(1-clamp(pct,0,100)/100)).toFixed(1)}
+function barColor(s){return s>=100?'linear-gradient(90deg,#00E68A,#00E5FF)':s>=60?'linear-gradient(90deg,#2D6BFF,#4D8BFF)':s>=30?'linear-gradient(90deg,#FFB020,#FFD23F)':'linear-gradient(90deg,#FF3358,#FF6B5B)'}
+
+let updTimer=null,prevLevel=null;
+function upd(el,mod,field){
+  const d=day();const val=el.value;
+  if(mod==='mission')d.missions[field]=val;
+  else if(mod==='kpi')d.kpi[field]=val;
+  else if(mod==='body'){d.body[field]=val;if(field==='sleepH'){/*affects mission*/}}
+  else if(mod==='journal')d.journal[field]=val;
+  liveRefresh();
+  clearTimeout(updTimer);updTimer=setTimeout(()=>{checkProgress();save(true)},500);
+}
+function toggleMission(id){SFX.on();const d=day();d.missions[id]=!bool(d.missions[id]);checkProgress();save();render()}
+function checkProgress(){
+  // level up detection
+  const lv=levelInfo(totalXp());
+  if(prevLevel===null)prevLevel=S.cache.level||lv.level;
+  if(lv.level>prevLevel){S.cache.level=lv.level;showLevelUp(lv)}
+  prevLevel=lv.level;S.cache.level=lv.level;
+  // achievements
+  const newly=checkAchievements();newly.forEach(showToast);
+}
+
+/* ============================================================
+   VIEW: HOME
+   ============================================================ */
+function viewHome(){
+  const k=todayKey();const sc=egoScore(k);const rk=rankOf(sc);const lv=levelInfo(totalXp());
+  const a=aggregate();const d=day(k);const co=coach();
+  const done=MISSIONS.filter(m=>m.score(d)>=100).length;
+  const dxp=dayXp(d);
+  if(!S._quote)S._quote=pick(QUOTES);
+  onMount(()=>animateNumber('[data-ego]',sc));
+  return `<div class="view">
+   <div class="card glow" style="padding:20px 16px 18px">
+    <div class="sheen"></div>
+    <div class="center"><span class="eyebrow">${fmtDate(k)} · TODAY'S VERDICT</span></div>
+    <div class="egowrap">
+      <div class="ego">
+        <div data-egoring>${ringSVG(sc,{size:220,stroke:16})}</div>
+        <div class="core">
+          <div class="lab">EGO SCORE</div>
+          <div class="val" data-ego>0</div>
+          <div class="max">/ 100</div>
+          <div class="rk" data-egorank style="color:${rk.color};text-shadow:0 0 14px ${rk.color}88">RANK ${rk.grade}</div>
+        </div>
+      </div>
+    </div>
+    <div class="quote"><span class="q">「</span>${S._quote}<span class="q">」</span></div>
+   </div>
+
+   <div class="chips mt12">
+    <div class="chip"><div class="cv" style="color:var(--cyan)">${done}<span style="font-size:12px;color:var(--dim)">/${MISSIONS.length}</span></div><div class="cl">ミッション達成</div></div>
+    <div class="chip"><div class="cv">${Math.floor(d.deepwork.totalMin/60)}<span style="font-size:11px">h</span>${d.deepwork.totalMin%60}<span style="font-size:11px">m</span></div><div class="cl">Deep Work</div></div>
+    <div class="chip"><div class="cv" style="color:var(--gold)">+${fmt(dxp)}</div><div class="cl">今日のXP</div></div>
+   </div>
+
+   ${coachCard(co)}
+
+   <div class="section-title"><h2>Today</h2><div class="line"></div></div>
+   <div class="grid2">
+    <div class="hub-c" onclick="go('mission')"><div class="hi" style="background:rgba(0,229,255,.12);border:1px solid var(--line);color:var(--cyan)"><svg viewBox="0 0 24 24" width="20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg></div><div class="ht">ミッション</div><div class="hs">${done}/${MISSIONS.length} 達成 · 採点する</div></div>
+    <div class="hub-c" onclick="go('focus')"><div class="hi" style="background:rgba(45,120,255,.12);border:1px solid var(--line);color:var(--blue2)"><svg viewBox="0 0 24 24" width="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg></div><div class="ht">Deep Work</div><div class="hs">90分の勝負を始める</div></div>
+    <div class="hub-c" onclick="go('kpi')"><div class="hi" style="background:rgba(0,230,138,.12);border:1px solid var(--line);color:var(--green)"><svg viewBox="0 0 24 24" width="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18M7 14l3-3 3 3 5-6"/></svg></div><div class="ht">経営KPI</div><div class="hs">今日の数字を入力</div></div>
+    <div class="hub-c" onclick="goSub('journal');route.tab='log';render()"><div class="hi" style="background:rgba(155,107,255,.12);border:1px solid var(--line);color:var(--purple)"><svg viewBox="0 0 24 24" width="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 3h11l3 3v15H5zM9 8h6M9 12h6"/></svg></div><div class="ht">ジャーナル</div><div class="hs">勝ち・負け・改善を書く</div></div>
+   </div>
+   <div class="tabbar-spacer"></div>
+  </div>`;
+}
+function coachCard(co){
+  return `<div class="coach mt12">
+    <div class="ch"><div class="av"><svg viewBox="0 0 24 24" width="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v3M12 19v3M5 12H2M22 12h-3"/><circle cx="12" cy="12" r="3.5"/></svg></div>
+      <div><div class="ct">EGO COACH</div><div class="cs">数字でしか語らない</div></div></div>
+    <div class="block"><div class="bt">今日の弱点</div><div class="bx">${co.weak}</div></div>
+    <div class="block"><div class="bt">明日の優先順位</div><div class="bx">${co.prio}</div></div>
+    <div class="block"><div class="bt">今週のボトルネック</div><div class="bx">${co.bottle}</div></div>
+    <div class="block"><div class="bt">改善案</div><div class="bx">${co.fix}</div></div>
+  </div>`;
+}
+
+/* ============================================================
+   VIEW: MISSION
+   ============================================================ */
+function viewMission(){
+  const d=day();const sc=egoScore();
+  return `<div class="view">
+   <span class="eyebrow">DAILY MISSIONS</span>
+   <div class="between mt8"><div class="h1">今日のミッション</div>
+     <div class="num" style="font-size:13px;color:var(--muted)">合計 <b data-egochip style="color:var(--cyan);font-size:18px">${sc}</b>/100</div></div>
+   <div class="sub mt8">入力すると達成率が自動採点され、EGO SCOREに反映される。チェックではなく、ゲージで“どこまで詰めたか”を測れ。</div>
+
+   <div class="card mt16" style="padding:6px 16px">
+   ${MISSIONS.map(m=>missionRow(m,d)).join('')}
+   </div>
+
+   <div class="card mt12">
+     <div class="between"><div><div class="eyebrow">睡眠 / 水分 / 体組成</div><div class="sub mt8" style="font-size:12px">睡眠・運動・筋トレは身体管理と連動している</div></div>
+     <button class="btn cyan sm" onclick="goSub('body');route.tab='log';render()">身体管理へ</button></div>
+   </div>
+   <div class="tabbar-spacer"></div>
+  </div>`;
+}
+function missionRow(m,d){
+  const s=m.score(d);let ctrl='';
+  if(m.kind==='bool'){const on=bool(d.missions[m.id]);
+    ctrl=`<button class="tog ${on?'on':''}" onclick="toggleMission('${m.id}')">${on?'達成':'未'}</button>`}
+  else if(m.kind==='time'){
+    ctrl=`<input type="time" value="${d.missions.wake||''}" onchange="upd(this,'mission','wake')" style="width:118px;padding:9px 10px;font-size:14px">`}
+  else if(m.kind==='num'){const v=d.missions[m.id]??'';
+    ctrl=`<input class="mini-in num-in" inputmode="decimal" placeholder="0" value="${v}" oninput="upd(this,'mission','${m.id}')"><span class="dim" style="font-size:11px">${m.unit||''}</span>`}
+  else if(m.kind==='auto'){ // pulled from other modules
+    let cur='';if(m.id==='deep')cur=d.deepwork.totalMin+'分';
+    else if(m.id==='ai')cur=d.improvements.length+'件';
+    else if(m.id==='revenue')cur=fmtY(num(d.kpi.revenue));
+    else if(m.id==='jrnl')cur=journalDone(d)?'記録済':'未記録';
+    ctrl=`<span class="num" style="font-size:13px;color:${s>=100?'var(--green)':'var(--muted)'}">${cur}</span>`}
+  const meta=m.kind==='bool'?'':m.kind==='auto'?(m.id==='deep'?`目標 ${m.t}分`:m.id==='revenue'?`目標 ${fmtY(m.t)}`:m.id==='ai'?'最低1件':'自動連携'):
+    m.kind==='time'?`目標 ${m.t} まで`:`目標 ${m.t}${m.unit||''}`;
+  return `<div class="mrow">
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">${ICONS[m.icon]}</svg></div>
+    <div class="info"><div class="nm">${m.name}</div>
+      <div class="meta">${meta}</div>
+      <div class="lgauge mt8"><i data-bar="${m.id}" style="width:${s}%;background:${barColor(s)}"></i></div>
+    </div>
+    <div class="ctrl">${ctrl}<span class="pct" data-pct="${m.id}">${s}%</span></div>
+  </div>`;
+}
+
+/* ---------- shared helpers ---------- */
+function animateNumber(sel,to,dur=900){const el=$(sel);if(!el)return;const start=performance.now();
+  function f(t){const p=clamp((t-start)/dur,0,1);const e=1-Math.pow(1-p,3);el.textContent=Math.round(to*e);if(p<1)requestAnimationFrame(f)}requestAnimationFrame(f)}
+function fmtDate(k){const[y,m,dd]=k.split('-').map(Number);const W=['日','月','火','水','木','金','土'];const dt=new Date(y,m-1,dd);return `${m}/${dd} (${W[dt.getDay()]})`}
+
+
+/* ============================================================
+   KPI definitions + aggregation helpers
+   ============================================================ */
+const KPI=[
+ {id:'revenue', name:'売上',      unit:'¥', agg:'sum',  yen:true},
+ {id:'mrr',     name:'MRR',       unit:'¥', agg:'last', yen:true},
+ {id:'contracts',name:'契約数',    unit:'件', agg:'last'},
+ {id:'churned', name:'解約数',     unit:'件', agg:'sum'},
+ {id:'meetings',name:'面談数',     unit:'件', agg:'sum'},
+ {id:'bookings',name:'予約数',     unit:'件', agg:'sum'},
+ {id:'adspend', name:'広告費',     unit:'¥', agg:'sum',  yen:true},
+ {id:'profit',  name:'利益',       unit:'¥', agg:'sum',  yen:true},
+ {id:'cash',    name:'キャッシュ', unit:'¥', agg:'last', yen:true},
+ {id:'inquiries',name:'問い合わせ',unit:'件', agg:'sum'},
+ {id:'lineAdds',name:'LINE追加',   unit:'人', agg:'sum'},
+ {id:'snsPosts',name:'SNS投稿',    unit:'件', agg:'sum'},
+ {id:'dmSent',  name:'DM送信',     unit:'件', agg:'sum'},
+ {id:'replyRate',name:'返信率',    unit:'%', agg:'avg'},
+ {id:'closeRate',name:'成約率',    unit:'%', agg:'avg'},
+ {id:'ltv',     name:'LTV',        unit:'¥', agg:'last', yen:true},
+ {id:'cac',     name:'CAC',        unit:'¥', agg:'last', yen:true}
+];
+function kpiFmt(m,v){return m.yen?fmtY(v):fmt(v)+(m.unit==='%'?'%':'')}
+function lastDays(n){const out=[];const d=new Date();for(let i=n-1;i>=0;i--){const x=new Date(d);x.setDate(d.getDate()-i);out.push(dateKey(x))}return out}
+function monthRange(yearMonthOffset){ // 0 = this month
+  const now=new Date();const base=new Date(now.getFullYear(),now.getMonth()-yearMonthOffset,1);
+  const y=base.getFullYear(),mo=base.getMonth();const dim=new Date(y,mo+1,0).getDate();
+  const keys=[];for(let i=1;i<=dim;i++)keys.push(dateKey(new Date(y,mo,i)));
+  return{keys,label:(mo+1)+'月',y,mo};
+}
+function aggMetric(keys,id,mode){
+  const vals=keys.map(k=>{const d=S.days[k];return d?num(d.kpi[id]):0});
+  if(mode==='sum')return Math.round(vals.reduce((a,b)=>a+b,0));
+  if(mode==='avg'){const nz=vals.filter(v=>v>0);return nz.length?Math.round(nz.reduce((a,b)=>a+b,0)/nz.length):0}
+  // last (snapshot): latest non-zero in range
+  for(let i=keys.length-1;i>=0;i--){const d=S.days[keys[i]];if(d&&num(d.kpi[id])>0)return num(d.kpi[id])}
+  return 0;
+}
+function kpiSeries(id,period){
+  const m=KPI.find(x=>x.id===id);
+  if(period==='day'){const keys=lastDays(14);
+    return{vals:keys.map(k=>{const d=S.days[k];return d?num(d.kpi[id]):0}),
+      labels:keys.map(k=>{const p=k.split('-');return p[1]+'/'+p[2]}),type:'line'}}
+  if(period==='week'){const vals=[],labels=[];
+    for(let i=7;i>=0;i--){vals.push(aggMetric(weekRange(i),id,m.agg));labels.push(i===0?'今週':'-'+i+'w')}
+    return{vals,labels,type:'bar'}}
+  if(period==='month'){const vals=[],labels=[];
+    for(let i=5;i>=0;i--){const r=monthRange(i);vals.push(aggMetric(r.keys,id,m.agg));labels.push(r.label)}
+    return{vals,labels,type:'bar'}}
+  // yoy: this year vs last year, same elapsed period
+  const now=new Date();const yKeys=[],lyKeys=[];
+  const janThis=new Date(now.getFullYear(),0,1);
+  for(let d=new Date(janThis);d<=now;d.setDate(d.getDate()+1))yKeys.push(dateKey(d));
+  const lyEnd=new Date(now.getFullYear()-1,now.getMonth(),now.getDate());
+  for(let d=new Date(now.getFullYear()-1,0,1);d<=lyEnd;d.setDate(d.getDate()+1))lyKeys.push(dateKey(d));
+  const cur=aggMetric(yKeys,id,m.agg),prev=aggMetric(lyKeys,id,m.agg);
+  return{vals:[prev,cur],labels:['昨年','今年'],type:'bar',yoy:true,cur,prev};
+}
+
+/* ============================================================
+   VIEW: KPI
+   ============================================================ */
+let kpiSel='revenue',kpiPer='day';
+function setKpiMetric(id){SFX.tap();kpiSel=id;render();const r=$('#metricRow');if(r){const a=$('#m_'+id);if(a)a.scrollIntoView({inline:'center',block:'nearest'})}}
+function setKpiPeriod(p){SFX.tap();kpiPer=p;render()}
+function viewKpi(){
+  const d=day();const m=KPI.find(x=>x.id===kpiSel);
+  const ser=kpiSeries(kpiSel,kpiPer);
+  const periodTotal=(()=>{
+    if(kpiPer==='day')return aggMetric(lastDays(14),kpiSel,m.agg);
+    if(kpiPer==='week')return aggMetric(weekRange(0),kpiSel,m.agg);
+    if(kpiPer==='month')return aggMetric(monthRange(0).keys,kpiSel,m.agg);
+    return ser.cur;
+  })();
+  const chart=ser.type==='line'
+    ? svgLine(ser.vals,{labels:ser.labels,h:170,color:m.yen?'#00E68A':'#4D8BFF',color2:'#00E5FF'})
+    : svgBar(ser.vals.map((v,i)=>({l:ser.labels[i],v,cur:i===ser.vals.length-1})),{h:170,color:'#2D6BFF'});
+  const metricChips=KPI.map(x=>
+    `<button id="m_${x.id}" class="mchip ${x.id===kpiSel?'on':''}" onclick="setKpiMetric('${x.id}')">${x.name}</button>`).join('');
+  const field=(x)=>{const v=d.kpi[x.id]??'';
+    return `<div class="kfield"><div class="kl">${x.name}<span class="u">${x.unit}</span></div>
+      <input inputmode="${x.unit==='%'?'decimal':'numeric'}" placeholder="0" value="${v}" oninput="upd(this,'kpi','${x.id}')"></div>`};
+  const periodLabel={day:'直近14日',week:'今週',month:'今月',yoy:'今年累計'}[kpiPer];
+  let yoyNote='';
+  if(ser.yoy){const diff=ser.cur-ser.prev;const up=diff>=0;const pr=ser.prev?Math.round(diff/ser.prev*100):0;
+    yoyNote=`<div class="sub mt12" style="font-size:13px">前年同期比 <b style="color:${up?'var(--green)':'var(--red)'}">${up?'+':''}${kpiFmt(m,diff)}${ser.prev?` (${up?'+':''}${pr}%)`:''}</b></div>`}
+  return `<div class="view">
+   <span class="eyebrow">BUSINESS KPI</span>
+   <div class="between mt8"><div class="h1">経営KPI</div>
+     <div class="num" style="font-size:12px;color:var(--dim)">${fmtDate(todayKey())}</div></div>
+
+   <div class="card mt16">
+     <div class="metric-row" id="metricRow">${metricChips}</div>
+     <div class="seg mt12">
+       <button class="${kpiPer==='day'?'on':''}" onclick="setKpiPeriod('day')">日別</button>
+       <button class="${kpiPer==='week'?'on':''}" onclick="setKpiPeriod('week')">週別</button>
+       <button class="${kpiPer==='month'?'on':''}" onclick="setKpiPeriod('month')">月別</button>
+       <button class="${kpiPer==='yoy'?'on':''}" onclick="setKpiPeriod('yoy')">前年比</button>
+     </div>
+     <div class="between mt16" style="align-items:flex-end">
+       <div><div class="eyebrow">${m.name} · ${periodLabel}</div>
+         <div class="num" style="font-size:30px;font-weight:800;margin-top:4px;color:${m.yen?'var(--green)':'var(--ice)'}">${kpiFmt(m,periodTotal)}</div></div>
+       <div class="dim" style="font-size:11px">${m.agg==='sum'?'合計':m.agg==='avg'?'平均':'最新値'}</div>
+     </div>
+     ${yoyNote}
+     <div class="mt12">${chart}</div>
+   </div>
+
+   <div class="section-title mt20"><h2>今日の数字を入力</h2><div class="line"></div></div>
+   <div class="sub" style="margin-bottom:12px">毎日入力するほど、推移と弱点が鮮明になる。空欄は0として扱われる。</div>
+   <div class="kgrid">${KPI.map(field).join('')}</div>
+
+   <div class="section-title mt24"><h2>EGOヒートマップ</h2><div class="line"></div></div>
+   <div class="sub" style="margin-bottom:12px">直近13週のEGO SCORE。色が濃いほど、その日勝っている。</div>
+   <div class="card">${heatmap(13)}</div>
+   <div class="tabbar-spacer"></div>
+  </div>`;
+}
+
+/* ============================================================
+   VIEW: FOCUS (Deep Work)
+   ============================================================ */
+let dwTimer=null;
+function startDeep(){const d=day();if(d.deepwork.active)return;ac();d.deepwork.active={start:Date.now()};
+  save(true);SFX.deep();showMsg('DEEP WORK',pick(MSG.deepStart));render()}
+function endDeep(){const d=day();const a=d.deepwork.active;if(!a)return;
+  const min=Math.max(1,Math.round((Date.now()-a.start)/60000));
+  d.deepwork.sessions.push({start:a.start,end:Date.now(),min});
+  d.deepwork.totalMin+=min;d.deepwork.active=null;
+  SFX.success();showMsg('DEEP WORK',pick(MSG.deepEnd));checkProgress();save();render()}
+function cancelDeep(){const d=day();if(!d.deepwork.active)return;
+  if(!confirm('このセッションを破棄する？記録されない。'))return;
+  d.deepwork.active=null;save();render()}
+function ensureDwTimer(){clearInterval(dwTimer);dwTimer=null;if(day().deepwork.active)dwTimer=setInterval(tickDw,250)}
+const DW_C=2*Math.PI*((240-14)/2);
+function tickDw(){const a=day().deepwork.active;if(!a){clearInterval(dwTimer);dwTimer=null;return}
+  const ms=Date.now()-a.start;const tot=Math.floor(ms/1000);
+  const mm=String(Math.floor(tot/60)).padStart(2,'0'),ss=String(tot%60).padStart(2,'0');
+  const tEl=$('#dwTime');if(tEl)tEl.textContent=mm+':'+ss;
+  const pct=clamp(ms/60000/90*100,0,100);
+  const rEl=$('#dwProg');if(rEl)rEl.style.strokeDashoffset=(DW_C*(1-pct/100)).toFixed(1);
+  const pEl=$('#dwPct');if(pEl)pEl.textContent=Math.floor(pct)+'% / 90分';
+}
+function viewFocus(){
+  const d=day();const dw=d.deepwork;const active=!!dw.active;
+  const todayMin=dw.totalMin;const tgt=T().deepMin;
+  const focusPct=clamp(Math.round(todayMin/tgt*100),0,100);
+  const wkMin=weekRange(0).reduce((s,k)=>s+((S.days[k]||{deepwork:{totalMin:0}}).deepwork?.totalMin||0),0);
+  const moMin=monthRange(0).keys.reduce((s,k)=>s+((S.days[k]||{deepwork:{totalMin:0}}).deepwork?.totalMin||0),0);
+  // initial ring state
+  let initPct=0,initTime='00:00';
+  if(active){const ms=Date.now()-dw.active.start;initPct=clamp(ms/60000/90*100,0,100);
+    const tot=Math.floor(ms/1000);initTime=String(Math.floor(tot/60)).padStart(2,'0')+':'+String(tot%60).padStart(2,'0')}
+  const off=(DW_C*(1-initPct/100)).toFixed(1);
+  // ranking (top days all-time)
+  const ranked=Object.keys(S.days).map(k=>({k,min:S.days[k].deepwork?.totalMin||0}))
+    .filter(x=>x.min>0).sort((a,b)=>b.min-a.min).slice(0,5);
+  const tk=todayKey();
+  onMount(ensureDwTimer);
+  const ring=`<div class="timer-ring">
+    <svg viewBox="0 0 240 240"><defs>
+      <linearGradient id="dwg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00E5FF"/><stop offset="1" stop-color="#2D6BFF"/></linearGradient>
+      <filter id="dwf" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+      <circle cx="120" cy="120" r="${(240-14)/2}" fill="none" stroke="rgba(120,150,255,.1)" stroke-width="14"/>
+      <circle id="dwProg" cx="120" cy="120" r="${(240-14)/2}" fill="none" stroke="url(#dwg)" stroke-width="14" stroke-linecap="round"
+        stroke-dasharray="${DW_C.toFixed(1)}" stroke-dashoffset="${off}" filter="url(#dwf)" style="transition:stroke-dashoffset .4s linear"/></svg>
+    <div class="tt"><div class="time" id="dwTime">${initTime}</div>
+      <div class="st" id="dwPct">${active?Math.floor(initPct)+'% / 90分':'READY'}</div></div></div>`;
+  return `<div class="view">
+   <span class="eyebrow">DEEP WORK</span>
+   <div class="between mt8"><div class="h1">Deep Work</div>
+     <div class="num" style="font-size:12px;color:var(--dim)">目標 ${tgt}分/日</div></div>
+   <div class="sub mt8">${active?'集中継続中。終わるまで、他の全てを捨てろ。':'90分、世界から切り離せ。ここでの密度が、お前の差になる。'}</div>
+
+   <div class="card glow mt16" style="padding:18px 16px 22px">
+     <div class="sheen"></div>
+     ${ring}
+     <div style="display:flex;gap:10px;margin-top:6px">
+       ${active
+         ? `<button class="btn red block" onclick="endDeep()">セッション終了</button>
+            <button class="btn ghost" style="flex:0 0 auto" onclick="cancelDeep()">破棄</button>`
+         : `<button class="btn primary block" onclick="startDeep()">▶ 集中を開始</button>`}
+     </div>
+   </div>
+
+   <div class="chips mt12">
+    <div class="chip"><div class="cv" style="color:var(--cyan)">${Math.floor(todayMin/60)}<span style="font-size:11px">h</span>${todayMin%60}<span style="font-size:11px">m</span></div><div class="cl">今日合計</div></div>
+    <div class="chip"><div class="cv">${Math.floor(wkMin/60)}<span style="font-size:11px">h</span></div><div class="cl">今週</div></div>
+    <div class="chip"><div class="cv">${Math.floor(moMin/60)}<span style="font-size:11px">h</span></div><div class="cl">今月</div></div>
+   </div>
+
+   <div class="card mt12">
+     <div class="between"><div class="eyebrow">今日の集中率</div><div class="num" style="color:${focusPct>=100?'var(--green)':'var(--ice)'};font-weight:700">${focusPct}%</div></div>
+     <div class="lgauge mt12" style="height:10px"><i style="width:${focusPct}%;background:${barColor(focusPct)}"></i></div>
+     <div class="dim mt8" style="font-size:11px">${todayMin}分 / 目標 ${tgt}分 · 本日 ${dw.sessions.length}セッション</div>
+   </div>
+
+   ${dw.sessions.length?`<div class="section-title mt20"><h2>今日のセッション</h2><div class="line"></div></div>
+   <div>${dw.sessions.map((s,i)=>{const t=new Date(s.start);const hh=String(t.getHours()).padStart(2,'0'),mn=String(t.getMinutes()).padStart(2,'0');
+     return `<div class="li"><div class="lh"><div><b style="font-size:15px">${s.min}分</b> <span class="dim" style="font-size:11px">SESSION ${i+1}</span></div><span class="when">${hh}:${mn} 開始</span></div></div>`}).join('')}</div>`:''}
+
+   <div class="section-title mt20"><h2>Deep Work ランキング</h2><div class="line"></div></div>
+   ${ranked.length?`<div>${ranked.map((r,i)=>{const medal=['🥇','🥈','🥉'][i]||`${i+1}`;const isToday=r.k===tk;
+     return `<div class="li" style="${isToday?'border-color:var(--blue2);background:rgba(45,120,255,.08)':''}"><div class="lh">
+       <div><span style="font-size:15px;margin-right:8px">${medal}</span><b>${Math.floor(r.min/60)}h ${r.min%60}m</b>${isToday?' <span class="tag">今日</span>':''}</div>
+       <span class="when">${fmtDate(r.k)}</span></div></div>`}).join('')}</div>`
+     :`<div class="empty">まだ記録がない。最初の90分を始めろ。</div>`}
+   <div class="tabbar-spacer"></div>
+  </div>`;
+}
+
+/* ============================================================
+   VIEW: LOG (hub)
+   ============================================================ */
+function viewLog(){
+  const a=aggregate();
+  const jDays=Object.values(S.days).filter(d=>journalDone(d)).length;
+  const bDays=Object.values(S.days).filter(d=>Object.keys(d.body||{}).length>0).length;
+  const aiTotal=a.totalImpr;
+  const achN=Object.keys(S.cache.unlocked).length;
+  const stageN=STAGES.filter(s=>s.cond(a)).length;
+  const tw=weekAgg(weekRange(0)),lw=weekAgg(weekRange(1));
+  const bossWin=(tw.rev>=lw.rev)+(tw.sales>=lw.sales)+(tw.deep>=lw.deep)+(tw.ai>=lw.ai)+(tw.meet>=lw.meet);
+  const card=(sub,ic,col,t,s,extra='')=>`<div class="hub-c" onclick="goSub('${sub}')">
+    <div class="hi" style="background:${col}22;border:1px solid var(--line);color:${col}">${ic}</div>
+    <div class="ht">${t}</div><div class="hs">${s}</div>${extra}</div>`;
+  const ai=(p)=>`<svg viewBox="0 0 24 24" width="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">${p}</svg>`;
+  return `<div class="view">
+   <span class="eyebrow">RECORDS & PROGRESS</span>
+   <div class="h1 mt8">記録と進化</div>
+   <div class="sub mt8">日々の記録が、お前の成長曲線になる。全ては数字で残る。</div>
+
+   <div class="section-title mt20"><h2>毎日の記録</h2><div class="line"></div></div>
+   <div class="grid2">
+    ${card('journal',ai('<path d="M5 3h11l3 3v15H5zM9 8h6M9 12h6M9 16h4"/>'),'#9B6BFF','ジャーナル',`${jDays}日記録 · 勝敗を残す`)}
+    ${card('body',ai('<path d="M12 4a2 2 0 1 0 0-.01M9 9h6l-1 7h-4zM10 22l1-6M14 22l-1-6"/>'),'#00E68A','身体管理',`${bDays}日記録 · 体組成と睡眠`)}
+    ${card('ailog',ai('<path d="M12 2v3M5 12H2M22 12h-3M12 19v3M6 6l2 2M16 16l2 2M18 6l-2 2M8 16l-2 2"/><circle cx="12" cy="12" r="3"/>'),'#4D8BFF','AI改善ログ',`${aiTotal}件の改善を記録`)}
+   </div>
+
+   <div class="section-title mt20"><h2>成長システム</h2><div class="line"></div></div>
+   <div class="grid2">
+    ${card('levels',ai('<path d="M13 2L3 14h7l-1 8 10-12h-7z"/>'),'#FFD23F','レベル / 実績',`${achN}個の実績を解除`)}
+    ${card('stages',ai('<path d="M3 20h18M6 20V10M12 20V4M18 20v-8"/>'),'#00E5FF','ステージ',`${stageN}/10 ステージ解放`)}
+    ${card('boss',ai('<path d="M12 2l3 6 6 .5-4.5 4 1.5 6L12 21l-5.5 3.5 1.5-6L3.5 8.5 9.5 8z"/>'),'#FF3358','週末ボス',`先週のお前に ${bossWin}/5 勝利中`)}
+   </div>
+
+   <div class="section-title mt20"><h2>設定</h2><div class="line"></div></div>
+   <div class="grid2">
+    ${card('settings',ai('<circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.5-2.4 1a7 7 0 0 0-1.7-1L14.5 2h-5l-.3 2.5a7 7 0 0 0-1.7 1l-2.4-1-2 3.5 2 1.5a7 7 0 0 0 0 2l-2 1.5 2 3.5 2.4-1a7 7 0 0 0 1.7 1l.3 2.5h5l.3-2.5a7 7 0 0 0 1.7-1l2.4 1 2-3.5-2-1.5a7 7 0 0 0 .1-1z"/>'),'#8A99BF','目標 / サウンド',`基準値・音・データ管理`)}
+   </div>
+   <div class="tabbar-spacer"></div>
+  </div>`;
+}
+
+/* ============================================================
+   VIEW: JOURNAL
+   ============================================================ */
+function viewJournal(){
+  const d=day();
+  const entries=Object.keys(S.days).filter(k=>journalDone(S.days[k])).sort().reverse();
+  const tk=todayKey();
+  return `<div class="view">
+   <div class="between"><button class="btn ghost sm" onclick="back()">‹ 記録</button><span class="eyebrow">JOURNAL</span></div>
+   <div class="h1 mt12">ジャーナル</div>
+   <div class="sub mt8">毎晩、3つだけ書け。勝ちを自覚し、負けを直視し、明日を決めろ。</div>
+
+   <div class="card mt16">
+     <div class="eyebrow" style="color:var(--green)">⚔ 今日勝ったこと</div>
+     <textarea class="mt8" placeholder="今日、自分を超えた瞬間は？" oninput="upd(this,'journal','win')">${(d.journal.win||'').replace(/</g,'&lt;')}</textarea>
+   </div>
+   <div class="card mt12">
+     <div class="eyebrow" style="color:var(--red)">✖ 今日負けたこと</div>
+     <textarea class="mt8" placeholder="逃げた・サボった・言い訳した瞬間は？" oninput="upd(this,'journal','lose')">${(d.journal.lose||'').replace(/</g,'&lt;')}</textarea>
+   </div>
+   <div class="card mt12">
+     <div class="eyebrow" style="color:var(--cyan)">→ 明日の改善</div>
+     <textarea class="mt8" placeholder="明日、何を1つ変える？" oninput="upd(this,'journal','improve')">${(d.journal.improve||'').replace(/</g,'&lt;')}</textarea>
+   </div>
+
+   <div class="section-title mt24"><h2>過去のジャーナル</h2><div class="line"></div></div>
+   ${entries.length?`<div>${entries.slice(0,30).map(k=>{const e=S.days[k].journal;
+     return `<div class="li"><div class="lh"><b style="font-size:13px;color:var(--ice)">${fmtDate(k)}</b>${k===tk?'<span class="tag">今日</span>':''}</div>
+       ${e.win?`<div class="mt8" style="font-size:13px"><span style="color:var(--green)">勝</span> ${e.win.replace(/</g,'&lt;')}</div>`:''}
+       ${e.lose?`<div class="mt8" style="font-size:13px"><span style="color:var(--red)">負</span> ${e.lose.replace(/</g,'&lt;')}</div>`:''}
+       ${e.improve?`<div class="mt8" style="font-size:13px"><span style="color:var(--cyan)">改</span> ${e.improve.replace(/</g,'&lt;')}</div>`:''}
+     </div>`}).join('')}</div>`:`<div class="empty">まだ記録がない。今夜が最初の一歩だ。</div>`}
+   <div class="tabbar-spacer"></div>
+  </div>`;
+}
+
+/* ============================================================
+   VIEW: BODY
+   ============================================================ */
+const BODY=[
+ {id:'weight', name:'体重',    unit:'kg', step:'0.1'},
+ {id:'fat',    name:'体脂肪',  unit:'%',  step:'0.1'},
+ {id:'sleepH', name:'睡眠',    unit:'h',  step:'0.1', mission:true},
+ {id:'steps',  name:'歩数',    unit:'歩', step:'1'},
+ {id:'water',  name:'水',      unit:'ml', step:'50'},
+ {id:'protein',name:'タンパク質',unit:'g', step:'1'}
+];
+function viewBody(){
+  const d=day();
+  const wkeys=lastDays(30).filter(k=>S.days[k]&&S.days[k].body&&S.days[k].body.weight);
+  const wVals=wkeys.map(k=>num(S.days[k].body.weight));
+  const wLabels=wkeys.map(k=>{const p=k.split('-');return p[1]+'/'+p[2]});
+  const fVals=wkeys.map(k=>num(S.days[k].body.fat));
+  const trainBtn=bool(d.missions.training);
+  const field=(b)=>{const v=d.body[b.id]??'';
+    return `<div class="kfield"><div class="kl">${b.name}<span class="u">${b.unit}</span></div>
+      <input inputmode="decimal" placeholder="0" value="${v}" oninput="upd(this,'body','${b.id}')"></div>`};
+  return `<div class="view">
+   <div class="between"><button class="btn ghost sm" onclick="back()">‹ 記録</button><span class="eyebrow">BODY</span></div>
+   <div class="h1 mt12">身体管理</div>
+   <div class="sub mt8">器を整えろ。睡眠・運動・筋トレはミッションに直結している。</div>
+
+   <div class="card mt16">
+     <div class="between"><div><div class="nm" style="font-weight:600">筋トレ（今日）</div><div class="dim" style="font-size:11px;margin-top:3px">やったか、やらなかったか。それだけだ。</div></div>
+       <button class="tog ${trainBtn?'on':''}" onclick="toggleMission('training')">${trainBtn?'達成':'未'}</button></div>
+   </div>
+
+   <div class="kgrid mt12">${BODY.map(field).join('')}</div>
+
+   <div class="section-title mt24"><h2>体重の推移</h2><div class="line"></div></div>
+   <div class="card">${svgLine(wVals,{labels:wLabels,h:170,color:'#00E68A',color2:'#00E5FF'})}</div>
+
+   <div class="section-title mt20"><h2>体脂肪の推移</h2><div class="line"></div></div>
+   <div class="card">${svgLine(fVals,{labels:wLabels,h:150,color:'#FFB020',color2:'#FFD23F'})}</div>
+   <div class="tabbar-spacer"></div>
+  </div>`;
+}
+
+/* ============================================================
+   VIEW: AI LOG
+   ============================================================ */
+let aiQuery='';
+const AI_CATS=['営業','仕組み','採用','商品','マーケ','財務','自己','その他'];
+function aiSearch(v){aiQuery=v;const list=$('#aiList');if(list)list.innerHTML=renderAiList()}
+function addImprovement(){
+  const t=$('#aiTitle').value.trim();if(!t){$('#aiTitle').focus();return}
+  const d=day();d.improvements.push({
+    title:t,content:$('#aiContent').value.trim(),result:$('#aiResult').value.trim(),
+    cat:$('#aiCat').value,ts:Date.now(),date:todayKey()});
+  SFX.success();showMsg('AI IMPROVEMENT',pick(MSG.aiDone));checkProgress();save();render()}
+function allImprovements(){const out=[];for(const k of Object.keys(S.days)){
+  (S.days[k].improvements||[]).forEach((im,i)=>out.push({...im,date:im.date||k,_k:k,_i:i}))}
+  return out.sort((a,b)=>(b.ts||0)-(a.ts||0))}
+function renderAiList(){
+  let items=allImprovements();
+  if(aiQuery){const q=aiQuery.toLowerCase();
+    items=items.filter(x=>(x.title||'').toLowerCase().includes(q)||(x.content||'').toLowerCase().includes(q)||(x.cat||'').toLowerCase().includes(q))}
+  if(!items.length)return `<div class="empty">${aiQuery?'該当する改善が見つからない。':'まだ改善がない。今日の1件を記録しろ。'}</div>`;
+  return items.map(x=>`<div class="li"><div class="lh">
+    <div style="min-width:0"><b style="font-size:14.5px">${(x.title||'').replace(/</g,'&lt;')}</b></div>
+    <span class="tag">${x.cat||'その他'}</span></div>
+    ${x.content?`<div class="mt8" style="font-size:13px;color:var(--muted)">${x.content.replace(/</g,'&lt;')}</div>`:''}
+    ${x.result?`<div class="mt8" style="font-size:12.5px"><span style="color:var(--green)">成果</span> ${x.result.replace(/</g,'&lt;')}</div>`:''}
+    <div class="when mt8">${fmtDate(x.date)}</div></div>`).join('');
+}
+function viewAiLog(){
+  const total=allImprovements().length;const tdy=day().improvements.length;
+  onMount(()=>{const l=$('#aiList');if(l)l.innerHTML=renderAiList()});
+  return `<div class="view">
+   <div class="between"><button class="btn ghost sm" onclick="back()">‹ 記録</button><span class="eyebrow">AI IMPROVEMENT LOG</span></div>
+   <div class="h1 mt12">AI改善ログ</div>
+   <div class="sub mt8">毎日最低1つ、昨日の自分のシステムを壊せ。${tdy>0?`<b style="color:var(--green)">今日は${tdy}件記録済み。</b>`:'<b style="color:var(--red)">今日はまだ0件。</b>'}</div>
+
+   <div class="card mt16">
+     <label class="fld"><span class="lab">タイトル <span class="dim">必須</span></span>
+       <input id="aiTitle" placeholder="例：面談の冒頭スクリプトを改善"></label>
+     <label class="fld mt12"><span class="lab">内容</span>
+       <textarea id="aiContent" placeholder="何を、どう変えたか"></textarea></label>
+     <label class="fld mt12"><span class="lab">成果 / 仮説</span>
+       <input id="aiResult" placeholder="例：成約率が2%上がる見込み"></label>
+     <label class="fld mt12"><span class="lab">カテゴリ</span>
+       <select id="aiCat">${AI_CATS.map(c=>`<option>${c}</option>`).join('')}</select></label>
+     <button class="btn primary block mt16" onclick="addImprovement()">＋ 改善を記録する</button>
+   </div>
+
+   <div class="section-title mt24"><h2>改善の履歴 <span class="dim" style="font-size:12px">(${total})</span></h2><div class="line"></div></div>
+   <input class="mt4" placeholder="🔍 タイトル・内容・カテゴリで検索" oninput="aiSearch(this.value)" value="${aiQuery.replace(/"/g,'&quot;')}">
+   <div id="aiList" class="mt12"></div>
+   <div class="tabbar-spacer"></div>
+  </div>`;
+}
+
+/* ============================================================
+   VIEW: LEVELS / ACHIEVEMENTS
+   ============================================================ */
+function viewLevels(){
+  const xp=totalXp();const lv=levelInfo(xp);const a=aggregate();
+  const sc=egoScore();const rk=rankOf(sc);
+  const unlocked=ACH.filter(x=>S.cache.unlocked[x.id]);
+  const locked=ACH.filter(x=>!S.cache.unlocked[x.id]);
+  const achRow=(x)=>{const un=!!S.cache.unlocked[x.id];let prog='';
+    if(!un&&x.p){const[c,t]=x.p(a);const pct=clamp(Math.round(c/t*100),0,100);
+      prog=`<div class="ap"><div class="lgauge"><i style="width:${pct}%;background:linear-gradient(90deg,#2D6BFF,#00E5FF)"></i></div>
+        <div class="dim" style="font-size:10px;margin-top:4px;font-family:var(--mono)">${fmt(Math.min(c,t))} / ${fmt(t)}</div></div>`}
+    return `<div class="ach ${un?'un':''}"><div class="am">${x.ico}</div>
+      <div class="ai"><div class="an">${x.n}</div><div class="ad">${x.d}</div>${prog}</div>
+      <div class="lock">${un?'✓':'🔒'}</div></div>`};
+  const milestones=LEVEL_TITLES.map(([m,n])=>{const reached=lv.level>=m;const cur=lv.title===n&&reached;
+    return `<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);opacity:${reached?1:.45}">
+      <div style="font-family:var(--mono);font-weight:800;font-size:13px;width:42px;color:${cur?'var(--cyan)':reached?'var(--ice)':'var(--dim)'}">LV${m}</div>
+      <div style="flex:1;font-weight:${cur?700:500};color:${cur?'var(--cyan)':'inherit'}">${n}</div>
+      <div>${cur?'<span class="tag" style="background:rgba(0,229,255,.15);color:var(--cyan)">現在</span>':reached?'<span style="color:var(--green)">✓</span>':''}</div></div>`}).join('');
+  return `<div class="view">
+   <div class="between"><button class="btn ghost sm" onclick="back()">‹ 記録</button><span class="eyebrow">LEVEL & ACHIEVEMENTS</span></div>
+
+   <div class="card glow mt12" style="text-align:center;padding:22px 16px">
+     <div class="sheen"></div>
+     <div class="eyebrow">CURRENT LEVEL</div>
+     <div style="font-family:var(--mono);font-weight:800;font-size:60px;line-height:1;margin:8px 0;background:linear-gradient(135deg,#00E5FF,#2D6BFF);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">${lv.level}</div>
+     <div style="font-size:18px;font-weight:700;color:var(--ice)">${lv.title}</div>
+     <div class="lgauge mt16" style="height:10px"><i style="width:${lv.pct}%;background:linear-gradient(90deg,#2D6BFF,#00E5FF)"></i></div>
+     <div class="between mt8"><span class="dim" style="font-size:11px;font-family:var(--mono)">${fmt(lv.into)} / ${fmt(lv.need)} XP</span>
+       <span class="dim" style="font-size:11px;font-family:var(--mono)">累計 ${fmt(xp)} XP</span></div>
+   </div>
+
+   <div class="chips mt12">
+     <div class="chip"><div class="cv" style="color:${rk.color}">${rk.grade}</div><div class="cl">今日のランク</div></div>
+     <div class="chip"><div class="cv" style="color:var(--gold)">${unlocked.length}<span style="font-size:12px;color:var(--dim)">/${ACH.length}</span></div><div class="cl">実績解除</div></div>
+     <div class="chip"><div class="cv">${a.active}</div><div class="cl">稼働日数</div></div>
+   </div>
+
+   <div class="card mt12">
+     <div class="eyebrow">XP獲得ルール</div>
+     <div class="sub mt8" style="font-size:12.5px">Deep Work(0.6/分) · AI改善(50) · 面談(20) · 営業(12/件) · 売上(1万→5XP) · 筋トレ(30) · 運動 · 読書 · 日記。<b style="color:var(--ice)">行動した分だけ、確実に積み上がる。</b></div>
+   </div>
+
+   <div class="section-title mt20"><h2>肩書の道</h2><div class="line"></div></div>
+   <div class="card">${milestones}</div>
+
+   <div class="section-title mt20"><h2>解除済み <span class="dim" style="font-size:12px">(${unlocked.length})</span></h2><div class="line"></div></div>
+   ${unlocked.length?unlocked.map(achRow).join(''):'<div class="empty">まだ実績がない。最初の解除を狙え。</div>'}
+
+   <div class="section-title mt20"><h2>未解除 <span class="dim" style="font-size:12px">(${locked.length})</span></h2><div class="line"></div></div>
+   ${locked.map(achRow).join('')}
+   <div class="tabbar-spacer"></div>
+  </div>`;
+}
+
+/* ============================================================
+   VIEW: STAGES
+   ============================================================ */
+function viewStages(){
+  const a=aggregate();
+  let firstLocked=true;
+  const rows=STAGES.map(s=>{const open=s.cond(a);let cur=false;
+    if(!open&&firstLocked){cur=true;firstLocked=false}
+    return `<div class="stage ${open?'open':''} ${cur?'cur':''}">
+      <div class="sn">${open?s.n:'🔒'}</div>
+      <div class="si"><div class="stt">Stage ${s.n}　${s.name}</div>
+        <div class="ssub">${s.sub}</div>
+        <div class="scond">${open?'<span style="color:var(--green)">✓ 解放済み</span>':'条件：'+s.need}</div></div>
+      ${cur?'<div style="position:absolute;top:12px;right:12px"><span class="tag" style="background:rgba(0,229,255,.15);color:var(--cyan)">挑戦中</span></div>':''}
+    </div>`}).join('');
+  const cleared=STAGES.filter(s=>s.cond(a)).length;
+  return `<div class="view">
+   <div class="between"><button class="btn ghost sm" onclick="back()">‹ 記録</button><span class="eyebrow">STAGES</span></div>
+   <div class="h1 mt12">ステージ</div>
+   <div class="sub mt8">精神から始まり、EGOへ至る10段階。条件を満たすたびに、次の領域が開く。</div>
+   <div class="card mt16" style="text-align:center;padding:16px">
+     <div style="font-family:var(--mono);font-weight:800;font-size:34px">${cleared}<span style="font-size:18px;color:var(--dim)"> / 10</span></div>
+     <div class="dim" style="font-size:11px;letter-spacing:.1em">STAGES UNLOCKED</div>
+     <div class="lgauge mt12" style="height:10px"><i style="width:${cleared/10*100}%;background:linear-gradient(90deg,#2D6BFF,#00E5FF)"></i></div>
+   </div>
+   <div class="mt16">${rows}</div>
+   <div class="tabbar-spacer"></div>
+  </div>`;
+}
+
+/* ============================================================
+   VIEW: BOSS (weekly + monthly)
+   ============================================================ */
+function viewBoss(){
+  const tw=weekAgg(weekRange(0)),lw=weekAgg(weekRange(1));
+  const rows=[
+    {l:'売上',k:'rev',fmt:v=>fmtY(v)},
+    {l:'営業件数',k:'sales',fmt:v=>v+'件'},
+    {l:'Deep Work',k:'deep',fmt:v=>Math.floor(v/60)+'h'+(v%60)+'m'},
+    {l:'AI改善',k:'ai',fmt:v=>v+'件'},
+    {l:'面談',k:'meet',fmt:v=>v+'件'}
+  ];
+  let wins=0,losses=0;
+  const cmp=rows.map(r=>{const cur=tw[r.k],prev=lw[r.k];let res,cls;
+    if(cur>prev){res='WIN';cls='win';wins++}else if(cur<prev){res='LOSE';cls='lose';losses++}else{res='—';cls='draw'}
+    return `<div class="bcompare"><div class="bl">${r.l}</div>
+      <div class="bv" style="color:var(--dim)">${r.fmt(prev)}</div>
+      <div class="bv" style="color:var(--ice)">${r.fmt(cur)}</div>
+      <div class="res ${cls}">${res}</div></div>`}).join('');
+  const overall=wins>losses?'勝利':wins<losses?'敗北':'引き分け';
+  const oColor=wins>losses?'var(--green)':wins<losses?'var(--red)':'var(--muted)';
+  const verdict=wins>losses?'先週のお前を超えた。だが、来週のお前はもっと強い。止まるな。'
+    :wins<losses?'先週のお前に負けた。この事実から逃げるな。来週、必ず取り返せ。'
+    :'互角。停滞は後退と同じだ。どこか1つ、明確に上回れ。';
+  // monthly
+  const mk=monthRange(0);const mRev=aggMetric(mk.keys,'revenue','sum');
+  const mDeep=mk.keys.reduce((s,k)=>s+((S.days[k]||{deepwork:{totalMin:0}}).deepwork?.totalMin||0),0);
+  const mAi=mk.keys.reduce((s,k)=>s+((S.days[k]||{improvements:[]}).improvements?.length||0),0);
+  const mSales=mk.keys.reduce((s,k)=>s+num((S.days[k]||{missions:{}}).missions?.sales),0);
+  const mPerfect=mk.keys.filter(k=>S.days[k]&&missionsComplete(k)).length;
+  const mActive=mk.keys.filter(k=>{const d=S.days[k];return d&&(d.deepwork.totalMin>0||d.improvements.length||Object.keys(d.kpi).length)}).length;
+  const revTgt=T().revenueDay*mk.keys.length;
+  const revRate=revTgt?clamp(Math.round(mRev/revTgt*100),0,999):0;
+  const grade=revRate>=100&&mPerfect>=15?'S':revRate>=80?'A':revRate>=60?'B':revRate>=40?'C':'D';
+  return `<div class="view">
+   <div class="between"><button class="btn ghost sm" onclick="back()">‹ 記録</button><span class="eyebrow">BOSS BATTLE</span></div>
+   <div class="h1 mt12">週末ボス</div>
+   <div class="sub mt8">毎週、お前の最大の敵は「先週のお前」だ。数字でのみ、勝敗が決まる。</div>
+
+   <div class="card glow mt16">
+     <div class="sheen"></div>
+     <div class="boss-vs">
+       <div class="boss-side"><div class="bn">先週のお前</div><div class="bsub">LAST WEEK</div></div>
+       <div class="vs">VS</div>
+       <div class="boss-side"><div class="bn" style="color:var(--cyan)">今週のお前</div><div class="bsub">THIS WEEK</div></div>
+     </div>
+     <div style="border-top:1px solid var(--line);margin-top:6px">${cmp}</div>
+     <div style="text-align:center;margin-top:16px">
+       <div style="font-family:var(--mono);font-weight:800;font-size:13px;letter-spacing:.2em;color:var(--dim)">RESULT</div>
+       <div style="font-size:28px;font-weight:800;color:${oColor};text-shadow:0 0 18px ${oColor}66;margin-top:4px">${wins} - ${losses}　${overall}</div>
+     </div>
+   </div>
+   <div class="card mt12"><div class="sub" style="font-size:13px;line-height:1.6">⚔ ${verdict}</div></div>
+
+   <div class="section-title mt24"><h2>月末ボス · ${mk.label}</h2><div class="line"></div></div>
+   <div class="card">
+     <div class="between"><div><div class="eyebrow">総合評価</div>
+       <div style="font-family:var(--mono);font-weight:800;font-size:44px;line-height:1;margin-top:4px;color:${grade==='S'?'var(--gold)':grade==='A'?'var(--cyan)':grade==='B'?'var(--blue2)':'var(--muted)'}">${grade}</div></div>
+       <div style="text-align:right"><div class="dim" style="font-size:11px">売上目標達成率</div>
+         <div class="num" style="font-size:24px;font-weight:700;color:${revRate>=100?'var(--green)':'var(--ice)'}">${revRate}%</div></div>
+     </div>
+     <div class="lgauge mt16" style="height:10px"><i style="width:${clamp(revRate,0,100)}%;background:${barColor(clamp(revRate,0,100))}"></i></div>
+     <div class="kgrid mt16">
+       <div class="kfield"><div class="kl">売上</div><div class="num" style="font-size:16px;margin-top:4px">${fmtY(mRev)}</div></div>
+       <div class="kfield"><div class="kl">Deep Work</div><div class="num" style="font-size:16px;margin-top:4px">${Math.floor(mDeep/60)}h</div></div>
+       <div class="kfield"><div class="kl">AI改善</div><div class="num" style="font-size:16px;margin-top:4px">${mAi}件</div></div>
+       <div class="kfield"><div class="kl">営業</div><div class="num" style="font-size:16px;margin-top:4px">${mSales}件</div></div>
+       <div class="kfield"><div class="kl">完全達成日</div><div class="num" style="font-size:16px;margin-top:4px">${mPerfect}日</div></div>
+       <div class="kfield"><div class="kl">稼働日数</div><div class="num" style="font-size:16px;margin-top:4px">${mActive}日</div></div>
+     </div>
+     <div class="card mt16" style="background:rgba(45,120,255,.06)"><div class="eyebrow" style="color:var(--cyan)">AIコーチ講評</div>
+       <div class="sub mt8" style="font-size:13px;line-height:1.6">${monthVerdict(grade,revRate,mPerfect,mAi,mActive)}</div></div>
+   </div>
+   <div class="tabbar-spacer"></div>
+  </div>`;
+}
+function monthVerdict(g,rate,perfect,ai,active){
+  const parts=[];
+  if(g==='S')parts.push('文句なしだ。この月は「本物」の片鱗を見せた。');
+  else if(g==='A')parts.push('良い月だった。だが、Sとの差は“当たり前の基準”の高さにある。');
+  else if(g==='B')parts.push('平凡だ。動いてはいるが、突き抜けていない。');
+  else parts.push('話にならん。この数字では、何も変わらない。');
+  if(rate<80)parts.push(`売上達成率${rate}%。目標設定が甘いか、行動量が足りないかのどちらかだ。`);
+  if(perfect<10)parts.push(`完全達成が${perfect}日。規律の再現性が低い。まずは“毎日同じ基準”を作れ。`);
+  if(ai<20)parts.push(`改善が${ai}件。仕組みの進化が遅い。属人性から抜けられていない。`);
+  if(active<20)parts.push(`稼働${active}日。記録しない日は、戦っていない日だ。`);
+  parts.push('来月、この講評を見返した時に笑えるかどうかは、今日からの30日で決まる。');
+  return parts.join(' ');
+}
+
+/* ============================================================
+   VIEW: SETTINGS
+   ============================================================ */
+function toggleSound(){S.settings.sound=!S.settings.sound;if(S.settings.sound){ac();SFX.on()}save(true);render()}
+function updTarget(el,key){const v=key==='wake'?el.value:num(el.value);S.settings.targets[key]=v;
+  liveRefresh();clearTimeout(updTimer);updTimer=setTimeout(()=>save(true),400)}
+function updName(el){S.settings.name=el.value.slice(0,20);clearTimeout(updTimer);updTimer=setTimeout(()=>save(true),400)}
+function exportData(){try{const blob=new Blob([JSON.stringify(S)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='egolock-backup-'+todayKey()+'.json';
+  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  SFX.success()}catch(e){alert('書き出しに失敗した: '+e.message)}}
+function triggerImport(){$('#importFile').click()}
+function handleImport(input){const f=input.files&&input.files[0];if(!f)return;
+  const r=new FileReader();r.onload=()=>{try{const obj=JSON.parse(r.result);
+    if(!obj||!obj.days){alert('このファイルはEGO LOCKのバックアップではない。');return}
+    if(!confirm('現在のデータを、このバックアップで上書きする。実行する？'))return;
+    S=migrate(obj);save();prevLevel=levelInfo(totalXp()).level;render();alert('復元した。')}
+    catch(e){alert('読み込みに失敗した: '+e.message)}};r.readAsText(f)}
+function resetData(){if(!confirm('全データを削除する。記録・レベル・実績の全てが消え、元に戻せない。本当に実行する？'))return;
+  if(!confirm('最終確認。本当にゼロからやり直すか？'))return;
+  localStorage.removeItem(SS);location.reload()}
+const TARGET_FIELDS=[
+ {k:'sleepH',  n:'睡眠 目標',      u:'h',  t:'number'},
+ {k:'wake',    n:'起床 目標時刻',  u:'',   t:'time'},
+ {k:'exerciseMin',n:'運動 目標',   u:'分', t:'number'},
+ {k:'deepMin', n:'Deep Work 目標', u:'分', t:'number'},
+ {k:'sales',   n:'営業 目標',      u:'件', t:'number'},
+ {k:'meetings',n:'面談 目標',      u:'件', t:'number'},
+ {k:'revenueDay',n:'売上 目標/日', u:'円', t:'number'},
+ {k:'readingMin',n:'読書 目標',    u:'分', t:'number'},
+ {k:'waterMl', n:'水 目標',        u:'ml', t:'number'},
+ {k:'proteinG',n:'タンパク質 目標',u:'g',  t:'number'}
+];
+function viewSettings(){
+  const s=S.settings;const t=s.targets;const a=aggregate();
+  const days=Object.keys(S.days).length;
+  const tfield=(f)=>{const val=t[f.k]??'';
+    return `<div class="srow"><div><div class="sl">${f.n}</div></div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <input class="tinput" type="${f.t}" ${f.t==='number'?'inputmode="decimal"':''} value="${val}" onchange="updTarget(this,'${f.k}')">
+        ${f.u?`<span class="dim" style="font-size:12px;width:22px">${f.u}</span>`:'<span style="width:22px"></span>'}</div></div>`};
+  return `<div class="view">
+   <div class="between"><button class="btn ghost sm" onclick="back()">‹ 記録</button><span class="eyebrow">SETTINGS</span></div>
+   <div class="h1 mt12">設定</div>
+
+   <div class="section-title mt20"><h2>基本</h2><div class="line"></div></div>
+   <div class="card">
+     <div class="srow"><div><div class="sl">サウンド</div><div class="sd">演出・効果音のON / OFF</div></div>
+       <div class="sw ${s.sound?'on':''}" onclick="toggleSound()"><i></i></div></div>
+     <div class="srow"><div style="flex:1"><div class="sl">名前</div><div class="sd">HUDやレポートで使われる</div></div>
+       <input style="width:140px" value="${(s.name||'').replace(/"/g,'&quot;')}" oninput="updName(this)" placeholder="YOSHI"></div>
+   </div>
+
+   <div class="section-title mt20"><h2>目標値（ミッションの基準）</h2><div class="line"></div></div>
+   <div class="sub" style="margin-bottom:12px">ここで決めた基準が、毎日の達成率とEGO SCOREの採点に使われる。甘くすれば、お前が甘くなる。</div>
+   <div class="card">${TARGET_FIELDS.map(tfield).join('')}</div>
+
+   <div class="section-title mt20"><h2>データ</h2><div class="line"></div></div>
+   <div class="card">
+     <div class="srow"><div><div class="sl">記録日数</div><div class="sd">${days}日分のデータを保存中</div></div>
+       <div class="num" style="font-size:20px;font-weight:700;color:var(--cyan)">${days}</div></div>
+     <div style="display:flex;gap:9px;margin-top:14px">
+       <button class="btn cyan block" onclick="exportData()">⬇ 書き出し</button>
+       <button class="btn ghost block" onclick="triggerImport()">⬆ 復元</button>
+     </div>
+     <input id="importFile" type="file" accept="application/json,.json" style="display:none" onchange="handleImport(this)">
+     <button class="btn red block mt12" onclick="resetData()">全データを削除</button>
+     <div class="dim" style="font-size:11px;margin-top:10px;line-height:1.5">データはこの端末内（localStorage）にのみ保存される。機種変更やブラウザ削除に備え、定期的に書き出しておけ。複数端末で同期したい場合は、Supabase連携を後から追加できる。</div>
+   </div>
+
+   <div class="card mt16" style="text-align:center;background:rgba(45,120,255,.05)">
+     <div style="font-family:var(--mono);letter-spacing:.2em;color:var(--cyan);font-size:12px;font-weight:700">Xector1 EGO LOCK</div>
+     <div class="dim" style="font-size:11px;margin-top:6px">毎日勝負し、自分の限界を超える。</div>
+   </div>
+   <div class="tabbar-spacer"></div>
+  </div>`;
+}
+
+/* ============================================================
+   INIT / BOOT
+   ============================================================ */
+// daily morning greeting + nudges (once per day)
+function dailyGreeting(){
+  S.meta=S.meta||{};const tk=todayKey();
+  if(S.meta.lastOpen!==tk){
+    const prev=S.meta.lastOpen;S.meta.lastOpen=tk;save(true);
+    const hr=new Date().getHours();
+    const eyebrow=hr<11?'WAKE UP':'EGO LOCK';
+    setTimeout(()=>{showMsg(eyebrow,pick(MSG.morning));
+      // yesterday review nudge
+      if(prev){const yd=S.days[prev];if(yd){const ysc=egoScore(prev);
+        if(ysc<50)showMsg('YESTERDAY',pick(MSG.lowScore));
+        else if(ysc>=85)showMsg('YESTERDAY',pick(MSG.highScore));}}
+    },650);
+  }
+}
+// audio unlock on first interaction
+function unlockAudioOnce(){ac();removeEventListener('pointerdown',unlockAudioOnce);removeEventListener('touchstart',unlockAudioOnce)}
+addEventListener('pointerdown',unlockAudioOnce,{passive:true});
+addEventListener('touchstart',unlockAudioOnce,{passive:true});
+// keep deep-work timer alive when returning to the tab
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){if(route.tab==='focus')ensureDwTimer();renderHeader()}});
+// install hint (iOS / not standalone)
+function maybeInstallHint(){
+  const standalone=window.navigator.standalone===true||matchMedia('(display-mode:standalone)').matches;
+  if(standalone)return;
+  S.meta=S.meta||{};const tk=todayKey();
+  if(S.meta.installHintDay===tk)return; // once per day max
+  const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
+  // show for iOS especially (no beforeinstallprompt there); also fine elsewhere
+  setTimeout(()=>{const el=$('#install');if(el){el.classList.add('show');S.meta.installHintDay=tk;save(true);
+    setTimeout(()=>el.classList.remove('show'),12000)}},3500);
+}
+// register service worker (offline)
+if('serviceWorker' in navigator){
+  addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{})});
+}
+// boot
+prevLevel=levelInfo(totalXp()).level;
+S.cache.level=prevLevel;
+day(); // ensure today exists
+render();
+dailyGreeting();
+maybeInstallHint();
+checkAchievements(); // silently sync any already-earned (no toast spam on first migrate)
+save(true);
+</script>
+</body>
+</html>
