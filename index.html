@@ -21,6 +21,7 @@
   --blue:#2D6BFF; --blue2:#4D8BFF; --cyan:#00E5FF; --ice:#9FD4FF;
   --red:#FF3358; --green:#00E68A; --gold:#FFD23F; --purple:#9B6BFF;
   --teal:#37E6C5; --teal-soft:rgba(55,230,197,.12);
+  --soul:#B98BFF; --soul-soft:rgba(185,139,255,.12);
   --text:#EAF0FF; --muted:#8A99BF; --dim:#5A6890;
   --glow:0 0 24px rgba(45,120,255,.45); --glowc:0 0 24px rgba(0,229,255,.4);
   --r:18px; --rs:13px;
@@ -458,6 +459,37 @@ textarea.tall{min-height:130px}
   box-shadow:0 0 22px rgba(232,33,39,.14)}
 .rw-tesla .ric{border-color:rgba(232,33,39,.45);background:rgba(232,33,39,.1)}
 
+/* ---------- SOUL PROTOCOL ---------- */
+.eyebrow.soul{color:var(--soul)}
+.sheen.soul{background:linear-gradient(90deg,transparent,var(--soul),transparent)!important;opacity:.45}
+.soul-card{position:relative;overflow:hidden;border-color:rgba(185,139,255,.24);
+  background:linear-gradient(180deg,rgba(185,139,255,.05),var(--surface))}
+.sitem{display:flex;align-items:flex-start;gap:12px;padding:11px 2px;border-bottom:1px solid var(--line);cursor:pointer}
+.sitem:last-child{border-bottom:none}
+.sbox{width:26px;height:26px;flex:none;border-radius:8px;border:1.5px solid var(--line2);background:var(--surface2);
+  display:flex;align-items:center;justify-content:center;color:#120a20;font-size:14px;transition:all .15s;margin-top:1px}
+.sbox .sico{filter:grayscale(.4);opacity:.85;font-size:14px}
+.sitem.on .sbox{background:linear-gradient(135deg,var(--soul),#7C4DFF);border-color:transparent;color:#fff}
+.sitem.on .sbox .sico{filter:none;opacity:1}
+.sitem .stx{flex:1;min-width:0}
+.sitem .stt{font-size:14px;font-weight:650;color:var(--muted);display:flex;align-items:center;gap:7px}
+.sitem.on .stt{color:var(--ice)}
+.sitem .std{font-size:11px;color:var(--dim);margin-top:3px;line-height:1.5}
+.speriod{font-size:9.5px;font-weight:700;letter-spacing:.04em;color:var(--soul);background:var(--soul-soft);
+  border:1px solid rgba(185,139,255,.3);padding:1px 7px;border-radius:20px}
+.speriod.mo{color:var(--gold);background:rgba(255,210,63,.1);border-color:rgba(255,210,63,.3)}
+.sdiv{font-size:10.5px;letter-spacing:.1em;color:var(--dim);margin:12px 0 2px;text-transform:uppercase}
+.soul-btn{background:linear-gradient(135deg,#7C4DFF,#B98BFF);color:#fff;border:none;font-weight:700}
+.soul-btn:active{transform:scale(.98)}
+.letter-card{border-color:rgba(185,139,255,.22)}
+/* 90-day protocol */
+.proto-card{position:relative}
+.pillar{padding:12px;border:1px solid var(--line);border-radius:var(--rs);background:var(--surface2)}
+.pillar .pt{font-size:13.5px;font-weight:700;color:var(--ice);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pillar .pv{font-family:var(--mono);font-size:11px;color:var(--soul);font-weight:600}
+.pillar .pd{font-size:11px;color:var(--dim);margin-top:8px;line-height:1.6}
+.pillar .lk{background:none;border:none;color:var(--cyan);font-size:11px;cursor:pointer;padding:0 0 0 4px;font-weight:600}
+
 
 @media (min-width:560px){
   body{background:radial-gradient(1000px 800px at 50% 0%,#0A1226,#05070E)}
@@ -511,8 +543,8 @@ let S=load();
 function freshDay(){return{
   missions:{}, // id:{v} raw input
   kpi:{}, body:{}, deepwork:{sessions:[],totalMin:0,active:null},
-  journal:{win:'',lose:'',improve:'',diary:''}, improvements:[],
-  restCheck:{}, restNote:'' // rest is left undefined until explicitly toggled
+  journal:{win:'',lose:'',improve:'',diary:'',thanks:''}, improvements:[],
+  restCheck:{}, restNote:'', soul:{} // rest is left undefined until explicitly toggled
 }}
 function load(){
   try{const r=JSON.parse(localStorage.getItem(SS));if(r&&r.days)return migrate(r)}catch(e){}
@@ -527,6 +559,8 @@ function migrate(r){
   if(typeof r.settings.netRate!=='number'||isNaN(r.settings.netRate))r.settings.netRate=50;
   r.cache=r.cache||{level:1,unlocked:{}};r.cache.unlocked=r.cache.unlocked||{};
   r.cache.wealth=r.cache.wealth||{best:0,last:0,rw:{}};r.cache.wealth.rw=r.cache.wealth.rw||{};
+  r.cache.soul=r.cache.soul||{start:null,pubName:'',pubDone:false,fatStart:null,weekly:{},monthly:{},letters:{}};
+  const sc=r.cache.soul;sc.weekly=sc.weekly||{};sc.monthly=sc.monthly||{};sc.letters=sc.letters||{};
   return r;
 }
 let saveTimer=null;
@@ -537,9 +571,11 @@ function save(quiet){
 function day(k){k=k||todayKey();if(!S.days[k])S.days[k]=freshDay();const d=S.days[k];
   d.missions=d.missions||{};d.kpi=d.kpi||{};d.body=d.body||{};
   d.deepwork=d.deepwork||{sessions:[],totalMin:0,active:null};
-  d.journal=d.journal||{win:'',lose:'',improve:'',diary:''};
+  d.journal=d.journal||{win:'',lose:'',improve:'',diary:'',thanks:''};
   if(d.journal.diary===undefined)d.journal.diary='';
+  if(d.journal.thanks===undefined)d.journal.thanks='';
   d.restCheck=d.restCheck||{};if(d.restNote===undefined)d.restNote='';
+  d.soul=d.soul||{};
   d.improvements=d.improvements||[];return d}
 const T=()=>S.settings.targets;
 
@@ -639,12 +675,61 @@ function ratio(v,t){if(!t)return v>0?100:0;return clamp(Math.round(v/t*100),0,10
 function wakeScore(t){if(!t)return 0;const[h,m]=String(t).split(':').map(Number);const mins=h*60+(m||0);
   const[th,tm]=String(T().wake).split(':').map(Number);const tgt=th*60+(tm||0);
   if(mins<=tgt)return 100; const over=mins-tgt; return clamp(100-Math.round(over/3),0,100)}
-function journalDone(d){return!!(d.journal.win||d.journal.lose||d.journal.improve||d.journal.diary)}
+function journalDone(d){return!!(d.journal.win||d.journal.lose||d.journal.improve||d.journal.diary||d.journal.thanks)}
 
 function egoScore(k){const d=day(k);let sum=0;for(const m of DAILY)sum+=m.score(d);return Math.round(sum/DAILY.length)}
 function missionsComplete(k){const d=day(k);return DAILY.every(m=>m.score(d)>=100)}
 
 /* ---------- REST / HOLIDAY MODE ---------- */
+/* ============================================================
+   SOUL PROTOCOL — 生活習慣を魂の型として溶かし込む
+   （手相/月丘の思想を、EGO LOCK流に「型」として運用）
+   ============================================================ */
+const SOUL_DAILY=[
+ {id:'asa',    ico:'🌅',t:'朝の儀式',      d:'起床直後、手のひらを温めて鏡の自分に「今日も成長する」と宣言する'},
+ {id:'sayu',   ico:'🍵',t:'白湯・緑茶',    d:'深緑のマグで一杯。内臓を起こし、生命線中盤を守る'},
+ {id:'walk',   ico:'🧭',t:'西南へ歩く',    d:'散歩 or ジョグ20〜40分。手相を意識しながら月丘の想像力を現実化する'},
+ {id:'ondoku', ico:'📖',t:'音読アウトプット',d:'読んだ20pを声に出す or ノート要約。小指のコミュ力を鍛える'},
+ {id:'thanks', ico:'🙏',t:'感謝を3つ',     d:'夜、感謝3つ＋明日の最小行動1つを書く。感情線の枝を整える'},
+ {id:'sleep23',ico:'🌙',t:'23時前就寝',    d:'魂の回復時間。就寝を死守する'}
+];
+const SOUL_WEEKLY=[
+ {id:'mu',     ico:'🧘',t:'無の時間',      d:'1時間スマホなしで瞑想 or ぼんやり。月丘を活性化し直感を磨く'},
+ {id:'letter', ico:'✉️',t:'別れの手紙',    d:'送らない手紙を書き、感謝に変換して破り捨てる'}
+];
+const SOUL_MONTHLY=[
+ {id:'challenge',ico:'⚔️',t:'挑戦デー',     d:'避けてきたことを1つ実行する（新趣味・未知の場所・人前で話す）'},
+ {id:'purge',    ico:'🧹',t:'人間関係の浄化',d:'「今、必要か？」と問い、不要な連絡を減らす'},
+ {id:'reset',    ico:'🪴',t:'環境リセット',  d:'西南角を緑と本で整える。森林系の香りを置く'}
+];
+const SOUL_BURN_MSG=['過去を燃やした。感謝だけ残せ。','手放した分だけ、前へ進める。','この別れは、次のステージへの神聖な通過儀礼だ。','燃やした灰から、新しい運命線が立ち上がる。'];
+function soulCache(){return S.cache.soul||(S.cache.soul={start:null,pubName:'',pubDone:false,fatStart:null,weekly:{},monthly:{},letters:{}})}
+function weekKey(k){const[y,m,dd]=(k||todayKey()).split('-').map(Number);const dt=new Date(y,m-1,dd);const dow=(dt.getDay()+6)%7;dt.setDate(dt.getDate()-dow);return dateKey(dt)}
+function monKey(k){return (k||todayKey()).slice(0,7)}
+function soulDoneCount(d){return d&&d.soul?SOUL_DAILY.filter(r=>d.soul[r.id]).length:0}
+function soulScore(d){return Math.round(soulDoneCount(d)/SOUL_DAILY.length*100)}
+function soulStreak(){let c=0,dt=new Date(),guard=0,first=true;
+  while(guard++<400){const k=dateKey(dt);
+    if(isRest(k)){dt.setDate(dt.getDate()-1);first=false;continue}
+    const done=soulDoneCount(S.days[k]);
+    if(done>=4){c++;dt.setDate(dt.getDate()-1)}
+    else if(first){dt.setDate(dt.getDate()-1)} // 今日はまだ猶予
+    else break;
+    first=false}
+  return c}
+function soulStartIfNeeded(){const sc=soulCache();if(!sc.start)sc.start=todayKey()}
+function protocolInfo(){const sc=soulCache();if(!sc.start)return null;
+  const[y,m,dd]=sc.start.split('-').map(Number);const s=new Date(y,m-1,dd);s.setHours(0,0,0,0);
+  const now=new Date();now.setHours(0,0,0,0);
+  const dayN=clamp(Math.floor((now-s)/86400000)+1,1,90);
+  const fats=[];for(const k of Object.keys(S.days).sort()){const f=num(S.days[k].body&&S.days[k].body.fat);if(f>0)fats.push({k,f})}
+  if(!sc.fatStart&&fats.length){sc.fatStart=fats[0].f}
+  const fatStart=sc.fatStart||0,fatNow=fats.length?fats[fats.length-1].f:0;
+  const fatDelta=(fatStart&&fatNow)?+(fatNow-fatStart).toFixed(1):0;
+  const letters=Object.values(sc.letters||{}).filter(Boolean).length;
+  return{dayN,pct:clamp(Math.round(dayN/90*100),0,100),fatStart,fatNow,fatDelta,letters,pub:sc.pubDone,pubName:sc.pubName||''}}
+
+
 const REST_CHECK=[
  {id:'sleep',  t:'しっかり寝る・寝坊してOK'},
  {id:'rest',   t:'身体をしっかり休める'},
@@ -679,6 +764,7 @@ function dayXp(d){
   x+=num(d.missions.reading)>=T().readingMin?15:0;
   x+=Math.min(restCount(d)*4,24); // resting well earns a little XP
   if(d.rest)x+=8;
+  x+=Math.min(soulDoneCount(d)*6,36); // 魂の型
   return Math.round(x);
 }
 function totalXp(){let t=0;for(const k in S.days)t+=dayXp(S.days[k]);return t}
@@ -1013,6 +1099,17 @@ function toggleRest(){const d=day(selKey);d.rest=!isRest(selKey);if(d.rest)SFX.d
 function toggleRestCheck(id){const d=day(selKey);d.restCheck[id]=!d.restCheck[id];SFX.on();checkProgress();save();render()}
 function openJournal(){route.tab='log';route.sub='journal';SFX.tap();render();window.scrollTo(0,0)}
 function openWealth(){route.tab='log';route.sub='wealth';SFX.tap();render();window.scrollTo(0,0)}
+/* ---------- SOUL PROTOCOL handlers ---------- */
+function toggleSoul(id){const d=day(selKey);d.soul=d.soul||{};d.soul[id]=!d.soul[id];soulStartIfNeeded();SFX.on();checkProgress();save();render()}
+function toggleSoulWeekly(id){const wk=weekKey(selKey);const sc=soulCache();sc.weekly[wk]=sc.weekly[wk]||{};sc.weekly[wk][id]=!sc.weekly[wk][id];soulStartIfNeeded();SFX.on();save();render()}
+function toggleSoulMonthly(id){const mo=monKey(selKey);const sc=soulCache();sc.monthly[mo]=sc.monthly[mo]||{};sc.monthly[mo][id]=!sc.monthly[mo][id];soulStartIfNeeded();SFX.on();save();render()}
+function burnLetter(){const el=$('#soulLetter');const wk=weekKey(todayKey());const sc=soulCache();
+  sc.letters[wk]=true;sc.weekly[wk]=sc.weekly[wk]||{};sc.weekly[wk].letter=true;
+  if(el)el.value='';soulStartIfNeeded();
+  SFX.success();showMsg('SOUL',pick(SOUL_BURN_MSG));checkProgress();save();render()}
+function updPubName(el){soulCache().pubName=el.value.slice(0,60);clearTimeout(updTimer);updTimer=setTimeout(()=>save(true),400)}
+function togglePub(){const sc=soulCache();sc.pubDone=!sc.pubDone;soulStartIfNeeded();if(sc.pubDone){SFX.levelup();showMsg('SOUL',pick(['公開成果物を世に出した。輝く自分の完成だ。','逃げずに形にした。財運の線が太くなる。']))}else SFX.tap();checkProgress();save();render()}
+function soulSyncThanks(){const d=day(selKey);d.soul=d.soul||{};if((d.journal.thanks||'').trim())d.soul.thanks=true;soulStartIfNeeded()}
 function toggleRestDay(i){const r=S.settings.restDays||(S.settings.restDays=[]);const ix=r.indexOf(i);if(ix>=0)r.splice(ix,1);else r.push(i);SFX.tap();save(true);render()}
 
 const NAV=[
@@ -1207,6 +1304,12 @@ function viewMission(){
    <!-- 月次の数字 -->
    ${monthlyCard()}
 
+   <!-- 魂の型 SOUL PROTOCOL -->
+   ${soulCard()}
+
+   <!-- 90日プロトコル -->
+   ${protocolCard()}
+
    <div class="card mt12">
      <div class="between"><div><div class="eyebrow">睡眠 / 水分 / 体組成</div><div class="sub mt8" style="font-size:12px">睡眠・運動・筋トレは身体管理と連動している</div></div>
      <button class="btn cyan sm" onclick="goSub('body');route.tab='log';render()">身体管理へ</button></div>
@@ -1251,6 +1354,72 @@ function monthlyCard(){
   </div>`;
 }
 
+/* ---------- SOUL PROTOCOL card (魂の型) ---------- */
+function soulCard(){
+  const d=day(selKey);const sc=soulCache();const scr=soulScore(d);const st=soulStreak();
+  const wk=weekKey(selKey),mo=monKey(selKey);
+  const wkS=sc.weekly[wk]||{},moS=sc.monthly[mo]||{};
+  const drow=(r)=>{const on=!!(d.soul&&d.soul[r.id]);
+    return `<div class="sitem ${on?'on':''}" onclick="toggleSoul('${r.id}')">
+      <div class="sbox">${on?'<svg viewBox="0 0 24 24" width="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>':`<span class="sico">${r.ico}</span>`}</div>
+      <div class="stx"><div class="stt">${r.t}</div><div class="std">${r.d}</div></div></div>`};
+  const wrow=(r)=>{const on=!!wkS[r.id];const isLetter=r.id==='letter';
+    return `<div class="sitem wk ${on?'on':''}" ${isLetter?'onclick="openJournal()"':`onclick="toggleSoulWeekly('${r.id}')"`}>
+      <div class="sbox">${on?'✓':`<span class="sico">${r.ico}</span>`}</div>
+      <div class="stx"><div class="stt">${r.t}<span class="speriod">今週</span></div><div class="std">${r.d}${isLetter?'（ジャーナルで書く）':''}</div></div></div>`};
+  const mrow=(r)=>{const on=!!moS[r.id];
+    return `<div class="sitem wk ${on?'on':''}" onclick="toggleSoulMonthly('${r.id}')">
+      <div class="sbox">${on?'✓':`<span class="sico">${r.ico}</span>`}</div>
+      <div class="stx"><div class="stt">${r.t}<span class="speriod mo">今月</span></div><div class="std">${r.d}</div></div></div>`};
+  return `<div class="card soul-card mt12" style="padding:14px 16px 8px">
+    <div class="sheen soul"></div>
+    <div class="between"><div class="eyebrow soul">🔮 魂の型 · SOUL PROTOCOL</div>
+      <div class="num" style="font-size:12px;color:var(--muted)">${st>0?`🔥${st}日 · `:''}<b style="color:var(--soul);font-size:17px">${scr}</b>%</div></div>
+    <div class="sub" style="font-size:11.5px;margin:6px 0 4px">別れは、魂が次のステージへ上がる神聖なきっかけだ。手相は変化を恐れない者に幸運を呼ぶ。まず生活の“型”を固めろ。EGO SCOREとは別枠のボーナスとして積む。</div>
+    ${SOUL_DAILY.map(drow).join('')}
+    <div class="sdiv">週次・月次の型</div>
+    ${SOUL_WEEKLY.map(wrow).join('')}
+    ${SOUL_MONTHLY.map(mrow).join('')}
+  </div>`;
+}
+
+/* ---------- 90日集中プロトコル ---------- */
+function protocolCard(){
+  const sc=soulCache();const p=protocolInfo();
+  if(!p){return `<div class="card mt12" style="padding:14px 16px">
+    <div class="eyebrow soul">🗺 90日プロトコル</div>
+    <div class="sub mt8" style="font-size:12px">魂を加速させる3ヶ月集中プログラム。上の「魂の型」を1つ実行すると自動で開始する。公開成果物・体脂肪-5%・別れの手紙の3本柱で“輝く自分”を作れ。</div>
+  </div>`}
+  const fatTxt=p.fatStart?`${p.fatStart}% → ${p.fatNow||'—'}%${p.fatDelta?` （${p.fatDelta>0?'+':''}${p.fatDelta}%）`:''}`:'体脂肪を記録すると自動追跡';
+  const fatGoal=p.fatStart?+(p.fatStart-5).toFixed(1):0;
+  const fatPct=p.fatStart&&p.fatNow?clamp(Math.round((p.fatStart-p.fatNow)/5*100),0,100):0;
+  const letterPct=clamp(Math.round(p.letters/12*100),0,100);
+  return `<div class="card mt12 proto-card" style="padding:14px 16px">
+    <div class="between"><div class="eyebrow soul">🗺 90日プロトコル</div>
+      <div class="num" style="font-size:12px;color:var(--muted)">DAY <b style="color:var(--soul);font-size:16px">${p.dayN}</b> / 90</div></div>
+    <div class="lgauge mt8" style="height:7px"><i style="width:${p.pct}%;background:linear-gradient(90deg,var(--soul),var(--purple))"></i></div>
+
+    <div class="pillar mt16">
+      <div class="between"><div class="pt">① 公開成果物</div>
+        <button class="btn ${p.pub?'cyan':'ghost'} sm" onclick="togglePub()">${p.pub?'完成 ✓':'未完'}</button></div>
+      <input class="tinput block mt8" style="width:100%" placeholder="作るもの（ブログ / 作品 / 資格 など）" value="${(p.pubName||'').replace(/"/g,'&quot;')}" oninput="updPubName(this)">
+      <div class="pd">2026年内に1つ、世に出す。復縁も引き寄せる“輝く自分”を作る。</div>
+    </div>
+
+    <div class="pillar mt12">
+      <div class="pt">② 身体の変革 <span class="pv">${fatTxt}</span></div>
+      <div class="lgauge mt8" style="height:6px"><i style="width:${fatPct}%;background:${barColor(fatPct)}"></i></div>
+      <div class="pd">3ヶ月で体脂肪 -5〜8%。${fatGoal?`目標 ${fatGoal}% ・`:''}週5運動＋タンパク質。顔の気色が変わる。<button class="lk" onclick="goSub('body');route.tab='log';render()">体脂肪を記録 ›</button></div>
+    </div>
+
+    <div class="pillar mt12">
+      <div class="pt">③ 別れの手紙 <span class="pv">${p.letters} / 12週</span></div>
+      <div class="lgauge mt8" style="height:6px"><i style="width:${letterPct}%;background:linear-gradient(90deg,var(--red),var(--purple))"></i></div>
+      <div class="pd">毎週日曜夜、送らない手紙を書いて破り捨てる。感情線の乱れが整う。<button class="lk" onclick="openJournal()">手紙を書く ›</button></div>
+    </div>
+  </div>`;
+}
+
 /* ============================================================
    VIEW: REST (休日モード)
    ============================================================ */
@@ -1275,6 +1444,13 @@ function viewRest(){
 
    <div class="section-title mt20"><h2>休日チェックリスト（自由）</h2><div class="line"></div></div>
    <div class="card" style="padding:8px 12px">${REST_CHECK.map(item).join('')}</div>
+
+   ${(()=>{const wk=weekKey(selKey);const on=!!(soulCache().weekly[wk]&&soulCache().weekly[wk].mu);
+     return `<div class="card mt12 soul-card" style="padding:12px 14px"><div class="sheen soul"></div>
+     <div class="sitem wk ${on?'on':''}" style="border:none;padding:4px 0" onclick="toggleSoulWeekly('mu')">
+       <div class="sbox">${on?'✓':'<span class="sico">🧘</span>'}</div>
+       <div class="stx"><div class="stt">無の時間<span class="speriod">今週</span></div><div class="std">1時間スマホなしで瞑想 or ぼんやり。休みは直感を磨く最高の機会だ。</div></div></div>
+   </div>`})()}
 
    <div class="section-title mt20"><h2>休日メモ</h2><div class="line"></div></div>
    <div class="card">
@@ -1804,6 +1980,21 @@ function viewJournal(){
      <textarea class="mt8" placeholder="明日、何を1つ変える？" oninput="upd(this,'journal','improve')">${(d.journal.improve||'').replace(/</g,'&lt;')}</textarea>
    </div>
 
+   <div class="card mt12">
+     <div class="eyebrow soul">🙏 感謝を3つ（夜の振り返り）</div>
+     <div class="sub mt8" style="font-size:11.5px">感謝3つ＋明日の最小行動1つ。感情線の枝を整える。書けば魂の型「感謝を3つ」も達成扱い。</div>
+     <textarea class="mt8" placeholder="1. …&#10;2. …&#10;3. …&#10;明日の最小行動：…" oninput="upd(this,'journal','thanks');if(this.value)soulSyncThanks()">${(d.journal.thanks||'').replace(/</g,'&lt;')}</textarea>
+   </div>
+
+   ${(()=>{const wk=weekKey(todayKey());const done=!!(soulCache().letters&&soulCache().letters[wk]);const p=protocolInfo();
+     return `<div class="card mt12 letter-card">
+     <div class="between"><div class="eyebrow soul">✉️ 別れの手紙（今週）</div>
+       <span class="num" style="font-size:12px;color:${done?'var(--green)':'var(--dim)'}">${done?'今週 済 ✓':'未'}${p?` · 通算 ${p.letters}/12週`:''}</span></div>
+     <div class="sub mt8" style="font-size:11.5px">送らない手紙だ。感情を吐き出し、感謝に変換しろ。書き終えたら「破り捨てる」。テキストは保存されない。</div>
+     <textarea id="soulLetter" class="mt8 tall" placeholder="元恋人・過去の自分へ。恨みも後悔も全部書け。最後は感謝で終わらせろ。"></textarea>
+     <button class="btn block mt8 soul-btn" onclick="burnLetter()">🔥 破り捨てる（今週の手紙を完了）</button>
+   </div>`})()}
+
    <div class="section-title mt24"><h2>過去の記録</h2><div class="line"></div></div>
    ${entries.length?`<div>${entries.slice(0,30).map(k=>{const e=S.days[k].journal;
      return `<div class="li ${k===selKey?'sel':''}"><div class="lh"><b style="font-size:13px;color:var(--ice)">${fmtDate(k)}</b>${k===tk?'<span class="tag">今日</span>':''}${k!==selKey?`<button class="jedit" onclick="selKey='${k}';render();window.scrollTo(0,0)">編集</button>`:''}</div>
@@ -1811,6 +2002,7 @@ function viewJournal(){
        ${e.win?`<div class="mt8" style="font-size:13px"><span style="color:var(--green)">勝</span> ${e.win.replace(/</g,'&lt;')}</div>`:''}
        ${e.lose?`<div class="mt8" style="font-size:13px"><span style="color:var(--red)">負</span> ${e.lose.replace(/</g,'&lt;')}</div>`:''}
        ${e.improve?`<div class="mt8" style="font-size:13px"><span style="color:var(--cyan)">改</span> ${e.improve.replace(/</g,'&lt;')}</div>`:''}
+       ${e.thanks?`<div class="mt8" style="font-size:13px;white-space:pre-wrap"><span style="color:var(--soul)">感</span> ${e.thanks.replace(/</g,'&lt;')}</div>`:''}
      </div>`}).join('')}</div>`:`<div class="empty">まだ記録がない。今夜が最初の一歩だ。</div>`}
    <div class="tabbar-spacer"></div>
   </div>`;
