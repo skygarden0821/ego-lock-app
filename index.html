@@ -15,15 +15,15 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
-  --bg:#05070E; --bg2:#080C18; --bg3:#0A1020;
-  --surface:rgba(16,23,44,.55); --surface2:rgba(20,28,52,.72); --solid:#0B1122;
-  --line:rgba(120,160,255,.13); --line2:rgba(120,160,255,.22);
-  --blue:#2D6BFF; --blue2:#4D8BFF; --cyan:#00E5FF; --ice:#9FD4FF;
-  --red:#FF3358; --green:#00E68A; --gold:#FFD23F; --purple:#9B6BFF;
-  --teal:#37E6C5; --teal-soft:rgba(55,230,197,.12);
-  --soul:#B98BFF; --soul-soft:rgba(185,139,255,.12);
-  --text:#EAF0FF; --muted:#8A99BF; --dim:#5A6890;
-  --glow:0 0 24px rgba(45,120,255,.45); --glowc:0 0 24px rgba(0,229,255,.4);
+  --bg:#0B0F1C; --bg2:#0F1526; --bg3:#141C31;
+  --surface:rgba(30,40,68,.62); --surface2:rgba(38,50,84,.78); --solid:#141B30;
+  --line:rgba(140,175,255,.20); --line2:rgba(140,175,255,.30);
+  --blue:#3D79FF; --blue2:#6BA0FF; --cyan:#22ECFF; --ice:#BFE0FF;
+  --red:#FF4D6A; --green:#1EEE96; --gold:#FFD84D; --purple:#A97CFF;
+  --teal:#48EBCC; --teal-soft:rgba(72,235,204,.14);
+  --soul:#C39BFF; --soul-soft:rgba(195,155,255,.14);
+  --text:#F2F6FF; --muted:#AEBBD8; --dim:#8492B4;
+  --glow:0 0 24px rgba(61,121,255,.45); --glowc:0 0 24px rgba(34,236,255,.4);
   --r:18px; --rs:13px;
   --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue","Hiragino Sans","Yu Gothic","Noto Sans JP",sans-serif;
   --mono:"SF Mono","SFMono-Regular",ui-monospace,"Roboto Mono","DejaVu Sans Mono",monospace;
@@ -57,7 +57,7 @@ body{
 header{position:fixed;top:0;left:0;right:0;z-index:40;
   max-width:520px;margin:0 auto;padding:calc(var(--safe-t) + 8px) 14px 8px;
   display:flex;align-items:center;gap:9px;
-  background:linear-gradient(180deg,rgba(7,10,20,.92),rgba(7,10,20,.55) 80%,transparent);
+  background:linear-gradient(180deg,rgba(13,18,34,.94),rgba(13,18,34,.55) 80%,transparent);
   backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);}
 .lvchip{display:flex;align-items:center;gap:9px;padding:5px 12px 5px 6px;
   background:var(--surface2);border:1px solid var(--line2);border-radius:30px;
@@ -82,7 +82,7 @@ header{position:fixed;top:0;left:0;right:0;z-index:40;
 /* ===== BOTTOM NAV ===== */
 nav{position:fixed;bottom:0;left:0;right:0;z-index:40;max-width:520px;margin:0 auto;
   padding:7px 8px calc(7px + var(--safe-b));display:grid;grid-template-columns:repeat(5,1fr);gap:2px;
-  background:linear-gradient(0deg,rgba(7,10,20,.96),rgba(7,10,20,.7));
+  background:linear-gradient(0deg,rgba(13,18,34,.97),rgba(13,18,34,.72));
   backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
   border-top:1px solid var(--line);}
 .nav-i{display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 0 4px;border-radius:14px;
@@ -295,7 +295,7 @@ select{appearance:none;-webkit-appearance:none;background-image:url("data:image/
 
 /* message overlay (blue lock) */
 #msg{position:fixed;inset:0;z-index:80;display:none;align-items:center;justify-content:center;padding:30px;
-  background:radial-gradient(circle at 50% 50%,rgba(5,12,28,.86),rgba(2,4,10,.95))}
+  background:radial-gradient(circle at 50% 50%,rgba(16,26,52,.82),rgba(9,13,26,.94))}
 #msg.show{display:flex;animation:fadeUp .4s}
 #msg .mcard{max-width:380px;text-align:center}
 #msg .mline{font-size:12px;letter-spacing:.3em;color:var(--cyan);text-transform:uppercase;margin-bottom:16px;font-weight:700}
@@ -306,7 +306,7 @@ select{appearance:none;-webkit-appearance:none;background-image:url("data:image/
 /* levelup / fx canvas */
 #fxc{position:fixed;inset:0;z-index:90;pointer-events:none;display:none}
 #lvup{position:fixed;inset:0;z-index:91;display:none;align-items:center;justify-content:center;flex-direction:column;
-  background:radial-gradient(circle,rgba(45,120,255,.2),rgba(2,4,10,.9))}
+  background:radial-gradient(circle,rgba(61,121,255,.22),rgba(11,15,28,.88))}
 #lvup.show{display:flex;animation:fadeUp .5s}
 #lvup .lt{font-size:13px;letter-spacing:.4em;color:var(--cyan);text-transform:uppercase;font-weight:700}
 #lvup .ln{font-family:var(--mono);font-size:96px;font-weight:800;line-height:1;
@@ -459,6 +459,24 @@ textarea.tall{min-height:130px}
   box-shadow:0 0 22px rgba(232,33,39,.14)}
 .rw-tesla .ric{border-color:rgba(232,33,39,.45);background:rgba(232,33,39,.1)}
 
+/* ---------- HOME goals card ---------- */
+.goal-card{border-color:rgba(255,216,77,.28);background:linear-gradient(180deg,rgba(255,216,77,.06),var(--surface))}
+.sync-chip{border:1px solid var(--line);background:var(--surface2);color:var(--muted);
+  font-size:10.5px;font-weight:600;padding:5px 10px;border-radius:20px;cursor:pointer;white-space:nowrap}
+.sync-chip:active{transform:scale(.95)}
+.goal-hero{display:flex;align-items:flex-end;justify-content:space-between}
+.goal-hero .gh-num{font-size:27px;font-weight:800;color:var(--gold);line-height:1}
+.goal-hero .gh-max{font-size:13px;color:var(--dim);font-weight:600;margin-left:6px}
+.goal-hero .gh-pct{font-size:22px;font-weight:800}
+.grow-row{padding:10px 0;border-bottom:1px solid var(--line)}
+.grow-row:last-child{border-bottom:none}
+.gr-top{display:flex;align-items:baseline;justify-content:space-between}
+.gr-l{font-size:13.5px;font-weight:650;color:var(--ice)}
+.gr-v{font-family:var(--mono);font-size:15px;font-weight:700}
+.gr-v .gr-t{font-size:11px;color:var(--dim);font-weight:500;margin-left:3px}
+.gr-d{font-size:11px;color:var(--muted);margin-top:5px}
+.gr-d b{color:var(--ice);font-family:var(--mono)}
+
 /* ---------- SOUL PROTOCOL ---------- */
 .eyebrow.soul{color:var(--soul)}
 .sheen.soul{background:linear-gradient(90deg,transparent,var(--soul),transparent)!important;opacity:.45}
@@ -492,7 +510,7 @@ textarea.tall{min-height:130px}
 
 
 @media (min-width:560px){
-  body{background:radial-gradient(1000px 800px at 50% 0%,#0A1226,#05070E)}
+  body{background:radial-gradient(1000px 800px at 50% 0%,#16213D,#0B0F1C)}
   #app{box-shadow:0 0 80px rgba(0,0,0,.6)}
 }
 </style>
@@ -549,7 +567,9 @@ function freshDay(){return{
 function load(){
   try{const r=JSON.parse(localStorage.getItem(SS));if(r&&r.days)return migrate(r)}catch(e){}
   return{meta:{created:Date.now(),version:1},
-    settings:{sound:true,name:'YOSHI',targets:{...DEFAULT_TARGETS},restDays:[],netRate:50},
+    settings:{sound:true,name:'YOSHI',targets:{...DEFAULT_TARGETS},restDays:[],netRate:50,
+      sheet:{url:'',key:'',auto:true,lastSync:null,lastErr:null,lastCount:0},
+      goals:{revenue:1000000,contracts:8,ad:80,line:240}},
     cache:{level:1,unlocked:{}}, days:{}};
 }
 function migrate(r){
@@ -557,6 +577,8 @@ function migrate(r){
   if(r.settings.sound===undefined)r.settings.sound=true;
   if(!Array.isArray(r.settings.restDays))r.settings.restDays=[];
   if(typeof r.settings.netRate!=='number'||isNaN(r.settings.netRate))r.settings.netRate=50;
+  r.settings.sheet=Object.assign({url:'',key:'',auto:true,lastSync:null,lastErr:null,lastCount:0},r.settings.sheet||{});
+  r.settings.goals=Object.assign({revenue:1000000,contracts:8,ad:80,line:240},r.settings.goals||{});
   r.cache=r.cache||{level:1,unlocked:{}};r.cache.unlocked=r.cache.unlocked||{};
   r.cache.wealth=r.cache.wealth||{best:0,last:0,rw:{}};r.cache.wealth.rw=r.cache.wealth.rw||{};
   r.cache.soul=r.cache.soul||{start:null,pubName:'',pubDone:false,fatStart:null,weekly:{},monthly:{},letters:{}};
@@ -1228,8 +1250,10 @@ function viewHome(){
     <div class="quote"><span class="q">「</span>${S._quote}<span class="q">」</span></div>
    </div>`;
   if(!rest)onMount(()=>animateNumber('[data-ego]',sc));
+  if(sheetCfg().auto&&sheetCfg().url)onMount(()=>syncSheet(false));
 
   return `<div class="view">
+   ${goalsCard()}
    ${hero}
 
    <div class="chips mt12">
@@ -1275,9 +1299,42 @@ function coachCard(co){
   </div>`;
 }
 
-/* ============================================================
-   VIEW: MISSION
-   ============================================================ */
+/* ---------- HOME: 今年/今月の目標 ---------- */
+function goalsCard(){
+  const g=S.settings.goals||{revenue:1000000,contracts:8,ad:80,line:240};
+  const s=sheetCfg();
+  const rev=monthRevenue();
+  const contracts=sumMonthKpi('contracts');
+  const ad=sumMonthKpi('adCount');
+  const line=sumMonthKpi('lineAdds');
+  const revPct=clamp(Math.round(rev/(g.revenue||1)*100),0,100);
+  const ml=monthRange(0).label;
+  const syncTxt=s.url?(s.lastErr?`⚠ 同期失敗`:(s.lastSync?`🔄 同期 ${syncAgo()}`:'🔄 未同期')):'シート未接続';
+  const mini=(label,cur,tgt,unit,color)=>{const pct=clamp(Math.round(cur/(tgt||1)*100),0,100);const diff=tgt-cur;
+    return `<div class="grow-row">
+      <div class="gr-top"><span class="gr-l">${label}</span>
+        <span class="gr-v"><b style="color:${color}">${fmt(cur)}</b><span class="gr-t">/ ${fmt(tgt)}${unit}</span></span></div>
+      <div class="lgauge mt6" style="height:7px"><i style="width:${pct}%;background:${barColor(pct)}"></i></div>
+      <div class="gr-d">${diff>0?`目標まで あと <b>${fmt(diff)}</b>${unit}`:`<b style="color:var(--green)">達成 ✓</b> +${fmt(-diff)}${unit}`}</div>
+    </div>`};
+  return `<div class="card goal-card" style="padding:16px">
+    <div class="between">
+      <div class="eyebrow" style="color:var(--gold)">🎯 今年の目標 · 月商 ${fmtMan(g.revenue)}円</div>
+      <button class="sync-chip" onclick="syncSheet(true)" title="シートから同期">${syncTxt}</button>
+    </div>
+    <div class="goal-hero mt12">
+      <div class="gh-num num">${fmtY(rev)}<span class="gh-max">/ ${fmtMan(g.revenue)}</span></div>
+      <div class="gh-pct num" style="color:${revPct>=100?'var(--green)':'var(--gold)'}">${revPct}%</div>
+    </div>
+    <div class="lgauge mt8" style="height:11px"><i style="width:${revPct}%;background:linear-gradient(90deg,var(--gold),#FFE27A)"></i></div>
+    <div class="gr-d" style="margin-top:6px">${ml}の月商回収 · ${rev>=g.revenue?`<b style="color:var(--green)">目標達成</b>`:`あと <b>${fmtY(g.revenue-rev)}</b>`}</div>
+
+    <div class="sdiv" style="margin:16px 0 4px">今月の目標 · ${ml}</div>
+    ${mini('契約数', contracts, g.contracts, '名', 'var(--cyan)')}
+    ${mini('AD数',   ad,        g.ad,        '名', 'var(--ice)')}
+    ${mini('LINE追加',line,     g.line,      '',   'var(--green)')}
+  </div>`;
+}
 function viewMission(){
   if(isRest(selKey))return viewRest();
   const d=day(selKey);const sc=egoScore(selKey);
@@ -1520,6 +1577,7 @@ const KPI=[
  {id:'cash',    name:'キャッシュ', unit:'¥', agg:'last', yen:true},
  {id:'inquiries',name:'問い合わせ',unit:'件', agg:'sum'},
  {id:'lineAdds',name:'LINE追加',   unit:'人', agg:'sum'},
+ {id:'adCount', name:'AD数',       unit:'名', agg:'sum'},
  {id:'snsPosts',name:'SNS投稿',    unit:'件', agg:'sum'},
  {id:'dmSent',  name:'DM送信',     unit:'件', agg:'sum'},
  {id:'replyRate',name:'返信率',    unit:'%', agg:'avg'},
@@ -1554,6 +1612,48 @@ function monthlyStat(id){const t=T();let cur=0,target=0;const keys=monthRange(0)
   return{cur,target,pct:target?clamp(Math.round(cur/target*100),0,100):(cur>0?100:0)}}
 function monthlyFmt(id,v){return MONTHLY_META[id]&&MONTHLY_META[id].yen?fmtY(v):fmt(v)}
 function monthlyAvgPct(){let s=0;for(const id in MONTHLY_META)s+=monthlyStat(id).pct;return Math.round(s/Object.keys(MONTHLY_META).length)}
+function sumMonthKpi(id){return aggMetric(monthRange(0).keys,id,'sum')}
+
+/* ============================================================
+   SHEET SYNC — GAS Webアプリから日次数値を取得（シートがマスター）
+   ============================================================ */
+let _syncing=false,_lastSyncTry=0;
+function sheetCfg(){const s=S.settings.sheet||(S.settings.sheet={url:'',key:'',auto:true,lastSync:null,lastErr:null,lastCount:0});return s}
+function syncAgo(){const s=sheetCfg();if(!s.lastSync)return null;const sec=Math.floor((Date.now()-s.lastSync)/1000);
+  if(sec<60)return '今';if(sec<3600)return Math.floor(sec/60)+'分前';if(sec<86400)return Math.floor(sec/3600)+'時間前';return Math.floor(sec/86400)+'日前'}
+async function syncSheet(manual){
+  const s=sheetCfg();const url=(s.url||'').trim();
+  if(!url){if(manual){s.lastErr='URL未設定';render()}return false}
+  if(_syncing)return false;
+  const now=Date.now();
+  if(!manual&&now-_lastSyncTry<45000)return false; // 自動は45秒スロットル
+  _syncing=true;_lastSyncTry=now;
+  const btn=$('#syncBtn');if(btn){btn.textContent='同期中…';btn.disabled=true}
+  try{
+    const q=url+(url.indexOf('?')<0?'?':'&')+'t='+now+(s.key?'&key='+encodeURIComponent(s.key):'');
+    const res=await fetch(q,{method:'GET',redirect:'follow'});
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const data=await res.json();
+    if(!data||!data.ok)throw new Error((data&&data.error)||'応答エラー');
+    const map={lineAdds:'lineAdds',ad:'adCount',contracts:'contracts',revenue:'revenue'};
+    let n=0;
+    for(const dk in (data.days||{})){
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(dk))continue;
+      const src=data.days[dk];const d=day(dk);n++;
+      for(const key in map){if(src[key]!==undefined&&src[key]!==null)d.kpi[map[key]]=src[key]}
+    }
+    s.lastSync=Date.now();s.lastErr=null;s.lastCount=n;
+    checkProgress();save(true);
+    if(manual){SFX.success();showMsg('SHEET SYNC',`シートから ${n}日分を取り込んだ`)}
+    render();
+    return true;
+  }catch(err){
+    s.lastErr=String(err&&err.message||err);
+    if(manual){SFX.error&&SFX.error();showMsg('SYNC 失敗',s.lastErr)}
+    render();
+    return false;
+  }finally{_syncing=false;const b=$('#syncBtn');if(b){b.disabled=false;b.textContent='今すぐ同期'}}
+}
 
 /* ============================================================
    WEALTH / 成長 — 月商で暮らしレベルが進化するゲームシステム
@@ -2288,6 +2388,9 @@ function toggleSound(){S.settings.sound=!S.settings.sound;if(S.settings.sound){a
 function updTarget(el,key){const v=key==='wake'?el.value:num(el.value);S.settings.targets[key]=v;
   liveRefresh();clearTimeout(updTimer);updTimer=setTimeout(()=>save(true),400)}
 function updName(el){S.settings.name=el.value.slice(0,20);clearTimeout(updTimer);updTimer=setTimeout(()=>save(true),400)}
+function updGoal(el,key){S.settings.goals=S.settings.goals||{};S.settings.goals[key]=Math.max(0,num(el.value));clearTimeout(updTimer);updTimer=setTimeout(()=>save(true),300)}
+function updSheet(el,key){const s=sheetCfg();s[key]=el.value.trim();clearTimeout(updTimer);updTimer=setTimeout(()=>save(true),300)}
+function toggleSheetAuto(){const s=sheetCfg();s.auto=!s.auto;SFX.tap();save(true);render();if(s.auto&&s.url)syncSheet(true)}
 function exportData(){try{const blob=new Blob([JSON.stringify(S)],{type:'application/json'});
   const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='egolock-backup-'+todayKey()+'.json';
   document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
@@ -2352,6 +2455,34 @@ function viewSettings(){
      <div class="wkrow">${WD.map((w,i)=>`<button class="wkchip ${(s.restDays||[]).includes(i)?'on':''}" onclick="toggleRestDay(${i})">${w}</button>`).join('')}</div>
    </div>
 
+   <div class="section-title mt20"><h2>目標（ホーム表示）</h2><div class="line"></div></div>
+   <div class="sub" style="margin-bottom:12px">ホーム最上部に出る「今年の目標／今月の目標」の基準値。現状との差分が常に見える。</div>
+   <div class="card">
+     <div class="srow"><div><div class="sl">月商（今年の目標）</div><div class="sd">お月謝回収の月間ゴール</div></div>
+       <div style="display:flex;align-items:center;gap:6px"><input class="tinput" type="number" inputmode="numeric" value="${(s.goals&&s.goals.revenue)??1000000}" onchange="updGoal(this,'revenue')"><span class="dim" style="font-size:12px;width:22px">円</span></div></div>
+     <div class="srow"><div><div class="sl">契約数 / 月</div></div>
+       <div style="display:flex;align-items:center;gap:6px"><input class="tinput" type="number" inputmode="numeric" value="${(s.goals&&s.goals.contracts)??8}" onchange="updGoal(this,'contracts')"><span class="dim" style="font-size:12px;width:22px">名</span></div></div>
+     <div class="srow"><div><div class="sl">AD数 / 月</div></div>
+       <div style="display:flex;align-items:center;gap:6px"><input class="tinput" type="number" inputmode="numeric" value="${(s.goals&&s.goals.ad)??80}" onchange="updGoal(this,'ad')"><span class="dim" style="font-size:12px;width:22px">名</span></div></div>
+     <div class="srow"><div><div class="sl">LINE追加 / 月</div></div>
+       <div style="display:flex;align-items:center;gap:6px"><input class="tinput" type="number" inputmode="numeric" value="${(s.goals&&s.goals.line)??240}" onchange="updGoal(this,'line')"><span class="dim" style="font-size:12px;width:22px"></span></div></div>
+   </div>
+
+   <div class="section-title mt20"><h2>シート連携（GAS）</h2><div class="line"></div></div>
+   <div class="sub" style="margin-bottom:12px">GASウェブアプリの /exec URL を貼ると、スプレッドシートの<b>ライン追加・AD・契約・お月謝回収</b>を自動で取り込む（シートが正）。設定手順はリポジトリの gas/README.md 参照。</div>
+   <div class="card">
+     <label class="fld"><span class="lab">GAS URL <span class="dim">…/exec</span></span>
+       <input id="sheetUrl" placeholder="https://script.google.com/macros/s/XXXX/exec" value="${((s.sheet&&s.sheet.url)||'').replace(/"/g,'&quot;')}" oninput="updSheet(this,'url')"></label>
+     <label class="fld mt12"><span class="lab">連携キー <span class="dim">任意</span></span>
+       <input id="sheetKey" placeholder="GAS側の CONFIG.KEY と一致させる" value="${((s.sheet&&s.sheet.key)||'').replace(/"/g,'&quot;')}" oninput="updSheet(this,'key')"></label>
+     <div class="srow mt12"><div><div class="sl">自動同期</div><div class="sd">起動時・アプリ復帰時に随時取得</div></div>
+       <div class="sw ${(s.sheet&&s.sheet.auto)?'on':''}" onclick="toggleSheetAuto()"><i></i></div></div>
+     <div class="between mt12">
+       <div class="dim" style="font-size:11.5px">${(s.sheet&&s.sheet.lastSync)?`最終同期 ${syncAgo()} · ${s.sheet.lastCount||0}日分`:'未同期'}${(s.sheet&&s.sheet.lastErr)?` · <span style="color:var(--red)">${s.sheet.lastErr}</span>`:''}</div>
+       <button id="syncBtn" class="btn cyan sm" onclick="syncSheet(true)">今すぐ同期</button>
+     </div>
+   </div>
+
    <div class="section-title mt20"><h2>データ</h2><div class="line"></div></div>
    <div class="card">
      <div class="srow"><div><div class="sl">記録日数</div><div class="sd">${days}日分のデータを保存中</div></div>
@@ -2396,7 +2527,7 @@ function unlockAudioOnce(){ac();removeEventListener('pointerdown',unlockAudioOnc
 addEventListener('pointerdown',unlockAudioOnce,{passive:true});
 addEventListener('touchstart',unlockAudioOnce,{passive:true});
 // keep deep-work timer alive when returning to the tab
-document.addEventListener('visibilitychange',()=>{if(!document.hidden){const tk=todayKey();if(tk!==_curBootDay){_curBootDay=tk;selKey=tk;render()}if(route.tab==='focus')ensureDwTimer();renderHeader()}});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){const tk=todayKey();if(tk!==_curBootDay){_curBootDay=tk;selKey=tk;render()}if(route.tab==='focus')ensureDwTimer();renderHeader();if(sheetCfg().auto&&sheetCfg().url)syncSheet(false)}});
 // install hint (iOS / not standalone)
 function maybeInstallHint(){
   const standalone=window.navigator.standalone===true||matchMedia('(display-mode:standalone)').matches;
