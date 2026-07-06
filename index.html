@@ -582,6 +582,7 @@ function migrate(r){
   r.cache=r.cache||{level:1,unlocked:{}};r.cache.unlocked=r.cache.unlocked||{};
   r.cache.wealth=r.cache.wealth||{best:0,last:0,rw:{}};r.cache.wealth.rw=r.cache.wealth.rw||{};
   r.cache.soul=r.cache.soul||{start:null,pubName:'',pubDone:false,fatStart:null,weekly:{},monthly:{},letters:{}};
+  r.cache.sheetRev=r.cache.sheetRev||{}; // 'YYYY-MM' -> お月謝回収(月商)
   const sc=r.cache.soul;sc.weekly=sc.weekly||{};sc.monthly=sc.monthly||{};sc.letters=sc.letters||{};
   return r;
 }
@@ -1607,7 +1608,7 @@ function sumMonthImpr(keys){keys=keys||monthRange(0).keys;let s=0;for(const k of
 function monthlyStat(id){const t=T();let cur=0,target=0;const keys=monthRange(0).keys;
   if(id==='sales'){cur=sumMonthMission('sales',keys);target=t.salesMonth}
   else if(id==='meeting'){cur=aggMetric(keys,'meetings','sum');target=t.meetingsMonth}
-  else if(id==='revenue'){cur=aggMetric(keys,'revenue','sum');target=t.revenueMonth}
+  else if(id==='revenue'){cur=monthRevenueFor(0);target=t.revenueMonth}
   else if(id==='ai'){cur=sumMonthImpr(keys);target=t.aiMonth}
   return{cur,target,pct:target?clamp(Math.round(cur/target*100),0,100):(cur>0?100:0)}}
 function monthlyFmt(id,v){return MONTHLY_META[id]&&MONTHLY_META[id].yen?fmtY(v):fmt(v)}
@@ -1635,13 +1636,17 @@ async function syncSheet(manual){
     if(!res.ok)throw new Error('HTTP '+res.status);
     const data=await res.json();
     if(!data||!data.ok)throw new Error((data&&data.error)||'応答エラー');
-    const map={lineAdds:'lineAdds',ad:'adCount',contracts:'contracts',revenue:'revenue'};
+    const map={lineAdds:'lineAdds',ad:'adCount',contracts:'contracts'};
     let n=0;
     for(const dk in (data.days||{})){
       if(!/^\d{4}-\d{2}-\d{2}$/.test(dk))continue;
       const src=data.days[dk];const d=day(dk);n++;
       for(const key in map){if(src[key]!==undefined&&src[key]!==null)d.kpi[map[key]]=src[key]}
     }
+    // お月謝（月商）は月次で受け取り、cache.sheetRev に格納（シートがマスター）
+    S.cache.sheetRev=S.cache.sheetRev||{};
+    const mr=data.monthsRevenue||{};
+    for(const ym in mr){if(/^\d{4}-\d{2}$/.test(ym))S.cache.sheetRev[ym]=num(mr[ym])}
     s.lastSync=Date.now();s.lastErr=null;s.lastCount=n;
     checkProgress();save(true);
     if(manual){SFX.success();showMsg('SHEET SYNC',`シートから ${n}日分を取り込んだ`)}
@@ -1677,7 +1682,10 @@ const WEALTH_REWARDS=[
  {id:'tesla', n:'中古テスラ Model 3',      price:3000000, need:2500000, ico:'🚗', note:'月商250万が安定ライン。頭金＋残価設定なら無理なく乗れる', tesla:true},
  {id:'lux',   n:'贅沢の自由（時計・鮨・スイート）', price:0, need:3500000, ico:'👑', note:'値札を見ずに選べる側へ'}
 ];
-function monthRevenue(){return aggMetric(monthRange(0).keys,'revenue','sum')}
+function monthRevenueFor(offset){const keys=monthRange(offset).keys;const ym=keys[0]?keys[0].slice(0,7):'';
+  const sr=S.cache&&S.cache.sheetRev;if(sr&&sr[ym]!=null&&sr[ym]!==undefined)return num(sr[ym]);
+  return aggMetric(keys,'revenue','sum')}
+function monthRevenue(){return monthRevenueFor(0)}
 function netIncome(rev){const r=clamp(num(S.settings.netRate??50),0,100);return Math.round(rev*r/100)}
 function wealthTierIdx(rev){let t=0;for(let i=0;i<WEALTH_TIERS.length;i++)if(rev>=WEALTH_TIERS[i].min)t=i;return t}
 function wealthPace(){ // 今月このペースなら
@@ -2469,7 +2477,7 @@ function viewSettings(){
    </div>
 
    <div class="section-title mt20"><h2>シート連携（GAS）</h2><div class="line"></div></div>
-   <div class="sub" style="margin-bottom:12px">GASウェブアプリの /exec URL を貼ると、スプレッドシートの<b>ライン追加・AD・契約・お月謝回収</b>を自動で取り込む（シートが正）。設定手順はリポジトリの gas/README.md 参照。</div>
+   <div class="sub" style="margin-bottom:12px">GASウェブアプリの /exec URL を貼ると、<b>日次進捗</b>タブからLINE追加・AD・契約を、<b>各月タブ(202601〜)</b>からお月謝回収(月商)を自動で取り込む（シートが正）。設定手順はリポジトリの gas/README.md 参照。</div>
    <div class="card">
      <label class="fld"><span class="lab">GAS URL <span class="dim">…/exec</span></span>
        <input id="sheetUrl" placeholder="https://script.google.com/macros/s/XXXX/exec" value="${((s.sheet&&s.sheet.url)||'').replace(/"/g,'&quot;')}" oninput="updSheet(this,'url')"></label>
