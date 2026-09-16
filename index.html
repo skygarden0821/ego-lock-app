@@ -21,6 +21,7 @@
   --blue:#3D79FF; --blue2:#6BA0FF; --cyan:#22ECFF; --ice:#BFE0FF;
   --red:#FF4D6A; --green:#1EEE96; --gold:#FFD84D; --purple:#A97CFF;
   --teal:#48EBCC; --teal-soft:rgba(72,235,204,.14);
+  --tide:#5FD6C8; --tide-soft:rgba(95,214,200,.13);
   --soul:#C39BFF; --soul-soft:rgba(195,155,255,.14);
   --text:#F2F6FF; --muted:#AEBBD8; --dim:#8492B4;
   --glow:0 0 24px rgba(61,121,255,.45); --glowc:0 0 24px rgba(34,236,255,.4);
@@ -341,6 +342,9 @@ hr.sep{border:0;height:1px;background:var(--line);margin:16px 0}
 .center{text-align:center}
 .tabbar-spacer{height:4px}
 .mt4{margin-top:4px}
+.mt6{margin-top:6px}
+.mt10{margin-top:10px}
+.mt14{margin-top:14px}
 /* KPI metric chips */
 .metric-row{display:flex;gap:7px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .metric-row::-webkit-scrollbar{display:none}
@@ -513,6 +517,112 @@ textarea.tall{min-height:130px}
   body{background:radial-gradient(1000px 800px at 50% 0%,#16213D,#0B0F1C)}
   #app{box-shadow:0 0 80px rgba(0,0,0,.6)}
 }
+/* ============================================================
+   心の型 TIDE — 衝動と行動の間に、自分の意思を置く
+   ============================================================ */
+.tide-quiet{font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+  letter-spacing:.05em;line-height:1.95}
+
+/* 常時表示のフローティングボタン */
+#tidebtn{position:fixed;right:14px;bottom:calc(88px + var(--safe-b));z-index:45;
+  display:flex;align-items:center;gap:8px;padding:12px 18px;border-radius:999px;
+  background:linear-gradient(135deg,rgba(24,60,76,.95),rgba(16,34,54,.95));
+  border:1px solid rgba(95,214,200,.4);color:var(--tide);
+  font-size:13.5px;font-weight:700;letter-spacing:.02em;
+  box-shadow:0 10px 30px rgba(0,0,0,.5),0 0 20px rgba(95,214,200,.18);
+  cursor:pointer;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+#tidebtn:active{transform:scale(.97)}
+#tidebtn svg{opacity:.95}
+#tidebtn.hide{display:none}
+
+/* フルスクリーン・プロトコル */
+#tide{position:fixed;inset:0;z-index:95;display:none;overflow-y:auto;
+  background:linear-gradient(180deg,#071018,#05080F 60%,#04060C);
+  padding:calc(var(--safe-t) + 18px) 20px calc(var(--safe-b) + 44px)}
+#tide.show{display:block;animation:fadeUp .32s}
+#tide .tin{max-width:460px;margin:0 auto}
+#tide .thead{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+#tide .thead .tt{font-size:11px;letter-spacing:.24em;color:var(--tide);font-weight:700}
+#tide .thead .tx{font-size:13px;color:var(--dim);padding:6px 2px;cursor:pointer}
+.tdots{display:flex;gap:5px;margin-bottom:26px}
+.tdots i{height:2px;flex:1;background:rgba(140,175,255,.14);border-radius:2px}
+.tdots i.on{background:var(--tide)}
+
+.thero{text-align:center;padding:32px 0 10px}
+.thero .h1q{font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+  font-size:27px;line-height:1.75;letter-spacing:.06em;color:#EAF4F2}
+.thero .h2q{font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+  font-size:15.5px;line-height:2;letter-spacing:.05em;color:var(--muted);margin-top:14px}
+
+.tq{font-size:20px;font-weight:700;line-height:1.55;margin-bottom:6px;color:#EAF4F2}
+.tsub{font-size:13px;color:var(--dim);line-height:1.8;margin-bottom:22px}
+
+.tchips{display:flex;flex-wrap:wrap;gap:8px}
+.tchip{padding:9px 14px;border-radius:999px;border:1px solid var(--line);
+  background:rgba(20,28,48,.7);font-size:13.5px;color:var(--muted);cursor:pointer;transition:.15s}
+.tchip.on{background:var(--tide);border-color:var(--tide);color:#05161A;font-weight:700}
+.tchip.red.on{background:var(--red);border-color:var(--red);color:#fff}
+
+.tfld{margin:22px 0}
+.tfld .fl{display:flex;justify-content:space-between;font-size:12.5px;color:var(--dim);margin-bottom:9px}
+.tfld .fl b{color:var(--tide);font-size:16px;font-family:var(--mono)}
+.tfld input[type=range]{-webkit-appearance:none;width:100%;height:28px;background:none}
+.tfld input[type=range]::-webkit-slider-runnable-track{height:3px;background:rgba(140,175,255,.16);border-radius:2px}
+.tfld input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;
+  background:#EAF4F2;margin-top:-11.5px;box-shadow:0 2px 10px rgba(0,0,0,.6)}
+
+/* 保留タイマー */
+.tring{width:206px;height:206px;margin:16px auto 8px;position:relative}
+.tring svg{transform:rotate(-90deg)}
+.tring .rc{fill:none;stroke:rgba(140,175,255,.14);stroke-width:3}
+.tring .rp{fill:none;stroke:var(--tide);stroke-width:3;stroke-linecap:round;
+  transition:stroke-dashoffset 1s linear;filter:drop-shadow(0 0 6px rgba(95,214,200,.55))}
+.tring .tin2{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.tring .tnum{font-family:var(--mono);font-size:44px;font-weight:300;color:#EAF4F2;letter-spacing:-.02em}
+.tring .tlab{font-size:10.5px;letter-spacing:.2em;color:var(--dim);margin-top:4px}
+.tbreath{position:absolute;inset:24px;border-radius:50%;border:1px solid rgba(95,214,200,.16);
+  animation:tbreathe 9s ease-in-out infinite}
+@keyframes tbreathe{0%,100%{transform:scale(.9);opacity:.3}50%{transform:scale(1.05);opacity:.7}}
+@media (prefers-reduced-motion:reduce){.tbreath{animation:none}}
+
+.tsteps{list-style:none;margin:4px 0 0;padding:0}
+.tsteps li{display:flex;gap:12px;align-items:flex-start;padding:13px 0;
+  border-bottom:1px solid var(--line);cursor:pointer}
+.tsteps li:last-child{border-bottom:0}
+.tsteps .n{width:21px;height:21px;flex:0 0 21px;border-radius:50%;border:1px solid var(--line2);
+  font-size:11px;display:flex;align-items:center;justify-content:center;color:var(--dim);margin-top:2px}
+.tsteps li.on .n{background:var(--tide);border-color:var(--tide);color:#05161A;font-weight:800}
+.tsteps .s{font-size:14.5px;line-height:1.6;color:var(--text)}
+.tsteps .s small{display:block;color:var(--dim);font-size:12px;line-height:1.65;margin-top:2px}
+
+/* RED LINE */
+.redbox{border:1px solid rgba(255,77,106,.38);background:rgba(255,77,106,.07);
+  border-radius:var(--rs);padding:16px}
+.redbox h4{font-size:12px;letter-spacing:.16em;color:var(--red);margin-bottom:10px;font-weight:700}
+.redbox ul{margin:0;padding-left:1.15em;font-size:13px;color:var(--muted);line-height:1.9}
+.redbox .why{font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+  font-size:14.5px;line-height:2;color:#F0E6E8;margin-top:15px;padding-top:15px;
+  border-top:1px solid rgba(255,77,106,.22);letter-spacing:.03em}
+
+/* TIDE カード（ホーム・KPI） */
+.tide-card{border-color:rgba(95,214,200,.24)!important}
+.eyebrow.tide{color:var(--tide)}
+.sheen.tide{background:linear-gradient(90deg,transparent,var(--tide),transparent)!important;opacity:.4}
+.tide-btn{background:linear-gradient(135deg,#2E8F84,#5FD6C8);color:#04161A;border:none;font-weight:800}
+.tide-btn:active{transform:scale(.98)}
+.tstat{display:flex;gap:14px;margin-top:4px}
+.tstat>div{flex:1;text-align:center;padding:11px 4px;border:1px solid var(--line);
+  border-radius:var(--rs);background:rgba(18,26,46,.5)}
+.tstat .v{font-family:var(--mono);font-size:21px;font-weight:600;line-height:1.15}
+.tstat .k{font-size:10px;color:var(--dim);letter-spacing:.05em;margin-top:3px}
+
+/* RECOVERY バナー */
+.recov{border:1px solid rgba(255,216,77,.32);background:rgba(255,216,77,.07);
+  border-radius:var(--rs);padding:15px 16px;margin-top:12px}
+.recov .rt{font-size:11.5px;letter-spacing:.2em;color:var(--gold);font-weight:700}
+.recov .rd{font-size:14px;color:var(--text);margin-top:6px;line-height:1.7}
+.recov ul{margin:10px 0 0;padding-left:1.15em;font-size:13px;color:var(--muted);line-height:1.85}
+
 </style>
 </head>
 <body>
@@ -529,6 +639,9 @@ textarea.tall{min-height:130px}
 <div id="msg" onclick="hideMsg()"><div class="mcard"><div class="mline" id="msgLine">EGO LOCK</div><div class="mtxt" id="msgTxt"></div><div class="mbar"></div><div class="mtap">タップして閉じる</div></div></div>
 
 <canvas id="fxc"></canvas>
+
+<div id="tidebtn" onclick="openTide()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M2 8c2.5 0 2.5-3 5-3s2.5 3 5 3 2.5-3 5-3 2.5 3 5 3"/><path d="M2 14c2.5 0 2.5-3 5-3s2.5 3 5 3 2.5-3 5-3 2.5 3 5 3"/><path d="M2 20c2.5 0 2.5-3 5-3s2.5 3 5 3 2.5-3 5-3 2.5 3 5 3"/></svg>波が来ている</div>
+<div id="tide"><div class="tin" id="tin"></div></div>
 <div id="lvup" onclick="this.classList.remove('show')"><div class="lt">LEVEL UP</div><div class="ln" id="lvNum">2</div><div class="ld" id="lvTitle"></div><div class="lq" id="lvQuote"></div></div>
 
 <div id="toast"><div class="tcard"><div class="ti" id="toastIco">🏆</div><div><div class="tt">ACHIEVEMENT UNLOCKED</div><div class="tn" id="toastName"></div></div></div></div>
@@ -562,7 +675,7 @@ function freshDay(){return{
   missions:{}, // id:{v} raw input
   kpi:{}, body:{}, deepwork:{sessions:[],totalMin:0,active:null},
   journal:{win:'',lose:'',improve:'',diary:'',thanks:''}, improvements:[],
-  restCheck:{}, restNote:'', soul:{} // rest is left undefined until explicitly toggled
+  restCheck:{}, restNote:'', soul:{}, mind:{} // rest is left undefined until explicitly toggled
 }}
 function load(){
   try{const r=JSON.parse(localStorage.getItem(SS));if(r&&r.days)return migrate(r)}catch(e){}
@@ -570,7 +683,9 @@ function load(){
     settings:{sound:true,name:'YOSHI',targets:{...DEFAULT_TARGETS},restDays:[],netRate:50,
       sheet:{url:'',key:'',auto:true,lastSync:null,lastErr:null,lastCount:0},
       goals:{revenue:1000000,contracts:8,ad:80,line:240}},
-    cache:{level:1,unlocked:{}}, days:{}};
+    cache:{level:1,unlocked:{}},
+    tide:{waves:[],lastContact:'',mailLimit:2,started:null},
+    days:{}};
 }
 function migrate(r){
   r.settings=r.settings||{};r.settings.targets={...DEFAULT_TARGETS,...(r.settings.targets||{})};
@@ -583,6 +698,8 @@ function migrate(r){
   r.cache.wealth=r.cache.wealth||{best:0,last:0,rw:{}};r.cache.wealth.rw=r.cache.wealth.rw||{};
   r.cache.soul=r.cache.soul||{start:null,pubName:'',pubDone:false,fatStart:null,weekly:{},monthly:{},letters:{}};
   r.cache.sheetRev=r.cache.sheetRev||{}; // 'YYYY-MM' -> お月謝回収(月商)
+  r.tide=Object.assign({waves:[],lastContact:'',mailLimit:2,started:null},r.tide||{});
+  if(!Array.isArray(r.tide.waves))r.tide.waves=[];
   const sc=r.cache.soul;sc.weekly=sc.weekly||{};sc.monthly=sc.monthly||{};sc.letters=sc.letters||{};
   return r;
 }
@@ -598,7 +715,7 @@ function day(k){k=k||todayKey();if(!S.days[k])S.days[k]=freshDay();const d=S.day
   if(d.journal.diary===undefined)d.journal.diary='';
   if(d.journal.thanks===undefined)d.journal.thanks='';
   d.restCheck=d.restCheck||{};if(d.restNote===undefined)d.restNote='';
-  d.soul=d.soul||{};
+  d.soul=d.soul||{};d.mind=d.mind||{};
   d.improvements=d.improvements||[];return d}
 const T=()=>S.settings.targets;
 
@@ -788,6 +905,7 @@ function dayXp(d){
   x+=Math.min(restCount(d)*4,24); // resting well earns a little XP
   if(d.rest)x+=8;
   x+=Math.min(soulDoneCount(d)*6,36); // 魂の型
+  x+=tideXp(d);                       // 心の型（加点のみ。思い出したことで減ることはない）
   return Math.round(x);
 }
 function totalXp(){let t=0;for(const k in S.days)t+=dayXp(S.days[k]);return t}
@@ -1097,6 +1215,12 @@ let route={tab:'home',sub:null};
 let selKey=todayKey();        // 編集中の日付（過去日も記録できる）
 let _curBootDay=todayKey();   // 日跨ぎ検知用
 function go(tab){if(route.tab===tab&&!route.sub){return}SFX.tap();route={tab,sub:null};render();$('#main').scrollTo?.(0,0);window.scrollTo(0,0)}
+function restoreTide(){ // 保留中に閉じた／アプリを離れた場合
+  const t=S.tide;if(!t||!Array.isArray(t.waves))return;
+  const live=t.waves.find(w=>w.open);if(!live)return;
+  if(live.startTs&&(Date.now()-live.startTs)<600000){TW=live;renderTide()}   // タイマー継続中
+  else{if(live.startTs)live.held=true;live.open=false;save(true)}            // 10分以上離れた＝動かなかった
+}
 function goSub(sub){SFX.tap();route.sub=sub;render();window.scrollTo(0,0)}
 function back(){SFX.tap();route.sub=null;render();window.scrollTo(0,0)}
 
@@ -1135,6 +1259,425 @@ function togglePub(){const sc=soulCache();sc.pubDone=!sc.pubDone;soulStartIfNeed
 function soulSyncThanks(){const d=day(selKey);d.soul=d.soul||{};if((d.journal.thanks||'').trim())d.soul.thanks=true;soulStartIfNeeded()}
 function toggleRestDay(i){const r=S.settings.restDays||(S.settings.restDays=[]);const ix=r.indexOf(i);if(ix>=0)r.splice(ix,1);else r.push(i);SFX.tap();save(true);render()}
 
+/* ============================================================
+   心の型 TIDE — 衝動と行動の間に、自分の意思を置く
+   思想: 感情は減点しない。感情と行動の間に意思を置けたかだけを測る。
+   ここだけは EGO LOCK の詰める声を使わない。静かな声で通す。
+   ============================================================ */
+const TIDE_Q=[
+ '気持ちは揺れていい。人生の方向だけ、前へ。',
+ '好きでいていい。でも、縋らない。',
+ '会いたい。でも、追わない。',
+ '失いたくない。でも、自分を失わない。',
+ '思い出してもいい。でも、今日を生きる。',
+ '希望は持っていい。人生は預けない。',
+ '感情は命令ではない。',
+ '衝動と行動の間に、自分の意思を置く。'
+];
+const TIDE_TRIG=[
+ ['連絡したい',0],['メールを確認したい',0],['SNSを見たい',0],['会いたい',0],
+ ['思い出の場所に行きたい',0],['職場を見に行きたい',1],['自宅周辺に行きたい',1],
+ ['ただ寂しい',0],['思い出して悲しい',0],['その他',0]
+];
+const TIDE_ACT=['散歩','シャワー','ジム','Deep Workに戻る','動画','音楽','読書','誰かと話す'];
+const RED_LINES=[
+ '相手の職場へ確認目的で行く',
+ '自宅周辺を探索する・通る',
+ '勤務状況やシフトを調べる',
+ '第三者から相手の情報を聞き出す',
+ '衝動的な連続連絡・複数手段での連絡',
+ '相手の反応を確かめるための行動'
+];
+const RED_WHY='これは、お前が悪い人間だから禁止されているのではない。\n\n'
+ +'好きだからこそ、相手の境界線を尊重する。越えた瞬間に、好きでいる人から、相手の生活を侵す人に変わる。'
+ +'もし本当に縁があったとしても、その未来は自分の手で消える。\n\n'
+ +'そして何より、これは自分の尊厳を守る線だ。自分で自分を尊敬できない状態で、誰かを大切にすることはできない。';
+
+const MODES={
+ RECOVERY:{n:'RECOVERY MODE',d:'今日は回復することも仕事だ。数字を追うのは明日でいい。',col:'var(--gold)',
+   floor:['水を1杯飲む','シャワーを浴びる','10分だけ歩く','最重要タスクを1つだけ']},
+ BALANCE:{n:'BALANCE MODE',d:'仕事と回復を両方とる日。どちらも削らない。',col:'var(--cyan)',
+   floor:['ミッションを半分','体を20分動かす','23時に閉じる']},
+ GROWTH:{n:'GROWTH MODE',d:'伸ばしにいける日。一番重い仕事と、新しい経験に使え。',col:'var(--green)',
+   floor:['Deep Work 本気で1本','一番重い判断を午前に','新しいことを1つ']}
+};
+function modeOf(f){f=num(f);if(!f)return null;return f>=8?'RECOVERY':f>=5?'BALANCE':'GROWTH'}
+function todayMode(k){return modeOf(mind(k).fatigue)}
+
+/* ---------- state ---------- */
+function tideCache(){return S.tide||(S.tide={waves:[],lastContact:'',mailLimit:2,started:null})}
+function mind(k){const d=day(k||todayKey());d.mind=d.mind||{};return d.mind}
+let _wIdx=null,_wN=-1,_dkMap=null,_dkN=-1;
+function waveIndex(){const ws=tideCache().waves;
+  if(_wN!==ws.length||!_wIdx){_wIdx={};for(const w of ws)(_wIdx[w.date]=_wIdx[w.date]||[]).push(w);_wN=ws.length}
+  return _wIdx}
+function wavesOn(k){return waveIndex()[k||todayKey()]||[]}
+function tideStartIfNeeded(){const t=tideCache();if(!t.started)t.started=todayKey()}
+
+/* ---------- aggregates ---------- */
+function tideAgg(n,endKey){
+  const end=endKey||todayKey();const o={days:0,imp:0,held:0,contacted:0,redline:0,
+    returned:0,ret:[],selfComp:0,selfCrit:0,alone:0,mail:0,highLoad:0,maxInt:0};
+  for(let i=0;i<n;i++){
+    const k=addDays(end,-i);const w=wavesOn(k);const m=(S.days[k]&&S.days[k].mind)||null;
+    o.imp+=w.length;o.held+=w.filter(x=>x.held).length;
+    const mx=w.reduce((a,x)=>Math.max(a,x.intensity||0),0);o.maxInt=Math.max(o.maxInt,mx);
+    if(!m||!Object.keys(m).length)continue;
+    o.days++;
+    if(m.contacted)o.contacted++;
+    if(m.redline)o.redline++;
+    if(m.returned){o.returned++;if(m.retMin)o.ret.push(num(m.retMin))}
+    if(m.selfComp)o.selfComp++;
+    o.selfCrit+=num(m.selfCrit);
+    if(m.alone)o.alone++;
+    o.mail+=num(m.mail);
+    if(mx>=7&&!m.contacted&&!m.redline)o.highLoad++;
+  }
+  o.holdRate=o.imp>0?o.held/o.imp:1;
+  o.retAvg=o.ret.length?Math.round(o.ret.reduce((a,b)=>a+b,0)/o.ret.length):null;
+  return o;
+}
+/* 精神的成長スコア: 保留35 / 衝動的な連絡0で20 / 境界線20 / 日常復帰10 / 自分に優しく10 / 高負荷ボーナス5
+   思い出した回数・気分・寂しさは一切入れない */
+function mindScore(a){a=a||tideAgg(7);
+  let s=a.holdRate*35+Math.max(0,20-a.contacted*7)+(a.redline===0?20:0)
+   +(a.returned/7)*10+(a.selfComp/7)*10+Math.min(5,a.highLoad);
+  return Math.round(clamp(s,0,100));
+}
+function tideXp(d){ // 加点のみ。思い出したことで減ることは絶対にない
+  if(!d||!S.tide)return 0;const m=d.mind||{};let x=0;
+  const k=dayKeyOf(d);if(!k)return 0;
+  const ws=wavesOn(k);
+  x+=Math.min(ws.filter(w=>w.held).length*12,36);
+  const mx=ws.reduce((a,w)=>Math.max(a,w.intensity||0),0);
+  if(mx>=7&&!m.contacted&&!m.redline)x+=25;   // 波が強い日に守れた
+  if(m.selfComp)x+=8;
+  if(m.alone)x+=6;
+  return x;
+}
+function dayKeyOf(d){const ks=Object.keys(S.days);
+  if(_dkN!==ks.length||!_dkMap){_dkMap=new Map();for(const k of ks)_dkMap.set(S.days[k],k);_dkN=ks.length}
+  return _dkMap.get(d)||null}
+
+/* ---------- protocol ---------- */
+let TW=null,TTick=null;
+function openTide(){
+  const live=tideCache().waves.find(w=>w.open);
+  TW=live||{id:Date.now(),date:todayKey(),ts:Date.now(),triggers:[],intensity:6,
+    rounds:0,held:false,action:'',acted:false,open:true,startTs:null,steps:[0,0,0],step:0,letter:''};
+  if(!live)tideCache().waves.push(TW);
+  tideStartIfNeeded();renderTide();
+}
+function renderTide(){
+  const w=TW;if(!w)return;const st=w.step;let h='';
+  if(st===0){
+    h=`<div class="thead"><div class="tt"></div><div class="tx" onclick="tideBail()">閉じる</div></div>
+     <div class="thero">
+       <div class="h1q">思い出した。それでいい。</div>
+       <div class="h2q">今は感情の波だ。<br>判断は後でいい。</div>
+     </div>
+     <div class="card mt20" style="padding:15px"><div class="sub" style="line-height:1.85">
+       この画面は忘れるための画面じゃない。波が引くまで、行き先を決めないための画面だ。</div></div>
+     <button class="btn block tide-btn mt16" onclick="tideGo(1)">続ける</button>
+     <button class="btn block mt10" onclick="tideBail()">いまは大丈夫</button>`;
+  }
+  if(st===1){
+    const hasRed=w.triggers.some(t=>{const f=TIDE_TRIG.find(x=>x[0]===t);return f&&f[1]});
+    h=thead('WHAT DO YOU WANT')+tdots(4,0)
+     +`<div class="tq">いま、何をしたい？</div>
+       <div class="tsub">選ぶだけでいい。正直で構わない。誰にも見えない。</div>
+       <div class="tchips">${TIDE_TRIG.map(([t,r])=>
+         `<div class="tchip ${r?'red':''} ${w.triggers.includes(t)?'on':''}" onclick="tideTog('${t}')">${t}</div>`).join('')}</div>`;
+    if(hasRed)h+=`<div class="redbox mt16"><h4>RED LINE</h4>
+      <div class="sub" style="margin:0">相手の生活圏に向かう行動は、理由が何であっても取らない。</div>
+      <div class="why">${RED_WHY.split('\n\n')[1]}</div></div>`;
+    h+=`<div class="tfld"><div class="fl"><span>いまの強さ</span><b id="tint">${w.intensity} / 10</b></div>
+        <input type="range" min="1" max="10" step="1" value="${w.intensity}"
+          oninput="TW.intensity=+this.value;document.getElementById('tint').textContent=this.value+' / 10'">
+        <div class="sub" style="margin-top:4px">強くていい。強い日に越えなかったことが、この記録で一番価値のある1日になる。</div></div>
+      <button class="btn block tide-btn" onclick="tideGo(2)">10分、動かない</button>`;
+  }
+  if(st===2){
+    const total=600,el=w.startTs?Math.floor((Date.now()-w.startTs)/1000):0;
+    const left=Math.max(0,total-el),done=left<=0,C=2*Math.PI*96;
+    h=thead(`HOLD${w.rounds>1?' · '+w.rounds:''}`)+tdots(4,1)
+     +`<div class="tring"><div class="tbreath"></div>
+        <svg width="206" height="206" viewBox="0 0 206 206">
+          <circle class="rc" cx="103" cy="103" r="96"/>
+          <circle class="rp" id="trp" cx="103" cy="103" r="96"
+            stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${(C*(1-Math.min(1,el/total))).toFixed(1)}"/>
+        </svg>
+        <div class="tin2"><div class="tnum" id="tnum">${mmss(left)}</div>
+        <div class="tlab">${done?'時間だ':'まだ動かない'}</div></div></div>
+      <ul class="tsteps">${['スマホを置く','水を1杯飲む','その場から少し移動する'].map((t,i)=>
+        `<li class="${w.steps[i]?'on':''}" onclick="tideStep(${i})"><div class="n">${w.steps[i]?'✓':i+1}</div>
+         <div class="s">${t}</div></li>`).join('')}</ul>
+      <div class="tide-quiet center mt16" style="font-size:16px;color:var(--ice)">衝動と行動の間に、自分の意思を置く。</div>
+      <button class="btn block ${done?'tide-btn':''} mt16" onclick="tideGo(3)">${done?'10分たった':'先に進む'}</button>
+      <div class="sub center mt10">この画面を閉じてもタイマーは動き続ける。歩きに出て構わない。</div>`;
+  }
+  if(st===3){
+    h=thead('CHOOSE ONE')+tdots(4,2)
+     +`<div class="tq">何をする？</div><div class="tsub">1つだけ選ぶ。頭より先に体を動かす。</div>
+       <div class="tchips">${TIDE_ACT.map(a=>
+         `<div class="tchip ${w.action===a?'on':''}" onclick="TW.action='${a}';renderTide()">${a}</div>`).join('')}</div>
+       <button class="btn block tide-btn mt20" ${w.action?'':'style="opacity:.4;pointer-events:none"'} onclick="tideGo(4)">これをやる</button>`;
+  }
+  if(st===4){
+    const el=w.startTs?Math.floor((Date.now()-w.startTs)/60000):0;
+    h=thead('CHECK')+tdots(4,3)
+     +`<div class="tq">まだ、行動したい？</div>
+       <div class="tsub">経過 ${el}分。どちらを選んでも構わない。</div>
+       <button class="btn block" onclick="tideAgain()">まだしたい　→　もう10分待つ</button>
+       <button class="btn block tide-btn mt10" onclick="tideWin()">もう大丈夫　→　記録して閉じる</button>
+       <div class="tfld"><div class="fl"><span>送りたい言葉があるなら、ここに書いて置いていく</span></div>
+         <textarea rows="3" placeholder="送らない。書くだけでいい。"
+           oninput="TW.letter=this.value">${(w.letter||'').replace(/</g,'&lt;')}</textarea>
+         <div class="sub mt8">書いた時点で、その感情は行き場を得る。これは魂の型の「別れの手紙」として今週分に記録される。</div></div>
+       <div style="height:1px;background:var(--line);margin:20px 0"></div>
+       <button class="btn block" style="color:var(--red);border-color:rgba(255,77,106,.35)" onclick="tideLost()">正直に言うと、行動してしまった</button>
+       <div class="sub center mt8">行動した日も記録する。隠した記録は、次に自分を守ってくれない。</div>`;
+  }
+  if(st===5){
+    const min=Math.floor((Date.now()-w.ts)/60000);
+    h=thead('')+`<div class="thero">
+       <div class="h1q">${w.held?'越えなかった。':'記録した。'}</div>
+       <div class="h2q">${w.held
+         ?`波が来て、${min}分待って、${w.action||'別の行動'}に切り替えた。<br>これは成長として記録される。`
+         :'正直に書けたこと自体が、次の自分を守る。'}</div></div>
+      <div class="tfld"><div class="fl"><span>日常に戻るまで</span><b id="trm">${Math.min(180,min)} 分</b></div>
+        <input type="range" min="0" max="180" step="5" value="${Math.min(180,min)}"
+          oninput="TW.returnMin=+this.value;document.getElementById('trm').textContent=this.value+' 分'">
+        <div class="sub mt4">3時間かかっていたものが20分になったなら、それが一番大きな成長だ。</div></div>
+      <button class="btn block tide-btn" onclick="tideClose()">閉じる</button>`;
+  }
+  $('#tin').innerHTML=h;$('#tide').classList.add('show');
+  document.body.style.overflow='hidden';$('#tidebtn').classList.add('hide');
+  if(st===2)startTideTick();
+}
+function thead(t){return `<div class="thead"><div class="tt">${t}</div><div class="tx" onclick="tideBail()">閉じる</div></div>`}
+function tdots(n,i){return `<div class="tdots">${Array.from({length:n},(_,x)=>`<i class="${x<=i?'on':''}"></i>`).join('')}</div>`}
+function mmss(s){return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
+function tideTog(t){const i=TW.triggers.indexOf(t);if(i>=0)TW.triggers.splice(i,1);else TW.triggers.push(t);SFX.tap();renderTide()}
+function tideStep(i){TW.steps[i]=TW.steps[i]?0:1;SFX.on();renderTide()}
+function tideGo(n){if(n===2&&!TW.startTs){TW.startTs=Date.now();TW.rounds=1}TW.step=n;SFX.tap();save(true);renderTide()}
+function tideAgain(){TW.startTs=Date.now();TW.rounds++;TW.step=2;SFX.tap();save(true);renderTide()}
+function tideWin(){
+  const e=Math.floor((Date.now()-TW.startTs)/1000);
+  TW.held=e>=600;TW.acted=false;TW.step=5;TW.returnMin=Math.min(180,Math.floor((Date.now()-TW.ts)/60000));
+  if(TW.held)SFX.success();save(true);renderTide();
+}
+function tideLost(){TW.held=false;TW.acted=true;TW.step=5;
+  TW.returnMin=Math.min(180,Math.floor((Date.now()-TW.ts)/60000));save(true);renderTide()}
+function tideClose(){
+  const w=TW;w.open=false;
+  const m=mind(w.date);
+  if(w.acted)m.contacted=1;
+  if(w.returnMin!=null){m.returned=1;if(!m.retMin)m.retMin=w.returnMin}
+  if((w.letter||'').trim()){ // 魂の型「別れの手紙」に合流させる
+    const sc=soulCache();const wk=weekKey(w.date);sc.letters[wk]=true;
+    sc.weekly[wk]=sc.weekly[wk]||{};sc.weekly[wk].letter=true;soulStartIfNeeded();
+  }
+  if(w.held)burst(innerWidth/2,innerHeight*0.42,50,['#5FD6C8','#BFE0FF','#48EBCC','#fff']);
+  closeTide();checkProgress();save();render();
+  TW=null;
+}
+function tideBail(){
+  if(TW&&!TW.startTs){const t=tideCache();t.waves=t.waves.filter(x=>x.id!==TW.id);TW=null;save(true)}
+  closeTide();render();
+}
+function closeTide(){
+  if(TTick){clearInterval(TTick);TTick=null}
+  $('#tide').classList.remove('show');document.body.style.overflow='';
+  $('#tidebtn').classList.remove('hide');
+}
+function startTideTick(){
+  if(TTick)clearInterval(TTick);
+  TTick=setInterval(()=>{
+    if(!TW||TW.step!==2){clearInterval(TTick);TTick=null;return}
+    const total=600,el=Math.floor((Date.now()-TW.startTs)/1000),left=Math.max(0,total-el);
+    const n=$('#tnum'),p=$('#trp');
+    if(!n){clearInterval(TTick);TTick=null;return}
+    n.textContent=mmss(left);
+    const C=2*Math.PI*96;p.setAttribute('stroke-dashoffset',(C*(1-Math.min(1,el/total))).toFixed(1));
+    if(left<=0){clearInterval(TTick);TTick=null;SFX.on();renderTide()}
+  },1000);
+}
+
+/* ---------- 名前を口にした / RED LINE ---------- */
+function openNameCall(){
+  $('#tin').innerHTML=thead('')+`<div class="thero">
+    <div class="h1q">3年間の習慣が、<br>まだ残っているだけ。</div>
+    <div class="h2q">名前が出たことは、失敗じゃない。</div></div>
+   <ul class="tsteps mt16">
+    <li class="on"><div class="n">1</div><div class="s">思い出した<small>否定しない。出てきたものは出てきたものだ。</small></div></li>
+    <li class="on"><div class="n">2</div><div class="s">大切だった<small>大切だったものは、大切なままでいい。</small></div></li>
+    <li class="on"><div class="n">3</div><div class="s">今やることに戻る<small>それだけ。戻れた時点で今日は成立している。</small></div></li>
+   </ul>
+   <div class="tide-quiet center mt20" style="font-size:18px;color:var(--ice)">思い出してもいい。でも、今日を生きる。</div>
+   <button class="btn block tide-btn mt20" onclick="closeTide();render()">戻る</button>
+   <button class="btn block mt10" onclick="closeTide();openTide()">波が強いので、保留を始める</button>`;
+  $('#tide').classList.add('show');document.body.style.overflow='hidden';$('#tidebtn').classList.add('hide');
+}
+function openRedLine(){
+  $('#tin').innerHTML=thead('RED LINE')+`
+   <div class="tq">自分と相手を守るための境界線</div>
+   <div class="tsub">理由が何であれ、ここは越えない。</div>
+   <div class="redbox"><h4>取らない行動</h4>
+     <ul>${RED_LINES.map(r=>`<li>${r}</li>`).join('')}</ul>
+     <div class="why">${RED_WHY.replace(/\n\n/g,'<br><br>')}</div></div>
+   <div class="tide-quiet center mt20" style="font-size:18px;color:var(--ice)">失いたくない。でも、自分を失わない。</div>
+   <button class="btn block tide-btn mt20" onclick="closeTide();render()">わかった</button>`;
+  $('#tide').classList.add('show');document.body.style.overflow='hidden';$('#tidebtn').classList.add('hide');
+}
+
+/* ---------- ホームのカード ---------- */
+function tideCard(){
+  const k=todayKey();const w=wavesOn(k);const held=w.filter(x=>x.held).length;
+  const a=tideAgg(7);const ms=mindScore(a);
+  if(!S._tideQ)S._tideQ=pick(TIDE_Q);
+  return `<div class="card tide-card mt12" style="padding:16px">
+   <div class="sheen tide"></div>
+   <div class="row" style="align-items:center">
+     <span class="eyebrow tide">心の型 · TIDE</span>
+     <span class="num" style="color:var(--tide);font-size:19px">${ms}<span style="font-size:11px;color:var(--dim)"> / 100</span></span>
+   </div>
+   <div class="tstat mt12">
+     <div><div class="v" style="color:var(--ice)">${w.length}</div><div class="k">今日の波</div></div>
+     <div><div class="v" style="color:var(--tide)">${held}</div><div class="k">保留できた</div></div>
+     <div><div class="v" style="color:${a.redline+a.contacted?'var(--red)':'var(--green)'}">${a.redline+a.contacted}</div><div class="k">今週の越境</div></div>
+   </div>
+   <div class="tide-quiet center mt16" style="font-size:15.5px;color:var(--ice)">${S._tideQ}</div>
+   <button class="btn block mt14" onclick="goSub('mind');route.tab='log';render()">心の型をひらく</button>
+  </div>`;
+}
+function recoveryCard(k){
+  const mo=todayMode(k);if(mo!=='RECOVERY')return '';
+  const mi=MODES.RECOVERY;
+  return `<div class="recov">
+   <div class="rt">${mi.n}</div>
+   <div class="rd">${mi.d}</div>
+   <ul>${mi.floor.map(x=>`<li>${x}</li>`).join('')}</ul>
+   <div class="sub mt10">この最低ラインが埋まれば、今日は合格だ。連続記録も切れない。</div>
+  </div>`;
+}
+
+/* ---------- サブ画面: 心の型 ---------- */
+function viewMind(){
+  const k=todayKey();const a7=tideAgg(7),a30=tideAgg(30);const ms=mindScore(a7);
+  const t=tideCache();
+  const first=t.started?tideAgg(14,addDays(t.started,13)):null;
+  const oldRet=first&&first.retAvg;
+  const m=mind(k);const mo=todayMode(k);
+  const w=tideCache().waves;
+  const trig={};w.slice(-80).forEach(x=>(x.triggers||[]).forEach(y=>trig[y]=(trig[y]||0)+1));
+  const tk=Object.keys(trig).sort((x,y)=>trig[y]-trig[x]).slice(0,6);
+  const hrs={};w.slice(-80).forEach(x=>{const h=new Date(x.ts).getHours();hrs[h]=(hrs[h]||0)+1});
+  const peak=Object.keys(hrs).sort((x,y)=>hrs[y]-hrs[x])[0];
+  const lc=t.lastContact?Math.round((new Date(todayKey())-new Date(t.lastContact))/86400000):null;
+
+  const R=(kk,v,col,sub)=>`<div class="row" style="align-items:flex-start;gap:14px">
+    <div style="flex:1;min-width:0"><div style="font-size:13.5px;line-height:1.5">${kk}</div>
+    ${sub?`<div class="sub" style="margin-top:2px">${sub}</div>`:''}</div>
+    <div class="num" style="flex:0 0 auto;font-size:17px;line-height:1.5;white-space:nowrap;color:${col||'var(--muted)'}">${v}</div></div>`;
+
+  return `<div class="view">
+   <div class="row"><span class="eyebrow tide">MIND · 心の型</span>
+     <span class="sub" style="cursor:pointer" onclick="back()">← 戻る</span></div>
+   <div class="h1 mt8">心の型</div>
+   <div class="sub mt8">精神的に強いとは、何も感じなくなることじゃない。感情があっても、行動を自分で選べることだ。</div>
+
+   <div class="card glow tide-card mt16" style="padding:20px 16px">
+    <div class="sheen tide"></div>
+    <div class="center"><span class="eyebrow tide">精神的成長スコア · 直近7日</span></div>
+    <div class="center mt12"><div class="num" style="font-size:54px;font-weight:300;color:var(--tide)">${ms}</div></div>
+    <div class="sub center mt6">保留35 / 衝動的な連絡ゼロ20 / 境界線20 / 日常復帰10 / 自分に優しく10 / 強い日に守れたボーナス5</div>
+    <div class="sub center mt8" style="color:var(--ice)">思い出した回数も、気分も、寂しさも、ここには一切入っていない。</div>
+   </div>
+
+   ${mo?`<div class="recov" style="border-color:${MODES[mo].col}44;background:${mo==='RECOVERY'?'rgba(255,216,77,.07)':'rgba(34,236,255,.05)'}">
+     <div class="rt" style="color:${MODES[mo].col}">${MODES[mo].n}</div>
+     <div class="rd">${MODES[mo].d}</div>
+     <ul>${MODES[mo].floor.map(x=>`<li>${x}</li>`).join('')}</ul></div>`:''}
+
+   <div class="section-title mt20"><h2>回復時間</h2><div class="line"></div></div>
+   <div class="card" style="padding:16px">
+    <div style="display:flex;align-items:baseline;gap:16px">
+      <div><div class="sub">いまの平均</div>
+        <div class="num" style="font-size:40px;font-weight:300;color:var(--tide)">${a30.retAvg!=null?a30.retAvg:'—'}<span style="font-size:14px;color:var(--dim)"> 分</span></div></div>
+      ${oldRet!=null?`<div class="sub">最初の2週間は ${oldRet}分</div>`:''}
+    </div>
+    <div class="sub mt10" style="line-height:1.85">思い出してから仕事や生活に戻るまでの時間。3時間かかっていたものが20分になったなら、それが一番正直な成長だ。</div>
+   </div>
+
+   <div class="section-title mt20"><h2>直近7日</h2><div class="line"></div></div>
+   <div class="card" style="padding:4px 16px">
+    ${R('波が来た回数',a7.imp,'var(--ice)','多くていい。正直に押せている証拠だ。')}
+    ${R('10分以上 保留できた',a7.held,'var(--tide)','ここが本命の数字。')}
+    ${R('保留成功率',Math.round(a7.holdRate*100)+'%',a7.holdRate>=.8?'var(--green)':a7.holdRate>=.6?'var(--gold)':'var(--red)')}
+    ${R('衝動的な連絡',a7.contacted,a7.contacted===0?'var(--green)':'var(--red)')}
+    ${R('境界線を越えた行動',a7.redline,a7.redline===0?'var(--green)':'var(--red)')}
+    ${R('波が強い日に守れた日',a7.highLoad,a7.highLoad>=2?'var(--green)':'var(--gold)','最も価値の高い1日。')}
+    ${R('日常に戻れた日',a7.returned,a7.returned>=4?'var(--green)':'var(--gold)')}
+    ${R('自分を責めた回数',a7.selfCrit,a7.selfCrit<=2?'var(--green)':a7.selfCrit<=5?'var(--gold)':'var(--red)','落ち込むことと、自分を責めることは別だ。')}
+    ${R('自分に優しくできた日',a7.selfComp,a7.selfComp>=3?'var(--green)':'var(--gold)')}
+    ${R('一人時間を自分のために使えた日',a7.alone,a7.alone>=3?'var(--green)':'var(--gold)')}
+    ${R('メール確認',a7.mail,a7.mail<=t.mailLimit*7?'var(--green)':'var(--gold)','ゼロは目指さない。決めた回数に収まっているかだけ。')}
+   </div>
+
+   ${tk.length?`<div class="section-title mt20"><h2>どんな時に波が来るか</h2><div class="line"></div></div>
+   <div class="card" style="padding:4px 16px">
+    ${tk.map(x=>R(x,trig[x]+'回','var(--muted)')).join('')}
+   </div>
+   ${peak!=null?`<div class="sub mt10">波が一番多いのは ${peak}時台。ここに低刺激の予定を先に置け。意志じゃなく配置で防ぐ。</div>`:''}`:''}
+
+   <div class="section-title mt20"><h2>今日の記録</h2><div class="line"></div></div>
+   <div class="card" style="padding:14px 16px">
+    <div class="tfld" style="margin:6px 0 14px"><div class="fl"><span>疲労度（モード判定に使う）</span><b id="mfat">${m.fatigue||'—'} / 10</b></div>
+      <input type="range" min="1" max="10" step="1" value="${m.fatigue||5}"
+        oninput="mind().fatigue=+this.value;document.getElementById('mfat').textContent=this.value+' / 10'"
+        onchange="save(true);render()"></div>
+    ${mindTog('contacted','衝動のまま連絡した／追いかけた','正直に。越えた日も記録が残るほうが強い',true)}
+    ${mindTog('redline','境界線（RED LINE）を越えた','',true)}
+    ${mindTog('returned','感情が出たあと日常に戻れた','')}
+    ${mindTog('selfComp','自分に「よくやった」と言えた','歯磨きと同じ回数でいい')}
+    ${mindTog('alone','一人の時間を自分のために使えた','孤独を埋める時間とは別物')}
+    <div class="tfld" style="margin:14px 0 6px"><div class="fl"><span>自分を責めた回数</span><b id="msc">${num(m.selfCrit)}</b></div>
+      <input type="range" min="0" max="10" step="1" value="${num(m.selfCrit)}"
+        oninput="mind().selfCrit=+this.value;document.getElementById('msc').textContent=this.value"
+        onchange="save(true);render()"></div>
+    <div class="row" style="gap:14px"><div style="flex:1;min-width:0;font-size:13.5px">メール確認 回数</div>
+      <input style="width:90px;flex:0 0 90px;text-align:right" type="number" inputmode="numeric"
+        value="${num(m.mail)||''}" oninput="mind().mail=num(this.value)" onchange="save(true)"></div>
+   </div>
+
+   ${lc!=null?`<div class="card mt12" style="padding:16px">
+     <div class="row" style="align-items:flex-start;gap:14px">
+       <div style="flex:1;min-width:0"><div style="font-size:13.5px">最後に自分から連絡した日から</div>
+       <div class="sub" style="margin-top:2px">ボールは相手側にある。返信がない＝永遠に終わった、でもない。未来は不確定だ。</div></div>
+       <div class="num" style="flex:0 0 auto;font-size:22px;white-space:nowrap;color:var(--ice)">${lc}<span style="font-size:11px;color:var(--dim)"> 日</span></div></div>
+    </div>`:''}
+
+   <div class="grid2 mt16">
+     <button class="btn" onclick="openRedLine()">RED LINE</button>
+     <button class="btn" onclick="openNameCall()">名前を口にした</button>
+   </div>
+   <button class="btn block tide-btn mt10" onclick="openTide()">いま、波が来ている</button>
+   <div class="tabbar-spacer"></div>
+  </div>`;
+}
+function mindTog(id,t,sub,warn){
+  const m=mind();const on=!!m[id];
+  return `<div class="sitem ${on?'on':''}" onclick="toggleMind('${id}')" style="display:flex;gap:11px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--line);cursor:pointer">
+   <div class="sbox" style="width:21px;height:21px;flex:0 0 21px;border-radius:6px;border:1px solid var(--line2);
+     display:flex;align-items:center;justify-content:center;font-size:12px;margin-top:2px;
+     ${on?`background:${warn?'var(--red)':'var(--tide)'};border-color:transparent;color:#fff`:''}">${on?'✓':''}</div>
+   <div><div style="font-size:13.5px">${t}</div>${sub?`<div class="sub" style="margin-top:1px">${sub}</div>`:''}</div>
+  </div>`;
+}
+function toggleMind(id){const m=mind();m[id]=m[id]?0:1;SFX.on();checkProgress();save();render()}
+
+
 const NAV=[
  {id:'home', label:'ホーム', svg:'<path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10"/>'},
  {id:'mission',label:'ミッション',svg:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/>'},
@@ -1162,7 +1705,7 @@ function renderHeader(){
 
 function render(){renderHeader();renderNav();
   const v={home:viewHome,mission:viewMission,kpi:viewKpi,focus:viewFocus,log:viewLog}[route.tab];
-  if(route.sub){const sv={journal:viewJournal,body:viewBody,ailog:viewAiLog,levels:viewLevels,stages:viewStages,boss:viewBoss,wealth:viewWealth,settings:viewSettings}[route.sub];
+  if(route.sub){const sv={journal:viewJournal,body:viewBody,ailog:viewAiLog,levels:viewLevels,stages:viewStages,boss:viewBoss,wealth:viewWealth,settings:viewSettings,mind:viewMind}[route.sub];
     $('#main').innerHTML=sv?sv():v();}
   else $('#main').innerHTML=v();
   afterRender();
@@ -1221,6 +1764,11 @@ function viewHome(){
   const done=DAILY.filter(m=>m.score(d)>=100).length;
   const dxp=dayXp(d);const rest=isRest(k);const st=Math.max(a.deepStreak,a.perfectStreak);
   if(!S._quote)S._quote=pick(QUOTES);
+  // 疲労が高い日は詰めない。回復を優先する言葉に差し替える
+  const _mo=todayMode(k);
+  const _hq=(_mo==='RECOVERY')
+    ? pick(['今日は回復も仕事だ。整えた分だけ、明日が動く。','削るべきは気力じゃない。今日の予定のほうだ。','休めるのも能力だ。基準は明日また上げろ。'])
+    : S._quote;
   if(!S._restQuote)S._restQuote=pick(REST_MSG);
 
   // ----- REST DAY hero -----
@@ -1248,7 +1796,7 @@ function viewHome(){
         </div>
       </div>
     </div>
-    <div class="quote"><span class="q">「</span>${S._quote}<span class="q">」</span></div>
+    <div class="quote"><span class="q">「</span>${_hq}<span class="q">」</span></div>
    </div>`;
   if(!rest)onMount(()=>animateNumber('[data-ego]',sc));
   if(sheetCfg().auto&&sheetCfg().url)onMount(()=>syncSheet(false));
@@ -1256,6 +1804,8 @@ function viewHome(){
   return `<div class="view">
    ${goalsCard()}
    ${hero}
+   ${recoveryCard(k)}
+   ${tideCard()}
 
    <div class="chips mt12">
     <div class="chip"><div class="cv" style="color:var(--cyan)">${done}<span style="font-size:12px;color:var(--dim)">/${DAILY.length}</span></div><div class="cl">規律ミッション</div></div>
@@ -1977,6 +2527,7 @@ function viewLog(){
     ${card('journal',ai('<path d="M5 3h11l3 3v15H5zM9 8h6M9 12h6M9 16h4"/>'),'#9B6BFF','ジャーナル',`${jDays}日記録 · 勝敗を残す`)}
     ${card('body',ai('<path d="M12 4a2 2 0 1 0 0-.01M9 9h6l-1 7h-4zM10 22l1-6M14 22l-1-6"/>'),'#00E68A','身体管理',`${bDays}日記録 · 体組成と睡眠`)}
     ${card('ailog',ai('<path d="M12 2v3M5 12H2M22 12h-3M12 19v3M6 6l2 2M16 16l2 2M18 6l-2 2M8 16l-2 2"/><circle cx="12" cy="12" r="3"/>'),'#4D8BFF','AI改善ログ',`${aiTotal}件の改善を記録`)}
+    ${card('mind',ai('<path d="M2 8c2.5 0 2.5-3 5-3s2.5 3 5 3 2.5-3 5-3 2.5 3 5 3M2 14c2.5 0 2.5-3 5-3s2.5 3 5 3 2.5-3 5-3 2.5 3 5 3M2 20c2.5 0 2.5-3 5-3s2.5 3 5 3 2.5-3 5-3 2.5 3 5 3"/>'),'#5FD6C8','心の型',`精神的成長 ${mindScore()} · 保留 ${Math.round(tideAgg(7).holdRate*100)}%`)}
    </div>
 
    <div class="section-title mt20"><h2>成長システム</h2><div class="line"></div></div>
@@ -2508,6 +3059,22 @@ function viewSettings(){
      <div style="font-family:var(--mono);letter-spacing:.2em;color:var(--cyan);font-size:12px;font-weight:700">Xector1 EGO LOCK</div>
      <div class="dim" style="font-size:11px;margin-top:6px">毎日勝負し、自分の限界を超える。</div>
    </div>
+   <div class="section-title mt20"><h2>心の型</h2><div class="line"></div></div>
+   <div class="card" style="padding:4px 16px">
+    <div class="row"><div><div style="font-size:13.5px">最後に自分から連絡した日</div>
+      <div class="sub">経過日数の表示に使う。空欄でもいい。</div></div>
+      <input type="date" style="width:150px" value="${tideCache().lastContact||''}"
+        onchange="tideCache().lastContact=this.value;save();render()"></div>
+    <div class="row"><div><div style="font-size:13.5px">1日のメール確認 上限</div>
+      <div class="sub">ゼロは目指さない。決めた回数に収まっているかだけ見る。</div></div>
+      <input type="number" inputmode="numeric" style="width:90px;text-align:right" value="${tideCache().mailLimit}"
+        onchange="tideCache().mailLimit=clamp(num(this.value),0,20);save();render()"></div>
+    <div class="row"><div><div style="font-size:13.5px">記録した波</div>
+      <div class="sub">端末内にのみ保存。外には出ない。</div></div>
+      <div class="num" style="font-size:17px">${tideCache().waves.length}</div></div>
+   </div>
+   <button class="btn block mt10" onclick="openRedLine()">RED LINE を確認する</button>
+
    <div class="tabbar-spacer"></div>
   </div>`;
 }
@@ -2535,7 +3102,7 @@ function unlockAudioOnce(){ac();removeEventListener('pointerdown',unlockAudioOnc
 addEventListener('pointerdown',unlockAudioOnce,{passive:true});
 addEventListener('touchstart',unlockAudioOnce,{passive:true});
 // keep deep-work timer alive when returning to the tab
-document.addEventListener('visibilitychange',()=>{if(!document.hidden){const tk=todayKey();if(tk!==_curBootDay){_curBootDay=tk;selKey=tk;render()}if(route.tab==='focus')ensureDwTimer();renderHeader();if(sheetCfg().auto&&sheetCfg().url)syncSheet(false)}});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){restoreTide();const tk=todayKey();if(tk!==_curBootDay){_curBootDay=tk;selKey=tk;render()}if(route.tab==='focus')ensureDwTimer();renderHeader();if(sheetCfg().auto&&sheetCfg().url)syncSheet(false)}});
 // install hint (iOS / not standalone)
 function maybeInstallHint(){
   const standalone=window.navigator.standalone===true||matchMedia('(display-mode:standalone)').matches;
@@ -2558,6 +3125,7 @@ day(); // ensure today exists
 render();
 dailyGreeting();
 maybeInstallHint();
+restoreTide();       // 保留中だった波を引き継ぐ
 checkAchievements(); // silently sync any already-earned (no toast spam on first migrate)
 save(true);
 </script>
