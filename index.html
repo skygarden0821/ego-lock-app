@@ -623,6 +623,48 @@ textarea.tall{min-height:130px}
 .recov .rd{font-size:14px;color:var(--text);margin-top:6px;line-height:1.7}
 .recov ul{margin:10px 0 0;padding-left:1.15em;font-size:13px;color:var(--muted);line-height:1.85}
 
+/* ===== TASKS ===== */
+.tk-card{padding:16px 14px}
+.tk-row{display:flex;gap:11px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line)}
+.tk-row:first-child{border-top:0}
+.tk-ck{flex:0 0 26px;width:26px;height:26px;border-radius:8px;border:1.5px solid var(--line2);background:rgba(8,12,24,.6);color:var(--green);font-size:15px;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;margin-top:1px}
+.tk-row.done .tk-ck{background:rgba(30,238,150,.16);border-color:var(--green)}
+.tk-row.done .tk-t{color:var(--dim);text-decoration:line-through}
+.tk-b{flex:1;min-width:0}
+.tk-t{font-size:14.5px;line-height:1.45;word-break:break-word}
+.tk-star{color:var(--gold);margin-right:5px}
+.tk-m{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
+.tk-m:empty{display:none}
+.tk-c{font-family:var(--mono);font-size:10.5px;color:var(--muted);border:1px solid var(--line);border-radius:7px;padding:1px 7px}
+.tk-c.tk-at{color:var(--cyan);border-color:rgba(34,236,255,.35)}
+.tk-c.tk-j{color:var(--purple);border-color:rgba(169,124,255,.4);font-family:var(--font)}
+.tk-c.tk-cr{color:var(--gold);border-color:rgba(255,216,77,.4);font-family:var(--font)}
+.tk-c.tk-w{color:var(--red);border-color:rgba(255,77,106,.45);font-family:var(--font)}
+.tk-c.tk-cal{border-color:rgba(95,214,200,.35);color:var(--tide)}
+.tk-c.tk-cal.p{font-family:var(--font);color:var(--dim)}
+.tk-ctl{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;align-items:center}
+.tk-ctl input{width:auto;padding:8px 9px;font-size:13px;border-radius:10px}
+.tk-ctl input[type=time]{min-width:100px}
+.tk-ctl input.num-in{width:64px}
+.tk-foot{margin-top:10px;font-size:12px;color:var(--dim);font-family:var(--mono)}
+.tk-foot.over{color:var(--gold)}
+.tk-cap{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin:12px 2px 0}
+.tk-cap input{width:72px;padding:7px 9px;font-size:13px}
+.tk-next{margin-top:8px;font-size:13px;color:var(--muted)}
+.tk-next b{font-family:var(--mono);color:var(--cyan);margin-right:4px}
+.tk-row.ev{opacity:.82}
+.tk-evt{flex:0 0 44px;font-family:var(--mono);font-size:12px;line-height:1.35;color:var(--ice);padding-top:2px}
+.tk-evt span{color:var(--dim)}
+.tk-row.ev .tk-t{color:var(--muted)}
+.tk-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:10px 2px 0}
+.tk-bt{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.tk-bar.over .tk-bt{color:var(--gold)}
+.tk-ad{display:flex;flex-wrap:wrap;gap:6px;margin:-4px 2px 8px}
+.tk-plan{padding:14px}
+.tk-pl{display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px solid var(--line);font-size:13.5px;flex-wrap:wrap}
+.tk-pl:first-child{border-top:0}
+.tk-pl .tm{font-family:var(--mono);font-size:12px;color:var(--cyan);flex:0 0 auto}
+.tk-pl .tt{flex:1;min-width:0;word-break:break-word}
 </style>
 </head>
 <body>
@@ -685,6 +727,7 @@ function load(){
       goals:{revenue:1000000,contracts:8,ad:80,line:240}},
     cache:{level:1,unlocked:{}},
     tide:{waves:[],lastContact:'',mailLimit:2,started:null},
+    tasks:{list:[],seq:0,cap:360},
     days:{}};
 }
 function migrate(r){
@@ -701,6 +744,7 @@ function migrate(r){
   r.tide=Object.assign({waves:[],lastContact:'',mailLimit:2,started:null},r.tide||{});
   if(!Array.isArray(r.tide.waves))r.tide.waves=[];
   const sc=r.cache.soul;sc.weekly=sc.weekly||{};sc.monthly=sc.monthly||{};sc.letters=sc.letters||{};
+  r.tasks=r.tasks||{list:[],seq:0,cap:360};if(!Array.isArray(r.tasks.list))r.tasks.list=[];if(!Array.isArray(r.tasks.outbox))r.tasks.outbox=[];r.tasks.cap=r.tasks.cap||360;r.tasks.seq=r.tasks.seq||0;
   return r;
 }
 let saveTimer=null;
@@ -1678,6 +1722,412 @@ function mindTog(id,t,sub,warn){
 function toggleMind(id){const m=mind();m[id]=m[id]?0:1;SFX.on();checkProgress();save();render()}
 
 
+/* ============================================================
+   TASKS — やることリスト（時刻・所要分・最重要・判断系タグ）
+   + CALENDAR — Googleカレンダー連携（GAS doPost 経由・双方向）
+   ============================================================ */
+function tkState(){const t=S.tasks||(S.tasks={list:[],seq:0,cap:360});if(!Array.isArray(t.list))t.list=[];if(!Array.isArray(t.outbox))t.outbox=[];return t}
+function calCfg(){const s=S.settings;const c=s.cal||(s.cal={});
+  if(c.on===undefined)c.on=false;if(!c.from)c.from='09:00';if(!c.to)c.to='21:00';
+  if(typeof c.buf!=='number')c.buf=10;if(c.shrink===undefined)c.shrink=true;if(c.ignore===undefined)c.ignore='予約NG';
+  return c}
+function calCache(){const c=S.cache;return c.cal||(c.cal={events:[],fetched:0,from:0,to:0,name:''})}
+function calReady(){const c=calCfg(),s=sheetCfg();return !!(c.on&&(s.url||'').trim()&&(s.key||'').trim())}
+function tkEsc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function tkNewId(){const t=tkState();t.seq=(t.seq||0)+1;return 't'+Date.now().toString(36)+t.seq}
+function tkTomorrow(){return addDays(todayKey(),1)}
+function tkFmt(min){min=Math.max(0,Math.round(min));return min>=60?(Math.round(min/6)/10)+'h':min+'分'}
+function tkDur(x){return x.est||30}
+function hmOf(ms){const d=new Date(ms);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
+function atMs(date,at){const[y,m,d]=date.split('-').map(Number);const[h,mi]=(at||'00:00').split(':').map(Number);return new Date(y,m-1,d,h,mi).getTime()}
+function tkFind(id){return tkState().list.find(x=>x.id===id)}
+let tkDraft='';
+
+function tkRoll(){ // 期限切れの未完了は今日へ持ち越し（時刻は外す）／古い完了は掃除
+  const t=tkState(),tk=todayKey();let ch=false;
+  t.list.forEach(x=>{if(!x.done&&x.date&&x.date<tk){x.date=tk;x.at='';x.calId='';x.calSync='';x.carried=(x.carried||0)+1;ch=true}});
+  const cut=Date.now()-60*86400000,n=t.list.length;
+  t.list=t.list.filter(x=>!(x.done&&x.doneAt&&x.doneAt<cut));
+  if(t.list.length!==n)ch=true;
+  if(ch)save(true);
+}
+function tkParse(line){ // 「タイトル 10:00 45分 ! 判」→ 時刻・分数・最重要(!)・判断系(判) は省略可
+  const toks=line.replace(/\u3000/g,' ').trim().split(/\s+/).filter(Boolean);
+  const o={t:'',est:0,at:'',pri:0,lane:'v'},title=[];
+  toks.forEach(w=>{let m;
+    if(/^[!！]$/.test(w))o.pri=1;
+    else if(/^(判|判断)$/.test(w))o.lane='j';
+    else if((m=w.match(/^(\d{1,2}):(\d{2})$/))){const h=+m[1],mi=+m[2];
+      if(h<24&&mi<60)o.at=String(h).padStart(2,'0')+':'+m[2];else title.push(w)}
+    else if((m=w.match(/^(\d{1,3})(m|分)$/i)))o.est=+m[1];
+    else title.push(w)});
+  o.t=title.join(' ');return o;
+}
+
+/* ---------- 変更 → カレンダー送信キュー ---------- */
+function calQueue(x,del){
+  if(!calCfg().on||!x)return;
+  const t=tkState();t.outbox=t.outbox.filter(o=>o.id!==x.id);
+  if(del){if(x.calId)t.outbox.push({op:'delete',id:x.id,calId:x.calId})}
+  else if(x.date&&x.at)t.outbox.push({op:'upsert',id:x.id});
+  else if(x.calId)t.outbox.push({op:'delete',id:x.id,calId:x.calId});
+  else return;
+  x.calSync='p';calFlushSoon();
+}
+function calPayload(x){
+  const s=atMs(x.date,x.at),full=s+tkDur(x)*60000;let e=full;
+  if(x.done&&calCfg().shrink&&!x.doneVia&&x.doneAt&&x.doneAt>s&&x.doneAt<full)e=Math.min(full,Math.max(s+300000,Math.ceil(x.doneAt/300000)*300000));
+  return{op:'upsert',id:x.id,calId:x.calId||'',title:(x.done?'✅ ':'')+(x.pri?'★ ':'')+x.t,start:s,end:e,lane:x.lane==='j'?'j':'v',done:!!x.done};
+}
+
+/* ---------- タスク操作 ---------- */
+function tkAdd(where){
+  const ta=$('#tkIn');const raw=ta?ta.value:tkDraft;
+  const lines=raw.split('\n').map(s=>s.replace(/^\s*(?:[-*・●○□☐]|\d+[.)、])\s*/,'')).filter(s=>s.trim());
+  if(!lines.length)return;
+  const t=tkState(),tk=todayKey();let n=0;
+  lines.forEach(l=>{const p=tkParse(l);if(!p.t)return;
+    const x={id:tkNewId(),t:p.t,est:p.est,at:p.at,pri:p.pri,lane:p.lane,
+      date:where==='today'?tk:(where==='tomorrow'?tkTomorrow():''),done:false,created:Date.now()+n};
+    t.list.push(x);calQueue(x);n++});
+  tkDraft='';if(ta)ta.value='';if(n){SFX.on();save();render()}
+}
+function tkToggle(id){const x=tkFind(id);if(!x)return;x.done=!x.done;x.doneAt=x.done?Date.now():0;x.doneVia='';
+  if(x.done)SFX.on();else SFX.tap();calQueue(x);save();render()}
+function calForget(cid){if(!cid)return;const cc=calCache();cc.events=(cc.events||[]).filter(e=>e.id!==cid)}
+function tkDel(id){const t=tkState();const x=tkFind(id);if(x){calQueue(x,true);calForget(x.calId)}t.list=t.list.filter(y=>y.id!==id);SFX.tap();save();render()}
+function tkPri(id){const x=tkFind(id);if(!x)return;x.pri=x.pri?0:1;SFX.tap();calQueue(x);save();render()}
+function tkLane(id){const x=tkFind(id);if(!x)return;x.lane=x.lane==='j'?'v':'j';SFX.tap();calQueue(x);save();render()}
+function tkMove(id){const x=tkFind(id);if(!x)return;const tk=todayKey(),tm=tkTomorrow();
+  x.date=(x.date===tk)?tm:(x.date===tm?'':tk);x.carried=0;SFX.tap();calQueue(x);save();render()}
+function tkSet(id,f,v){const x=tkFind(id);if(!x)return;
+  if(f==='est')x.est=clamp(Math.round(num(v)),0,600);
+  else if(f==='at'){x.at=v||'';if(x.at&&!x.date)x.date=todayKey();x.calGone=0}
+  calQueue(x);save();render()}
+function tkCap(v){const t=tkState();t.cap=clamp(Math.round(num(v))||360,60,900);save();render()}
+function openTasks(){route.sub='tasks';SFX.tap();render();window.scrollTo(0,0);calSync(false)}
+
+/* ---------- 並び・集計 ---------- */
+function tkSort(a,b){
+  if(!!a.done!==!!b.done)return a.done?1:-1;
+  if(!!a.at!==!!b.at)return a.at?-1:1;
+  if(a.at&&b.at&&a.at!==b.at)return a.at<b.at?-1:1;
+  if((b.pri||0)!==(a.pri||0))return (b.pri||0)-(a.pri||0);
+  return (a.created||0)-(b.created||0);
+}
+function tkOn(date){return tkState().list.filter(x=>(x.date||'')===date).sort(tkSort)}
+function tkLoad(list){return list.filter(x=>!x.done).reduce((a,x)=>a+tkDur(x),0)} // 所要未入力は30分で計算
+
+/* ---------- カレンダーの予定（キャッシュ）---------- */
+function calIgnoreRe(){const w=(calCfg().ignore||'').split(/[,、，]/).map(s=>s.trim()).filter(Boolean);
+  return w.length?new RegExp(w.map(s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|')):null}
+function calFixedOn(date){ // 空き時間の計算に使う「動かせない予定」
+  const cc=calCache();if(!calReady()||!cc.fetched)return[];
+  const d0=atMs(date,'00:00'),d1=atMs(addDays(date,1),'00:00');
+  const tasks=tkState().list,ids=new Set(tasks.map(x=>x.id)),cids=new Set(tasks.map(x=>x.calId).filter(Boolean));
+  const re=calIgnoreRe();
+  return (cc.events||[]).filter(e=>!e.ad&&e.s<d1&&e.e>d0&&(e.e-e.s)<12*3600000
+    &&!(e.tag&&ids.has(e.tag))&&!cids.has(e.id)&&!(re&&re.test(e.t))).sort((a,b)=>a.s-b.s);
+}
+function calAllDayOn(date){const cc=calCache();if(!calReady()||!cc.fetched)return[];
+  const d0=atMs(date,'00:00'),d1=atMs(addDays(date,1),'00:00');
+  return (cc.events||[]).filter(e=>(e.ad||(e.e-e.s)>=12*3600000)&&e.s<d1&&e.e>d0)}
+function calWindow(date,now){const c=calCfg();let s=atMs(date,c.from),e=atMs(date,c.to);
+  if(date===todayKey()&&now){const n=Math.ceil((now+5*60000)/(15*60000))*15*60000;if(n>s)s=n}
+  return[s,e]}
+function freeSlots(date,now,busy){ // busy: [{s,e}]（余白込み）
+  const[ws,we]=calWindow(date,now);if(we<=ws)return[];
+  const bs=busy.map(b=>({s:Math.max(ws,b.s),e:Math.min(we,b.e)})).filter(b=>b.e>b.s).sort((a,b)=>a.s-b.s);
+  const out=[];let cur=ws;
+  bs.forEach(b=>{if(b.s>cur)out.push({s:cur,e:b.s});if(b.e>cur)cur=b.e});
+  if(cur<we)out.push({s:cur,e:we});return out;
+}
+function calFreeMin(date,now){const buf=calCfg().buf*60000;
+  return freeSlots(date,now,calFixedOn(date).map(e=>({s:e.s-buf,e:e.e+buf}))).reduce((a,x)=>a+(x.e-x.s),0)/60000}
+
+/* ---------- 空き時間に並べる ---------- */
+let tkPlanView=null;
+function tkPlan(now){
+  now=now||Date.now();const tk=todayKey(),buf=calCfg().buf*60000;
+  const busy=calFixedOn(tk).map(e=>({s:e.s-buf,e:e.e+buf}));
+  tkOn(tk).filter(x=>x.at&&!x.done).forEach(x=>{const s=atMs(tk,x.at);busy.push({s:s,e:s+tkDur(x)*60000+buf})});
+  const slots=freeSlots(tk,now,busy);
+  const todo=tkOn(tk).filter(x=>!x.done&&!x.at).sort((a,b)=>(b.pri||0)-(a.pri||0)||((b.lane==='j')-(a.lane==='j'))||(a.created||0)-(b.created||0));
+  const placed=[],rest=[];
+  todo.forEach(x=>{const d=tkDur(x)*60000;const sl=slots.find(z=>z.e-z.s>=d);
+    if(!sl){rest.push(x.id);return}
+    placed.push({id:x.id,s:sl.s,e:sl.s+d});sl.s=sl.s+d+buf});
+  return{placed,rest};
+}
+function tkPlanMake(){SFX.tap();tkPlanView=tkPlan();render()}
+function tkPlanApply(){const p=tkPlanView;if(!p)return;const tk=todayKey();
+  p.placed.forEach(o=>{const x=tkFind(o.id);if(!x||x.done)return;x.date=tk;x.at=hmOf(o.s);x.carried=0;calQueue(x)});
+  tkPlanView=null;SFX.on();save();render()}
+function tkPlanRestTomorrow(){const p=tkPlanView;if(!p)return;const tm=tkTomorrow();
+  p.rest.forEach(id=>{const x=tkFind(id);if(x){x.date=tm;x.at='';calQueue(x)}});
+  p.rest=[];SFX.tap();save();render()}
+
+/* ---------- GAS通信 ---------- */
+async function calPost(body){
+  const s=sheetCfg();const url=(s.url||'').trim();
+  const res=await fetch(url,{method:'POST',body:JSON.stringify(Object.assign({key:(s.key||'').trim()},body)),redirect:'follow'});
+  if(!res.ok)throw new Error('HTTP '+res.status);
+  const d=await res.json();if(!d||!d.ok)throw new Error((d&&d.error)||'応答エラー');return d;
+}
+function calMsg(a,b){try{showMsg(a,b)}catch(e){}}
+function calSnd(k){try{(SFX[k]||SFX.tap)()}catch(e){}}
+let _calFlushT=null,_calBusy=false,_calAgain=false,_calSyncing=false,_calLastTry=0;
+function calFlushSoon(){clearTimeout(_calFlushT);_calFlushT=setTimeout(()=>{calFlush().then(ok=>{if(ok)calRerender()})},1200)}
+async function calFlush(){
+  if(!calReady())return false;const t=tkState();if(!t.outbox.length)return true;
+  if(_calBusy){_calAgain=true;return false}
+  _calBusy=true;const batch=t.outbox.splice(0,50);
+  const ops=batch.map(o=>{if(o.op==='delete')return o;const x=tkFind(o.id);
+    if(!x)return null;if(!x.date||!x.at)return x.calId?{op:'delete',id:x.id,calId:x.calId}:null;return calPayload(x)}).filter(Boolean);
+  try{
+    const d=ops.length?await calPost({action:'ops',ops}):{results:[]};
+    (d.results||[]).forEach(r=>{const x=tkFind(r.id);if(!x)return;
+      if(!r.ok){x.calSync='err';x.calErr=String(r.error||'');return}
+      if(r.deleted){calForget(r.calId);if(x.calId===r.calId&&!(x.date&&x.at))x.calId=''}else if(r.calId)x.calId=r.calId;
+      if(!t.outbox.some(o=>o.id===x.id))x.calSync=x.calId?'ok':'';x.calErr=''});
+    calCfg().lastErr=null;save(true);
+  }catch(err){
+    const again=new Set(t.outbox.map(o=>o.id));t.outbox=batch.filter(o=>!again.has(o.id)).concat(t.outbox);
+    calCfg().lastErr=String(err&&err.message||err);save(true);_calBusy=false;return false;
+  }
+  _calBusy=false;
+  if(_calAgain||t.outbox.length){_calAgain=false;return calFlush()}
+  return true;
+}
+async function calPull(){
+  const tk=todayKey(),from=atMs(addDays(tk,-1),'00:00'),to=atMs(addDays(tk,15),'00:00');
+  const ids=tkState().list.filter(x=>x.calId).map(x=>x.calId);
+  const d=await calPost({action:'read',from,to,ids});
+  const cc=calCache();cc.events=(d.events||[]).map(e=>({id:String(e.id),t:String(e.t||''),s:+e.s,e:+e.e,ad:!!e.ad,tag:e.tag||'',cal:e.cal||'',own:!!e.own}));
+  cc.fetched=Date.now();cc.from=d.from||from;cc.to=d.to||to;cc.name=(d.cal&&d.cal.name)||cc.name;
+  calReconcile(cc.events,d.linked||{},cc.from,cc.to);
+  return d;
+}
+function calReconcile(evs,linked,from,to){ // カレンダー側の変更をタスクへ戻す
+  const t=tkState();const pend=new Set(t.outbox.map(o=>o.id));const byId={};evs.forEach(e=>{if(e.own)byId[e.id]=e});
+  let ch=0;const regray=[];
+  t.list.forEach(x=>{
+    if(!x.calId||pend.has(x.id))return;
+    let ev=byId[x.calId];
+    if(!ev&&linked[x.calId])ev=linked[x.calId];
+    if(!ev){
+      if(linked[x.calId]===null||(x.date&&x.at&&atMs(x.date,x.at)>=from&&atMs(x.date,x.at)<to&&!(x.calId in linked))){
+        x.calId='';x.at='';x.calGone=1;x.calSync='';ch++}
+      return}
+    if(ev.tag&&ev.tag!==x.id)return;
+    const mark=/^\s*(✅|✔|✓|☑|済)/.test(ev.t);
+    const title=ev.t.replace(/^\s*(✅|✔|✓|☑|済)\s*/,'').replace(/^\s*★\s*/,'').trim();
+    const d=dateKey(new Date(ev.s)),at=hmOf(ev.s),dur=Math.round((ev.e-ev.s)/60000);
+    if(d!==x.date||at!==x.at){x.date=d;x.at=at;x.carried=0;ch++}
+    if(!x.done&&!mark&&dur>=5&&dur<=720&&dur!==tkDur(x)){x.est=dur;ch++}
+    if(mark&&!x.done){x.done=true;x.doneAt=Date.now();x.doneVia='cal';regray.push(x);ch++}
+    if(title&&title!==x.t){x.t=title;ch++}
+    x.calGone=0;x.calSync='ok';
+  });
+  regray.forEach(x=>calQueue(x)); // カレンダーで✅にした予定もグレーに揃える
+  if(ch)save(true);return ch;
+}
+function calRerender(){const a=document.activeElement,m=$('#main');
+  if(a&&m&&m.contains(a)&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))return;render()}
+async function calSync(manual){
+  if(!calReady()){if(manual){const s=sheetCfg();calMsg('CALENDAR',!calCfg().on?'設定でカレンダー連携をONにしてください':(!(s.url||'').trim()?'GAS URL が未設定です':'連携キーが未設定です（カレンダー連携には必須）'))}return false}
+  const now=Date.now();if(_calSyncing)return false;if(!manual&&now-_calLastTry<60000)return false;
+  _calSyncing=true;_calLastTry=now;const c=calCfg();
+  try{
+    await calFlush();await calPull();
+    c.lastSync=Date.now();c.lastErr=null;save(true);
+    if(manual){calSnd('success');calMsg('CALENDAR',`${calCache().name||'カレンダー'}と同期した`)}
+    return true;
+  }catch(err){c.lastErr=String(err&&err.message||err);save(true);
+    if(manual){calSnd('error');calMsg('CALENDAR 失敗',c.lastErr)}return false}
+  finally{_calSyncing=false;calRerender()}
+}
+async function calTest(){
+  if(!calReady()){calSync(true);return}
+  try{const d=await calPost({action:'probe'});const w=d.write||{};
+    const msg=!w.found?`書き込み先が見つからない：${w.id}`
+      :w.writable?`「${w.name}」に書き込める。準備OK`
+      :`「${w.name}」は読めるが書き込めない。共有設定を「予定の変更」にするか、GASの CAL.writeId を自分のカレンダーに変える`;
+    calCfg().writable=!!w.writable;save(true);calSnd(w.writable?'success':'error');calMsg('接続テスト',msg);render();
+  }catch(err){calCfg().lastErr=String(err&&err.message||err);save(true);calMsg('接続テスト 失敗',calCfg().lastErr);render()}
+}
+function calToggle(){const c=calCfg();c.on=!c.on;SFX.tap();
+  if(c.on){const tk=todayKey();tkState().list.forEach(x=>{if(!x.done&&x.date&&x.date>=tk&&x.at&&!x.calId)calQueue(x)})}
+  save(true);render();if(c.on)calSync(true)}
+function calSetCfg(f,v){const c=calCfg();
+  if(f==='from'||f==='to'){if(!/^\d{2}:\d{2}$/.test(v||''))return render();const nf=f==='from'?v:c.from,nt=f==='to'?v:c.to;
+    if(nf>=nt){calMsg('作業時間帯','終了は開始より後にしてください');return render()}c[f]=v}
+  else if(f==='buf')c.buf=clamp(Math.round(num(v)),0,60);
+  else if(f==='ignore')c.ignore=String(v||'').slice(0,200);
+  else if(f==='shrink')c.shrink=!!v;
+  save(true);render()}
+function calAgo(ts){if(!ts)return'未同期';const m=Math.round((Date.now()-ts)/60000);return m<1?'たった今':m<60?m+'分前':Math.round(m/60)+'時間前'}
+function calSettingsHtml(){const c=calCfg(),s=sheetCfg(),cc=calCache();
+  const need=!(s.url||'').trim()?'GAS URL が未設定':!(s.key||'').trim()?'連携キーが未設定（必須）':'';
+  const st=!c.on?'OFF':need?`<span style="color:var(--gold)">${need}</span>`:`${tkEsc(cc.name||'カレンダー')} · 最終同期 ${calAgo(c.lastSync)}${c.writable===false?' · <span style="color:var(--gold)">書き込み不可</span>':''}`;
+  return `
+   <div class="section-title mt20"><h2>カレンダー連携（Google）</h2><div class="line"></div></div>
+   <div class="sub" style="margin-bottom:12px">上のGAS URLと連携キーを使う。時刻を入れたタスクがカレンダーに入り、完了すると✅に変わる。カレンダー側で時刻を動かす・予定を消す・タイトル先頭に✅を付けると、アプリに戻ってくる。EGO LOCKが作った予定以外には触らない。</div>
+   <div class="card">
+     <div class="srow"><div><div class="sl">カレンダー連携</div><div class="sd">${st}</div></div>
+       <div class="sw ${c.on?'on':''}" onclick="calToggle()"><i></i></div></div>
+     <div class="grid2 mt12">
+       <label class="fld"><span class="lab">作業開始</span><input type="time" value="${c.from}" onchange="calSetCfg('from',this.value)"></label>
+       <label class="fld"><span class="lab">作業終了</span><input type="time" value="${c.to}" onchange="calSetCfg('to',this.value)"></label>
+     </div>
+     <label class="fld mt12"><span class="lab">予定の前後の余白 <span class="dim">分</span></span>
+       <input type="number" class="num-in" inputmode="numeric" min="0" max="60" value="${c.buf}" onchange="calSetCfg('buf',this.value)"></label>
+     <label class="fld mt12"><span class="lab">空き時間の計算で無視する予定名 <span class="dim">カンマ区切り・部分一致</span></span>
+       <input value="${tkEsc(c.ignore)}" placeholder="予約NG" onchange="calSetCfg('ignore',this.value)"></label>
+     <div class="srow mt12"><div><div class="sl">完了時刻で予定を締める</div><div class="sd">早く終わったら、その分カレンダーの枠を空ける</div></div>
+       <div class="sw ${c.shrink?'on':''}" onclick="calSetCfg('shrink',!calCfg().shrink)"><i></i></div></div>
+     ${(tkState().outbox.length||c.lastErr)?`<div class="dim mt12" style="font-size:11.5px">${tkState().outbox.length?`送信待ち ${tkState().outbox.length}件 `:''}${c.lastErr?`<span style="color:var(--red)">${tkEsc(c.lastErr)}</span>`:''}</div>`:''}
+     <div class="row mt12" style="gap:8px"><button class="btn ghost sm" style="flex:1;white-space:nowrap" onclick="calTest()">接続テスト</button><button class="btn cyan sm" style="flex:1;white-space:nowrap" onclick="calSync(true)">今すぐ同期</button></div>
+   </div>`;
+}
+
+/* ---------- 表示 ---------- */
+function tkMeta(x){
+  const c=[];
+  if(x.at)c.push(`<span class="tk-c tk-at">${x.at}${x.date&&x.date!==todayKey()?'':''}</span>`);
+  if(x.est)c.push(`<span class="tk-c">${x.est}分</span>`);
+  if(x.lane==='j')c.push(`<span class="tk-c tk-j">判断</span>`);
+  if(x.carried&&!x.done)c.push(`<span class="tk-c tk-cr">持ち越し${x.carried}</span>`);
+  if(x.lane==='j'&&x.at&&x.at>='21:00'&&!x.done)c.push(`<span class="tk-c tk-w">21時以降は判断が鈍る</span>`);
+  if(calCfg().on){
+    if(x.calSync==='p')c.push(`<span class="tk-c tk-cal p">同期待ち</span>`);
+    else if(x.calSync==='err')c.push(`<span class="tk-c tk-w" title="${tkEsc(x.calErr||'')}">送信エラー</span>`);
+    else if(x.calId)c.push(`<span class="tk-c tk-cal">📅</span>`);
+    if(x.calGone&&!x.at)c.push(`<span class="tk-c tk-cr">カレンダーで削除</span>`);
+  }
+  return c.join('');
+}
+function tkRow(x,edit){
+  const id=x.id;
+  return `<div class="tk-row ${x.done?'done':''}">
+   <button class="tk-ck" onclick="tkToggle('${id}')" aria-label="完了">${x.done?'✓':''}</button>
+   <div class="tk-b">
+    <div class="tk-t">${x.pri?'<span class="tk-star">★</span>':''}${tkEsc(x.t)}</div>
+    <div class="tk-m">${tkMeta(x)}</div>
+    ${edit?`<div class="tk-ctl">
+      <input type="time" value="${x.at||''}" onchange="tkSet('${id}','at',this.value)" aria-label="開始時刻">
+      <input type="number" class="num-in" inputmode="numeric" min="0" max="600" step="5" value="${x.est||''}" placeholder="分" onchange="tkSet('${id}','est',this.value)" aria-label="所要分">
+      <button class="btn ghost sm" onclick="tkPri('${id}')" aria-label="最重要">${x.pri?'★':'☆'}</button>
+      <button class="btn ghost sm" onclick="tkLane('${id}')">${x.lane==='j'?'判断':'量'}</button>
+      <button class="btn ghost sm" onclick="tkMove('${id}')">${(x.date||'')===todayKey()?'明日へ':((x.date||'')===tkTomorrow()?'あとへ':'今日へ')}</button>
+      <button class="btn ghost sm" onclick="tkDel('${id}')" aria-label="削除">✕</button>
+     </div>`:''}
+   </div>
+  </div>`;
+}
+function evRow(e){
+  return `<div class="tk-row ev">
+   <div class="tk-evt">${hmOf(e.s)}<br><span>${hmOf(e.e)}</span></div>
+   <div class="tk-b"><div class="tk-t">${tkEsc(e.t)}</div>${e.cal?`<div class="tk-m"><span class="tk-c">${tkEsc(e.cal)}</span></div>`:''}</div>
+  </div>`;
+}
+function tkBudget(date,open){ // {free, load, over, txt}
+  const load=tkLoad(open);
+  if(calReady()&&calCache().fetched){const free=calFreeMin(date,Date.now());
+    return{free,load,over:load>free,txt:`空き ${tkFmt(free)} / 積み ${tkFmt(load)}`}}
+  const cap=tkState().cap||360;return{free:cap,load,over:load>cap,txt:`積み ${tkFmt(load)} / 上限 ${tkFmt(cap)}`};
+}
+function tasksCard(){
+  tkRoll();
+  const k=todayKey(),mo=todayMode(k),all=tkOn(k);
+  const open=all.filter(x=>!x.done),done=all.filter(x=>x.done);
+  let shown=all,note='';
+  if(mo==='RECOVERY'){
+    const pr=open.filter(x=>x.pri),keep=pr.length?pr:open.slice(0,1);
+    shown=keep.concat(done);
+    note=open.length>keep.length?`回復モード。残り${open.length-keep.length}件は今日は見なくていい。`:'回復モード。最重要だけでいい。';
+  }
+  const b=tkBudget(k,open),over=b.over&&mo!=='RECOVERY';
+  let next='';
+  if(calReady()&&calCache().fetched){const now=Date.now();
+    const cand=calFixedOn(k).filter(e=>e.e>now).map(e=>({s:e.s,t:e.t}))
+      .concat(open.filter(x=>x.at).map(x=>({s:atMs(k,x.at),t:x.t})).filter(z=>z.s+tkDur({})*60000>now)).sort((a,c)=>a.s-c.s)[0];
+    if(cand)next=`<div class="tk-next">次 <b>${hmOf(cand.s)}</b> ${tkEsc(cand.t)}</div>`;
+    onMount(()=>calSync(false));
+  }
+  return `<div class="card tk-card mt12">
+   <div class="between"><span class="eyebrow" style="color:var(--cyan)">TODAY'S TASKS</span>
+    <button class="btn ghost sm" onclick="openTasks()">編集 ›</button></div>
+   ${next}
+   ${note?`<div class="sub mt8">${note}</div>`:''}
+   <div class="mt8">${shown.length?shown.map(x=>tkRow(x,false)).join(''):`<div class="sub">まだ入っていません。「編集」からまとめて追加できます。</div>`}</div>
+   <div class="tk-foot ${over?'over':''}">${done.length}/${all.length} 完了 · ${b.txt}${over?'（入りきらない）':''}</div>
+  </div>`;
+}
+function tkSection(title,list,sub){
+  return `<div class="section-title"><h2>${title}</h2><div class="line"></div></div>
+   ${sub?`<div class="sub" style="margin:-4px 2px 6px">${sub}</div>`:''}
+   <div class="card" style="padding:6px 14px">${list.length?list.map(x=>tkRow(x,true)).join(''):`<div class="sub" style="padding:12px 0">なし</div>`}</div>`;
+}
+function tkPlanCard(){const p=tkPlanView;if(!p)return'';
+  const rows=p.placed.map(o=>{const x=tkFind(o.id);if(!x)return'';
+    const late=x.lane==='j'&&hmOf(o.s)>='18:00';
+    return `<div class="tk-pl"><span class="tm">${hmOf(o.s)}–${hmOf(o.e)}</span><span class="tt">${x.pri?'★ ':''}${tkEsc(x.t)}</span>${x.lane==='j'?`<span class="tk-c ${late?'tk-w':'tk-j'}">${late?'夕方の判断':'判断'}</span>`:''}</div>`}).join('');
+  const rest=p.rest.map(id=>{const x=tkFind(id);return x?tkEsc(x.t):''}).filter(Boolean);
+  const noCal=!(calReady()&&calCache().fetched);
+  return `<div class="card tk-plan mt10">
+   <div class="eyebrow" style="color:var(--cyan)">この順で入れる</div>
+   ${noCal?`<div class="sub mt8">カレンダー未連携なので、既存の予定は考慮していない。</div>`:''}
+   <div class="mt8">${rows||'<div class="sub">並べられるタスクがない。</div>'}</div>
+   ${rest.length?`<div class="sub mt10" style="color:var(--gold)">入りきらない：${rest.join('、')}</div>
+     <button class="btn sm mt8" onclick="tkPlanRestTomorrow()">入りきらない分を明日へ</button>`:''}
+   <div class="row mt12" style="gap:8px">${p.placed.length?`<button class="btn primary sm" style="flex:1" onclick="tkPlanApply()">この通りに入れる${calReady()?'（カレンダーにも）':''}</button>`:''}
+    <button class="btn ghost sm" onclick="tkPlanView=null;render()">やめる</button></div>
+  </div>`;
+}
+function tkTodayBlock(today){
+  const k=todayKey(),open=today.filter(x=>!x.done),b=tkBudget(k,open);
+  const unsched=open.filter(x=>!x.at).length;
+  const bar=`<div class="tk-bar ${b.over?'over':''}"><div class="tk-bt">${b.txt}${b.over?'　入りきらない':''}</div>
+    <div class="row" style="gap:6px">${unsched?`<button class="btn primary sm" onclick="tkPlanMake()">空き時間に並べる</button>`:''}${calReady()?`<button class="btn ghost sm" onclick="calSync(true)">同期</button>`:''}</div></div>`;
+  if(!(calReady()&&calCache().fetched))
+    return tkSection('今日',today,'時刻を入れると上から順に並ぶ。判断が要る仕事は午前へ。')+bar+tkPlanCard();
+  const fixed=calFixedOn(k),ad=calAllDayOn(k);
+  const timed=today.filter(x=>x.at).map(x=>({s:atMs(k,x.at),h:tkRow(x,true)}))
+    .concat(fixed.map(e=>({s:e.s,h:evRow(e)}))).sort((a,c)=>a.s-c.s);
+  const nt=today.filter(x=>!x.at);
+  return `<div class="section-title"><h2>今日の流れ</h2><div class="line"></div></div>
+   ${ad.length?`<div class="tk-ad">${ad.map(e=>`<span class="tk-c">終日 ${tkEsc(e.t)}</span>`).join('')}</div>`:''}
+   <div class="card" style="padding:6px 14px">${timed.length?timed.map(z=>z.h).join(''):`<div class="sub" style="padding:12px 0">時刻の決まった予定なし</div>`}</div>
+   ${bar}${tkPlanCard()}
+   <div class="section-title"><h2>時間未定</h2><div class="line"></div></div>
+   <div class="card" style="padding:6px 14px">${nt.length?nt.map(x=>tkRow(x,true)).join(''):`<div class="sub" style="padding:12px 0">なし</div>`}</div>`;
+}
+function viewTasks(){
+  tkRoll();
+  const t=tkState(),k=todayKey();
+  const today=tkOn(k),tomo=tkOn(tkTomorrow()),later=tkOn('');
+  const stars=today.filter(x=>x.pri&&!x.done).length;
+  return `<div class="view">
+   <div class="between"><button class="btn ghost sm" onclick="back()">‹ 戻る</button><span class="eyebrow">TASKS</span></div>
+   <div class="h1 mt12">やることリスト</div>
+   <div class="sub mt8">1行1タスクで貼り付けOK。書き方は「タイトル 10:00 45分 ! 判」。時刻・分数・！（最重要）・判（判断が要る仕事）は省略できる。${calReady()?'時刻を入れたタスクはカレンダーにも入る。':''}</div>
+   <div class="card mt16">
+    <textarea id="tkIn" class="tall" oninput="tkDraft=this.value" placeholder="例）&#10;企画書を仕上げる 10:00 90分 ! 判&#10;請求書の確認 30分&#10;返信をまとめて返す 17:00 30分">${tkEsc(tkDraft)}</textarea>
+    <div class="row mt10" style="gap:8px"><button class="btn primary sm" style="flex:1" onclick="tkAdd('today')">今日に追加</button>
+     <button class="btn sm" onclick="tkAdd('tomorrow')">明日</button><button class="btn ghost sm" onclick="tkAdd('later')">あとで</button></div>
+   </div>
+   ${calReady()?'':`<div class="tk-cap">1日の上限 <input type="number" class="num-in" inputmode="numeric" value="${t.cap||360}" onchange="tkCap(this.value)" aria-label="1日の上限（分）"> 分${stars>3?'　最重要は3つまで。':''}</div>`}
+   ${calReady()&&stars>3?'<div class="tk-cap">最重要は3つまで。</div>':''}
+   ${tkTodayBlock(today)}
+   ${tkSection('明日',tomo)}
+   ${tkSection('あとで',later)}
+   <div class="tabbar-spacer"></div>
+  </div>`;
+}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&calReady())calSync(false)});
+window.addEventListener('online',()=>{if(calReady())calFlush().then(ok=>{if(ok)calRerender()})});
+
 const NAV=[
  {id:'home', label:'ホーム', svg:'<path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10"/>'},
  {id:'mission',label:'ミッション',svg:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/>'},
@@ -1705,7 +2155,7 @@ function renderHeader(){
 
 function render(){renderHeader();renderNav();
   const v={home:viewHome,mission:viewMission,kpi:viewKpi,focus:viewFocus,log:viewLog}[route.tab];
-  if(route.sub){const sv={journal:viewJournal,body:viewBody,ailog:viewAiLog,levels:viewLevels,stages:viewStages,boss:viewBoss,wealth:viewWealth,settings:viewSettings,mind:viewMind}[route.sub];
+  if(route.sub){const sv={journal:viewJournal,body:viewBody,ailog:viewAiLog,levels:viewLevels,stages:viewStages,boss:viewBoss,wealth:viewWealth,settings:viewSettings,mind:viewMind,tasks:viewTasks}[route.sub];
     $('#main').innerHTML=sv?sv():v();}
   else $('#main').innerHTML=v();
   afterRender();
@@ -1805,6 +2255,7 @@ function viewHome(){
    ${goalsCard()}
    ${hero}
    ${recoveryCard(k)}
+   ${tasksCard()}
    ${tideCard()}
 
    <div class="chips mt12">
@@ -3032,7 +3483,7 @@ function viewSettings(){
    <div class="card">
      <label class="fld"><span class="lab">GAS URL <span class="dim">…/exec</span></span>
        <input id="sheetUrl" placeholder="https://script.google.com/macros/s/XXXX/exec" value="${((s.sheet&&s.sheet.url)||'').replace(/"/g,'&quot;')}" oninput="updSheet(this,'url')"></label>
-     <label class="fld mt12"><span class="lab">連携キー <span class="dim">任意</span></span>
+     <label class="fld mt12"><span class="lab">連携キー <span class="dim">カレンダー連携には必須</span></span>
        <input id="sheetKey" placeholder="GAS側の CONFIG.KEY と一致させる" value="${((s.sheet&&s.sheet.key)||'').replace(/"/g,'&quot;')}" oninput="updSheet(this,'key')"></label>
      <div class="srow mt12"><div><div class="sl">自動同期</div><div class="sd">起動時・アプリ復帰時に随時取得</div></div>
        <div class="sw ${(s.sheet&&s.sheet.auto)?'on':''}" onclick="toggleSheetAuto()"><i></i></div></div>
@@ -3041,6 +3492,7 @@ function viewSettings(){
        <button id="syncBtn" class="btn cyan sm" onclick="syncSheet(true)">今すぐ同期</button>
      </div>
    </div>
+   ${calSettingsHtml()}
 
    <div class="section-title mt20"><h2>データ</h2><div class="line"></div></div>
    <div class="card">

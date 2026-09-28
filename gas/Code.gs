@@ -8,11 +8,16 @@
  *   - ライン追加 / AD / 契約  … 「日次進捗」タブ A〜D列（日付/LINE追加数/AD数/契約数）
  *   - お月謝（月商）          … 各月タブ 202601〜（回収列＝支払完了の合計）
  *
+ *  カレンダー連携（doPost / KEY必須）:
+ *   - read  … 空き時間計算用の予定と、EGO LOCKタスクの予定の現状を返す
+ *   - ops   … タスクの予定を作成・更新・削除（EGO LOCKが作った予定だけ）
+ *   - probe … 書き込み先カレンダーに書けるかを確認
+ *
  *  デプロイ手順は gas/README.md 参照（種類:ウェブアプリ / 実行:自分 / アクセス:全員）。
  */
 
 var CONFIG = {
-  KEY: '', // 任意の合言葉（設定推奨）。アプリの「連携キー」と一致させる。
+  KEY: '', // 合言葉はスクリプトプロパティ EGOLOCK_KEY に設定する（_key() 参照）。ここは空のままでよい。
   DAYS_BACK: 400, // 日次を何日分返すか
 
   // ① 日次: ライン追加・AD・契約（日次進捗タブ）
@@ -31,14 +36,32 @@ var CONFIG = {
     feeHeader: '費用',           // フォールバック用
     statusHeader: '状況',        // フォールバック用
     paidStatuses: ['支払完了']   // 回収列が空の月はこの状況の費用を合算
+  },
+
+  // ③ カレンダー連携（EGO LOCK のタスク ⇄ Googleカレンダー）
+  CAL: {
+    writeId: 'xector1.kunoike@gmail.com',   // タスクを書き込むカレンダー（X1_九之池）
+    readIds: ['xector1.kunoike@gmail.com'], // 空き時間の計算に読む予定（複数可）
+    tagKey: 'egolock',                      // EGO LOCKが作った予定の目印。これが無い予定には一切触らない
+    maxRangeDays: 40
   }
 };
 
+/** 合言葉。スクリプトプロパティ EGOLOCK_KEY を優先し、無ければ CONFIG.KEY にフォールバック。 */
+function _key() {
+  try {
+    var v = PropertiesService.getScriptProperties().getProperty('EGOLOCK_KEY');
+    if (v) return String(v);
+  } catch (x) {}
+  return CONFIG.KEY || '';
+}
+
 function doGet(e) {
   try {
-    if (CONFIG.KEY) {
+    var key = _key();
+    if (key) {
       var got = e && e.parameter ? e.parameter.key : '';
-      if (got !== CONFIG.KEY) return _json({ ok: false, error: 'bad key' });
+      if (got !== key) return _json({ ok: false, error: 'bad key' });
     }
     var tz = Session.getScriptTimeZone() || 'Asia/Tokyo';
     var cutoff = new Date();
@@ -138,6 +161,170 @@ function _readOtsuki(cfg, monthsRevenue) {
   });
 }
 
+/* ================================================================
+ *  カレンダー連携（doPost）
+ *  アプリから text/plain で JSON を POST する（CORSのプリフライト回避）。
+ *  body = { key, action: 'read' | 'ops' | 'probe', ... }
+ * ================================================================ */
+function doPost(e) {
+  try {
+    var body = {};
+    try { body = JSON.parse((e && e.postData && e.postData.contents) || '{}'); }
+    catch (x) { return _json({ ok: false, error: 'bad json' }); }
+    var key = _key();
+    if (!key) return _json({ ok: false, error: '合言葉が未設定です（スクリプトプロパティ EGOLOCK_KEY を設定してください。カレンダー連携には必須）' });
+    if (body.key !== key) return _json({ ok: false, error: 'bad key' });
+    var a = body.action;
+    if (a === 'probe') return _json(_calProbe());
+    if (a === 'read') return _json(_calRead(body));
+    if (a === 'ops') {
+      var lock = LockService.getScriptLock();
+      lock.waitLock(20000);
+      try { return _json(_calOps(body.ops || [])); }
+      finally { lock.releaseLock(); }
+    }
+    return _json({ ok: false, error: 'unknown action' });
+  } catch (err) {
+    return _json({ ok: false, error: String(err) });
+  }
+}
+
+function _calGet(id) {
+  if (!id) return null;
+  try { return CalendarApp.getCalendarById(String(id)); } catch (x) { return null; }
+}
+
+function _tagOf(ev) {
+  try { return ev.getTag(CONFIG.CAL.tagKey) || ''; } catch (x) { return ''; }
+}
+
+function _mine(ev, id) { return !!ev && _tagOf(ev) === String(id); }
+
+function _declined(ev) {
+  try { return ev.getMyStatus() === CalendarApp.GuestStatus.NO; } catch (x) { return false; }
+}
+
+function _evJson(ev, calName, own) {
+  return {
+    id: ev.getId(), t: ev.getTitle(),
+    s: ev.getStartTime().getTime(), e: ev.getEndTime().getTime(),
+    ad: ev.isAllDayEvent(), tag: _tagOf(ev), cal: calName, own: !!own
+  };
+}
+
+function _uniq(a) { var o = [], m = {}; (a || []).forEach(function (x) { if (x && !m[x]) { m[x] = 1; o.push(x); } }); return o; }
+
+/** 予定の一覧（空き時間の計算用）＋ リンク済みタスク予定の現状 */
+function _calRead(b) {
+  var DAY = 86400000, now = Date.now();
+  var from = Number(b.from) || (now - DAY), to = Number(b.to) || (now + 14 * DAY);
+  if (to <= from) to = from + DAY;
+  if (to - from > CONFIG.CAL.maxRangeDays * DAY) to = from + CONFIG.CAL.maxRangeDays * DAY;
+  var wid = CONFIG.CAL.writeId, wc = _calGet(wid);
+  var ids = _uniq([wid].concat(CONFIG.CAL.readIds || []));
+  var out = [], seen = {}, have = {}, errors = [];
+  ids.forEach(function (id) {
+    var cal = (id === wid) ? wc : _calGet(id);
+    if (!cal) { errors.push('カレンダーが見つからない: ' + id); return; }
+    var name = cal.getName(), own = (id === wid);
+    cal.getEvents(new Date(from), new Date(to)).forEach(function (ev) {
+      var k = ev.getId() + '|' + ev.getStartTime().getTime(); // 繰り返し予定はIDを共有するので開始時刻で区別
+      if (seen[k] || _declined(ev)) return;
+      seen[k] = 1;
+      var j = _evJson(ev, name, own);
+      if (own) have[j.id] = 1;
+      out.push(j);
+    });
+  });
+  // 範囲外に動かされたタスク予定も追えるように、IDで直接確認する
+  var linked = {};
+  (b.ids || []).slice(0, 200).forEach(function (id) {
+    id = String(id);
+    if (have[id] || !wc) return;
+    var ev = null;
+    try { ev = wc.getEventById(id); } catch (x) {}
+    if (!ev) { linked[id] = null; return; }
+    var st = ev.getStartTime().getTime();
+    if (st >= from && st < to) { linked[id] = null; return; } // 範囲内なのに一覧に無い＝削除済み
+    linked[id] = _evJson(ev, wc.getName(), true);
+  });
+  return { ok: true, from: from, to: to, cal: { id: wid, name: wc ? wc.getName() : '' },
+           events: out, linked: linked, errors: errors };
+}
+
+/** タスク予定の作成・更新・削除（最大50件／回） */
+function _calOps(ops) {
+  var cal = _calGet(CONFIG.CAL.writeId);
+  if (!cal) return { ok: false, error: '書き込み先カレンダーが見つかりません: ' + CONFIG.CAL.writeId };
+  var res = [];
+  (ops || []).slice(0, 50).forEach(function (op) {
+    try { res.push(op && op.op === 'delete' ? _calDel(cal, op) : _calUpsert(cal, op)); }
+    catch (err) { res.push({ id: op && op.id, ok: false, error: String(err) }); }
+  });
+  return { ok: true, results: res };
+}
+
+function _calUpsert(cal, op) {
+  var id = String(op.id || '');
+  if (!/^[\w-]{1,64}$/.test(id)) throw 'bad id';
+  var s = Number(op.start), e = Number(op.end);
+  if (!(s > 0 && e > s && e - s <= 12 * 3600000)) throw 'bad time';
+  var title = String(op.title || '').replace(/[\r\n]+/g, ' ').slice(0, 200) || '(無題)';
+  var ev = null;
+  if (op.calId) {
+    try { ev = cal.getEventById(String(op.calId)); } catch (x) {}
+    if (ev && !_mine(ev, id)) ev = null; // 目印の違う予定は絶対に触らない
+  }
+  if (!ev) { // 応答が途切れて予定IDを受け取れなかった場合の二重作成防止
+    var DAY = 86400000;
+    var near = cal.getEvents(new Date(s - DAY), new Date(e + DAY));
+    for (var i = 0; i < near.length; i++) { if (_mine(near[i], id)) { ev = near[i]; break; } }
+  }
+  if (!ev) {
+    ev = cal.createEvent(title, new Date(s), new Date(e), {
+      description: 'EGO LOCK のタスク\nアプリで完了にするか、タイトルの先頭に ✅ を付けると完了扱いになります。'
+    });
+    ev.setTag(CONFIG.CAL.tagKey, id);
+  } else {
+    if (ev.getTitle() !== title) ev.setTitle(title);
+    if (ev.getStartTime().getTime() !== s || ev.getEndTime().getTime() !== e) ev.setTime(new Date(s), new Date(e));
+  }
+  try {
+    var C = CalendarApp.EventColor;
+    ev.setColor(op.done ? C.GRAY : (op.lane === 'j' ? C.MAUVE : C.CYAN));
+  } catch (x) {}
+  return { id: id, ok: true, calId: ev.getId(), s: s, e: e };
+}
+
+function _calDel(cal, op) {
+  var id = String(op.id || ''), cid = String(op.calId || ''), ev = null;
+  if (cid) { try { ev = cal.getEventById(cid); } catch (x) {} }
+  if (ev && _mine(ev, id)) ev.deleteEvent();
+  return { id: id, ok: true, deleted: true, calId: cid };
+}
+
+/** 接続テスト：書き込み先に予定を作って即削除できるか */
+function _calProbe() {
+  var out = { ok: true, write: { id: CONFIG.CAL.writeId, found: false }, read: [] };
+  var wc = _calGet(CONFIG.CAL.writeId);
+  if (wc) {
+    out.write.found = true;
+    out.write.name = wc.getName();
+    try { out.write.owned = wc.isOwnedByMe(); } catch (x) {}
+    try {
+      var t0 = new Date(Date.now() + 400 * 86400000);
+      var tev = wc.createEvent('EGO LOCK 接続テスト（自動で削除）', t0, new Date(t0.getTime() + 60000));
+      tev.deleteEvent();
+      out.write.writable = true;
+    } catch (err) { out.write.writable = false; out.write.error = String(err); }
+  }
+  _uniq(CONFIG.CAL.readIds || []).forEach(function (id) {
+    var c = _calGet(id);
+    out.read.push({ id: id, found: !!c, name: c ? c.getName() : '' });
+  });
+  return out;
+}
+
 function _findCol(header, needle) {
   needle = String(needle).trim();
   var i = header.indexOf(needle);
@@ -172,6 +359,10 @@ function _json(obj) {
 
 /** デプロイ前の動作確認用（エディタで実行 → 実行ログにJSON） */
 function _test() {
-  var out = doGet({ parameter: { key: CONFIG.KEY } });
+  var key = _key();
+  var out = doGet({ parameter: { key: key } });
   Logger.log(out.getContent());
+  // カレンダー連携の確認（初回はカレンダーの権限許可が出る）
+  var p = doPost({ postData: { contents: JSON.stringify({ key: key, action: 'probe' }) } });
+  Logger.log(p.getContent());
 }

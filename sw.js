@@ -1,5 +1,5 @@
 /* Xector1 EGO LOCK — service worker (offline-first) */
-const CACHE = 'egolock-v9';
+const CACHE = 'egolock-v11';
 const ASSETS = [
   './',
   './index.html',
