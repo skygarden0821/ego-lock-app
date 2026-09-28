@@ -59,10 +59,9 @@ function _key() {
 function doGet(e) {
   try {
     var key = _key();
-    if (key) {
-      var got = e && e.parameter ? e.parameter.key : '';
-      if (got !== key) return _json({ ok: false, error: 'bad key' });
-    }
+    if (!key) return _json({ ok: false, error: '合言葉が未設定です（スクリプトプロパティ EGOLOCK_KEY を設定してください）' });
+    var got = e && e.parameter ? e.parameter.key : '';
+    if (got !== key) return _json({ ok: false, error: 'bad key' });
     var tz = Session.getScriptTimeZone() || 'Asia/Tokyo';
     var cutoff = new Date();
     cutoff.setDate(cutoff.getDate() - CONFIG.DAYS_BACK);
