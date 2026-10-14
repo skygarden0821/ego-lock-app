@@ -16,7 +16,7 @@
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
   --bg:#0B0F1C; --bg2:#0F1526; --bg3:#141C31;
-  --surface:rgba(30,40,68,.62); --surface2:rgba(38,50,84,.78); --solid:#141B30;
+  --surface:rgba(26,35,62,.8); --surface2:rgba(38,50,84,.78); --solid:#141B30;
   --line:rgba(140,175,255,.20); --line2:rgba(140,175,255,.30);
   --blue:#3D79FF; --blue2:#6BA0FF; --cyan:#22ECFF; --ice:#BFE0FF;
   --red:#FF4D6A; --green:#1EEE96; --gold:#FFD84D; --purple:#A97CFF;
@@ -67,11 +67,11 @@ header{position:fixed;top:0;left:0;right:0;z-index:40;
 .lvring svg{position:absolute;inset:0;transform:rotate(-90deg)}
 .lvring b{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--cyan);font-variant-numeric:tabular-nums}
 .lvchip .meta{display:flex;flex-direction:column;line-height:1.05;min-width:0}
-.lvchip .meta .t{font-size:9px;letter-spacing:.18em;color:var(--dim);text-transform:uppercase}
+.lvchip .meta .t{font-size:11px;letter-spacing:.18em;color:var(--dim);text-transform:uppercase}
 .lvchip .meta .n{font-size:12.5px;font-weight:650;color:var(--ice);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:118px}
 .rankpill{margin-left:auto;display:flex;flex-direction:column;align-items:center;
   padding:3px 12px;border-radius:12px;border:1px solid var(--line2);background:var(--surface);}
-.rankpill .t{font-size:8px;letter-spacing:.2em;color:var(--dim)}
+.rankpill .t{font-size:10px;letter-spacing:.2em;color:var(--dim)}
 .rankpill .g{font-family:var(--mono);font-weight:800;font-size:18px;line-height:1;letter-spacing:.03em}
 .streak{display:flex;align-items:center;gap:3px;padding:6px 10px;border-radius:12px;
   border:1px solid var(--line);background:var(--surface);font-family:var(--mono);font-weight:700;font-size:13px}
@@ -89,7 +89,7 @@ nav{position:fixed;bottom:0;left:0;right:0;z-index:40;max-width:520px;margin:0 a
 .nav-i{display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 0 4px;border-radius:14px;
   color:var(--dim);position:relative;transition:color .2s}
 .nav-i svg{width:23px;height:23px;stroke-width:1.9}
-.nav-i span{font-size:9.5px;letter-spacing:.04em;font-weight:600}
+.nav-i span{font-size:11px;letter-spacing:.04em;font-weight:600}
 .nav-i.on{color:var(--cyan)}
 .nav-i.on svg{filter:drop-shadow(0 0 8px rgba(0,229,255,.7))}
 .nav-i.on::before{content:"";position:absolute;top:0;width:26px;height:3px;border-radius:3px;
@@ -100,12 +100,12 @@ nav{position:fixed;bottom:0;left:0;right:0;z-index:40;max-width:520px;margin:0 a
 main{padding:14px}
 .view{animation:fadeUp .42s cubic-bezier(.2,.7,.2,1)}
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-.eyebrow{font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--dim);font-weight:700}
+.eyebrow{font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--dim);font-weight:700}
 .h1{font-size:23px;font-weight:750;letter-spacing:-.01em}
 .sub{color:var(--muted);font-size:13px}
 .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
-  padding:16px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);position:relative;overflow:hidden}
+  padding:16px;position:relative;overflow:hidden}
 .card.glow{box-shadow:var(--glow);border-color:var(--line2)}
 .card .sheen{position:absolute;top:0;left:0;right:0;height:1px;
   background:linear-gradient(90deg,transparent,rgba(120,180,255,.6),transparent)}
@@ -152,6 +152,7 @@ select{appearance:none;-webkit-appearance:none;background-image:url("data:image/
 /* linear gauge */
 .lgauge{height:8px;border-radius:6px;background:rgba(120,150,255,.1);overflow:hidden;position:relative}
 .lgauge>i{display:block;height:100%;border-radius:6px;transition:width .7s cubic-bezier(.2,.8,.2,1)}
+.lgauge .pace{position:absolute;top:0;bottom:0;width:2px;margin-left:-1px;background:rgba(255,255,255,.75);box-shadow:0 0 0 1px rgba(5,7,14,.55)}
 
 /* mission row */
 .mrow{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--line)}
@@ -169,11 +170,17 @@ select{appearance:none;-webkit-appearance:none;background-image:url("data:image/
 /* KPI grid */
 .kgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
 .kfield{background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:11px 12px}
-.kfield .kl{font-size:10.5px;letter-spacing:.04em;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
-.kfield .kl .u{color:var(--dim);font-size:9px}
+.kfield .kl{font-size:11.5px;letter-spacing:.04em;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+.kfield .kl .u{color:var(--dim);font-size:11px}
 .kfield input{border:0;background:transparent;padding:5px 0 0;font-family:var(--mono);font-size:18px;font-weight:600}
 .kfield input:focus{box-shadow:none}
 .kfield.full{grid-column:1/-1}
+.tnote{padding:12px 0;border-top:1px solid var(--line);margin-top:10px}
+.tnote .tn-d{font-size:11.5px;color:var(--dim)}
+.tnote .tn-t{font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;font-size:14.5px;line-height:1.9;color:#EAF4F2;white-space:pre-wrap;word-break:break-word;margin-top:6px}
+.kfield.ro{background:rgba(18,26,46,.35);border-style:dashed}
+.kfield.ro .kv{font-size:18px;font-weight:600;padding-top:5px;color:var(--ice)}
+.kfield.ro .kl .u{color:var(--tide)}
 
 /* radial ego gauge */
 .egowrap{display:grid;place-items:center;padding:6px 0 2px}
@@ -197,7 +204,7 @@ select{appearance:none;-webkit-appearance:none;background-image:url("data:image/
 .chips{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
 .chip{background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:11px 10px;text-align:center}
 .chip .cv{font-family:var(--mono);font-size:19px;font-weight:700}
-.chip .cl{font-size:9.5px;color:var(--dim);letter-spacing:.05em;margin-top:2px}
+.chip .cl{font-size:11px;color:var(--dim);letter-spacing:.05em;margin-top:2px}
 
 /* coach */
 .coach{background:linear-gradient(135deg,rgba(20,28,52,.8),rgba(12,16,32,.8));
@@ -207,9 +214,9 @@ select{appearance:none;-webkit-appearance:none;background-image:url("data:image/
 .coach .av{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;
   background:linear-gradient(135deg,#0E3A6B,#061B33);border:1px solid var(--line2);color:var(--cyan)}
 .coach .ct{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--cyan);font-weight:700}
-.coach .cs{font-size:10px;color:var(--dim)}
+.coach .cs{font-size:11px;color:var(--dim)}
 .coach .block{margin-top:11px}
-.coach .block .bt{font-size:10px;letter-spacing:.12em;color:var(--gold);text-transform:uppercase;font-weight:700;margin-bottom:4px}
+.coach .block .bt{font-size:11px;letter-spacing:.12em;color:var(--blue2);text-transform:uppercase;font-weight:700;margin-bottom:4px}
 .coach .block .bx{font-size:13.5px;color:var(--text);line-height:1.55}
 
 /* hub cards */
@@ -232,8 +239,8 @@ select{appearance:none;-webkit-appearance:none;background-image:url("data:image/
 /* list items */
 .li{background:var(--surface);border:1px solid var(--line);border-radius:var(--rs);padding:13px;margin-bottom:9px}
 .li .lh{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
-.li .tag{font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(45,120,255,.14);color:var(--blue2);border:1px solid var(--line)}
-.li .when{font-size:10px;color:var(--dim);font-family:var(--mono)}
+.li .tag{font-size:11px;padding:2px 8px;border-radius:20px;background:rgba(45,120,255,.14);color:var(--blue2);border:1px solid var(--line)}
+.li .when{font-size:11px;color:var(--dim);font-family:var(--mono)}
 
 /* achievements */
 .ach{display:flex;gap:12px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:var(--rs);
@@ -265,7 +272,7 @@ select{appearance:none;-webkit-appearance:none;background-image:url("data:image/
 .boss-vs{display:flex;align-items:center;justify-content:center;gap:14px;padding:14px 0}
 .boss-side{text-align:center;flex:1}
 .boss-side .bn{font-size:12px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
-.boss-side .bsub{font-size:10px;color:var(--dim)}
+.boss-side .bsub{font-size:11px;color:var(--dim)}
 .vs{font-family:var(--mono);font-weight:800;font-size:22px;color:var(--red);text-shadow:0 0 16px rgba(255,51,88,.5)}
 .bcompare{display:flex;align-items:center;padding:11px 4px;border-bottom:1px solid var(--line);gap:8px}
 .bcompare:last-child{border-bottom:0}
@@ -275,8 +282,14 @@ select{appearance:none;-webkit-appearance:none;background-image:url("data:image/
 .win{color:var(--green)} .lose{color:var(--red)} .draw{color:var(--muted)}
 
 /* charts */
-.chart-wrap{width:100%;overflow:hidden}
-.chart-wrap svg{width:100%;display:block}
+.chart{position:relative;padding-top:2px}
+.cplot{position:relative;width:100%}
+.cplot svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.cdot{position:absolute;width:9px;height:9px;margin:-4.5px 0 0 -4.5px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 8px rgba(0,0,0,.5)}
+.cy{position:absolute;font:600 11px var(--mono);color:var(--muted);background:rgba(10,14,28,.78);padding:1px 6px;border-radius:6px;pointer-events:none}
+.cy.top{top:-2px;left:0}.cy.bot{bottom:0;left:0}.cy.tr{top:-2px;right:0;color:var(--cyan)}
+.cx{position:relative;height:18px;margin-top:7px}
+.cx span{position:absolute;top:0;font:500 11px var(--mono);color:var(--dim);white-space:nowrap}
 .empty{padding:30px 10px;text-align:center;color:var(--dim);font-size:13px}
 .seg{display:flex;gap:4px;background:rgba(8,12,24,.6);border:1px solid var(--line);border-radius:11px;padding:3px}
 .seg button{flex:1;padding:7px 4px;border:0;background:transparent;color:var(--muted);font-size:12px;font-weight:600;border-radius:8px;cursor:pointer}
@@ -325,7 +338,7 @@ select{appearance:none;-webkit-appearance:none;background-image:url("data:image/
   background:linear-gradient(135deg,rgba(255,210,63,.16),rgba(20,28,52,.92));border:1px solid rgba(255,210,63,.45);
   box-shadow:0 8px 30px rgba(0,0,0,.5);backdrop-filter:blur(14px)}
 #toast .ti{font-size:24px}
-#toast .tt{font-size:10px;letter-spacing:.16em;color:var(--gold);text-transform:uppercase;font-weight:700}
+#toast .tt{font-size:11px;letter-spacing:.16em;color:var(--gold);text-transform:uppercase;font-weight:700}
 #toast .tn{font-size:14px;font-weight:700;margin-top:1px}
 
 /* install banner */
@@ -373,7 +386,7 @@ hr.sep{border:0;height:1px;background:var(--line);margin:16px 0}
 .datebar .dnav:disabled{opacity:.3;pointer-events:none}
 .datebar .dlabel{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;position:relative;cursor:pointer}
 .datebar .dd{font-family:var(--mono);font-weight:700;font-size:14px;color:var(--text)}
-.datebar .dtag{font-size:10px;letter-spacing:.06em;padding:2px 9px;border-radius:20px;border:1px solid var(--line)}
+.datebar .dtag{font-size:11px;letter-spacing:.06em;padding:2px 9px;border-radius:20px;border:1px solid var(--line)}
 .datebar .dtag.now{background:rgba(0,229,255,.12);color:var(--cyan)}
 .datebar .dtag.past{background:rgba(255,210,63,.14);color:var(--gold)}
 .datebar .dlabel input[type=date]{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;border:none;background:transparent}
@@ -445,8 +458,8 @@ textarea.tall{min-height:130px}
 .wtier.on{background:var(--surface2);box-shadow:0 0 18px rgba(0,229,255,.12)}
 .wtier .wchar{animation:none}
 .wtier .tn{font-size:11.5px;font-weight:700;margin-top:4px}
-.wtier .tm{font-size:9.5px;color:var(--dim);margin-top:2px}
-.wtier .tbest{font-size:9px;color:var(--gold);margin-top:3px}
+.wtier .tm{font-size:11px;color:var(--dim);margin-top:2px}
+.wtier .tbest{font-size:11px;color:var(--gold);margin-top:3px}
 .rw{display:flex;gap:12px;align-items:flex-start;padding:13px;border:1px solid var(--line);
   border-radius:var(--rs);background:var(--surface);margin-bottom:9px}
 .rw .ric{flex:none;width:42px;height:42px;display:flex;align-items:center;justify-content:center;
@@ -455,7 +468,7 @@ textarea.tall{min-height:130px}
 .rw .rt{font-size:14px;font-weight:650}
 .rw .rp{font-size:11px;color:var(--dim);font-weight:500}
 .rw .rn{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.5}
-.rw .rs{font-size:10.5px;color:var(--dim);margin-top:6px}
+.rw .rs{font-size:11.5px;color:var(--dim);margin-top:6px}
 .rw.ok{border-color:rgba(0,230,138,.4)}
 .rw.ok .ric{border-color:rgba(0,230,138,.4);background:rgba(0,230,138,.1)}
 .rw.ok .rs{color:var(--green)}
@@ -466,7 +479,7 @@ textarea.tall{min-height:130px}
 /* ---------- HOME goals card ---------- */
 .goal-card{border-color:rgba(255,216,77,.28);background:linear-gradient(180deg,rgba(255,216,77,.06),var(--surface))}
 .sync-chip{border:1px solid var(--line);background:var(--surface2);color:var(--muted);
-  font-size:10.5px;font-weight:600;padding:5px 10px;border-radius:20px;cursor:pointer;white-space:nowrap}
+  font-size:11.5px;font-weight:600;padding:5px 10px;border-radius:20px;cursor:pointer;white-space:nowrap}
 .sync-chip:active{transform:scale(.95)}
 .goal-hero{display:flex;align-items:flex-end;justify-content:space-between}
 .goal-hero .gh-num{font-size:27px;font-weight:800;color:var(--gold);line-height:1}
@@ -497,10 +510,20 @@ textarea.tall{min-height:130px}
 .sitem .stt{font-size:14px;font-weight:650;color:var(--muted);display:flex;align-items:center;gap:7px}
 .sitem.on .stt{color:var(--ice)}
 .sitem .std{font-size:11px;color:var(--dim);margin-top:3px;line-height:1.5}
-.speriod{font-size:9.5px;font-weight:700;letter-spacing:.04em;color:var(--soul);background:var(--soul-soft);
+.speriod{font-size:11px;font-weight:700;letter-spacing:.04em;color:var(--soul);background:var(--soul-soft);
   border:1px solid rgba(185,139,255,.3);padding:1px 7px;border-radius:20px}
 .speriod.mo{color:var(--gold);background:rgba(255,210,63,.1);border-color:rgba(255,210,63,.3)}
-.sdiv{font-size:10.5px;letter-spacing:.1em;color:var(--dim);margin:12px 0 2px;text-transform:uppercase}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.schip{display:flex;align-items:center;gap:9px;padding:9px 10px;border:1px solid var(--line);border-radius:12px;background:rgba(18,26,46,.5);
+  font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;min-width:0}
+.schip>span:last-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.schip.on{border-color:rgba(195,155,255,.5);background:var(--soul-soft);color:var(--ice)}
+.sbox.sm{width:24px;height:24px;flex:0 0 24px;display:grid;place-items:center;font-size:12px}
+.schip.on .sbox{background:linear-gradient(135deg,var(--soul),#7C4DFF);border-color:transparent;color:#fff}
+.fold-btn{display:block;width:100%;margin-top:12px;padding:9px 0 0;border:0;border-top:1px solid var(--line);background:none;
+  color:var(--soul);font-size:12.5px;font-weight:650;cursor:pointer;font-family:var(--font);text-align:left}
+.proto-in{margin-top:12px;padding:14px 0 6px;border-top:1px solid var(--line)}
+.sdiv{font-size:11.5px;letter-spacing:.1em;color:var(--dim);margin:12px 0 2px;text-transform:uppercase}
 .soul-btn{background:linear-gradient(135deg,#7C4DFF,#B98BFF);color:#fff;border:none;font-weight:700}
 .soul-btn:active{transform:scale(.98)}
 .letter-card{border-color:rgba(185,139,255,.22)}
@@ -511,8 +534,13 @@ textarea.tall{min-height:130px}
 .pillar .pv{font-family:var(--mono);font-size:11px;color:var(--soul);font-weight:600}
 .pillar .pd{font-size:11px;color:var(--dim);margin-top:8px;line-height:1.6}
 .pillar .lk{background:none;border:none;color:var(--cyan);font-size:11px;cursor:pointer;padding:0 0 0 4px;font-weight:600}
+.bedrow{display:flex;align-items:center;gap:6px;margin-top:6px;font-size:12px;color:var(--dim)}
+.bedrow .bed-in{width:104px;padding:5px 7px;font-size:13px;border-radius:9px}
 .mrow .lk{background:none;border:none;color:var(--cyan);font-size:12px;cursor:pointer;padding:4px 0;font-weight:700;font-family:var(--font)}
 .lk-inline{display:inline-block;margin-left:8px;background:none;border:none;color:var(--cyan);font-size:12px;font-weight:700;cursor:pointer;padding:2px 0;font-family:var(--font)}
+.dwsplit{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.dwsplit>div{border:1px solid var(--line);border-radius:13px;padding:10px 12px;background:rgba(18,26,46,.45);display:flex;align-items:baseline;gap:5px}
+.dwsplit b{font-size:20px}.dwsplit span{font-size:12px;color:var(--dim)}
 .dw-cal{border-color:rgba(95,214,200,.3)!important}
 .dw-cal .ct{color:var(--tide);font-size:11px}
 
@@ -579,7 +607,7 @@ textarea.tall{min-height:130px}
   transition:stroke-dashoffset 1s linear;filter:drop-shadow(0 0 6px rgba(95,214,200,.55))}
 .tring .tin2{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .tring .tnum{font-family:var(--mono);font-size:44px;font-weight:300;color:#EAF4F2;letter-spacing:-.02em}
-.tring .tlab{font-size:10.5px;letter-spacing:.2em;color:var(--dim);margin-top:4px}
+.tring .tlab{font-size:11.5px;letter-spacing:.2em;color:var(--dim);margin-top:4px}
 .tbreath{position:absolute;inset:24px;border-radius:50%;border:1px solid rgba(95,214,200,.16);
   animation:tbreathe 9s ease-in-out infinite}
 @keyframes tbreathe{0%,100%{transform:scale(.9);opacity:.3}50%{transform:scale(1.05);opacity:.7}}
@@ -614,7 +642,7 @@ textarea.tall{min-height:130px}
 .tstat>div{flex:1;text-align:center;padding:11px 4px;border:1px solid var(--line);
   border-radius:var(--rs);background:rgba(18,26,46,.5)}
 .tstat .v{font-family:var(--mono);font-size:21px;font-weight:600;line-height:1.15}
-.tstat .k{font-size:10px;color:var(--dim);letter-spacing:.05em;margin-top:3px}
+.tstat .k{font-size:11px;color:var(--dim);letter-spacing:.05em;margin-top:3px}
 
 /* RECOVERY バナー */
 .recov{border:1px solid rgba(255,216,77,.32);background:rgba(255,216,77,.07);
@@ -635,7 +663,7 @@ textarea.tall{min-height:130px}
 .tk-star{color:var(--gold);margin-right:5px}
 .tk-m{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
 .tk-m:empty{display:none}
-.tk-c{font-family:var(--mono);font-size:10.5px;color:var(--muted);border:1px solid var(--line);border-radius:7px;padding:1px 7px}
+.tk-c{font-family:var(--mono);font-size:11.5px;color:var(--muted);border:1px solid var(--line);border-radius:7px;padding:1px 7px}
 .tk-c.tk-at{color:var(--cyan);border-color:rgba(34,236,255,.35)}
 .tk-c.tk-j{color:var(--purple);border-color:rgba(169,124,255,.4);font-family:var(--font)}
 .tk-c.tk-cr{color:var(--gold);border-color:rgba(255,216,77,.4);font-family:var(--font)}
@@ -659,10 +687,10 @@ textarea.tall{min-height:130px}
 .tk-quick .btn{flex:0 0 auto}
 .gmini{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
 .gmini>div{border:1px solid var(--line);border-radius:12px;padding:9px 9px 8px;background:rgba(18,26,46,.45);min-width:0}
-.gmini .gl{font-size:10.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gmini .gl{font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gmini .gv{font-family:var(--mono);font-size:17px;font-weight:700;margin-top:2px;white-space:nowrap}
-.gmini .gv span{font-size:10.5px;color:var(--dim);font-weight:500}
-.gmini .gd{font-size:10px;color:var(--dim);margin-top:5px;white-space:nowrap}
+.gmini .gv span{font-size:11.5px;color:var(--dim);font-weight:500}
+.gmini .gd{font-size:11px;color:var(--dim);margin-top:5px;white-space:nowrap}
 .coach-more{display:block;width:100%;margin-top:12px;padding:8px 0 0;border:0;border-top:1px solid var(--line);background:none;
   color:var(--cyan);font-size:12.5px;font-weight:650;cursor:pointer;font-family:var(--font);text-align:left}
 #msg .mbar.run{animation:mbar var(--mdur,3s) linear forwards}
@@ -722,6 +750,7 @@ const fmt=(n)=>{if(n==null||isNaN(n))return'0';n=Math.round(n);return n.toLocale
 const fmtY=(n)=>'¥'+fmt(n);
 const fmtMan=(n)=>{n=Math.round(n||0);if(n>=100000000)return(Math.round(n/1000000)/100)+'億';if(n>=10000)return(Math.round(n/1000)/10)+'万';return fmt(n)};
 const SS='egolock.v1';
+let MEMO={}; // 集計のメモ（memo()参照）
 
 /* ---------- DEFAULT TARGETS ---------- */
 const DEFAULT_TARGETS={
@@ -761,7 +790,7 @@ function migrate(r){
   r.cache.wealth=r.cache.wealth||{best:0,last:0,rw:{}};r.cache.wealth.rw=r.cache.wealth.rw||{};
   r.cache.soul=r.cache.soul||{start:null,pubName:'',pubDone:false,fatStart:null,weekly:{},monthly:{},letters:{}};
   r.cache.sheetRev=r.cache.sheetRev||{}; // 'YYYY-MM' -> お月謝回収(月商)
-  r.tide=Object.assign({waves:[],lastContact:'',mailLimit:2,started:null},r.tide||{});
+  r.tide=Object.assign({waves:[],lastContact:'',mailLimit:2,started:null,notes:[]},r.tide||{});if(!Array.isArray(r.tide.notes))r.tide.notes=[];
   if(!Array.isArray(r.tide.waves))r.tide.waves=[];
   const sc=r.cache.soul;sc.weekly=sc.weekly||{};sc.monthly=sc.monthly||{};sc.letters=sc.letters||{};
   r.tasks=r.tasks||{list:[],seq:0,cap:360};if(!Array.isArray(r.tasks.list))r.tasks.list=[];if(!Array.isArray(r.tasks.outbox))r.tasks.outbox=[];r.tasks.cap=r.tasks.cap||360;r.tasks.seq=r.tasks.seq||0;
@@ -769,7 +798,7 @@ function migrate(r){
 }
 let saveTimer=null;
 function save(quiet){
-  localStorage.setItem(SS,JSON.stringify(S));
+  memoReset();localStorage.setItem(SS,JSON.stringify(S));
   if(!quiet){clearTimeout(saveTimer);const e=$('#saved');e.classList.add('show');saveTimer=setTimeout(()=>e.classList.remove('show'),1100)}
 }
 function day(k){k=k||todayKey();if(!S.days[k])S.days[k]=freshDay();const d=S.days[k];
@@ -881,6 +910,8 @@ function wakeScore(t){if(!t)return 0;const[h,m]=String(t).split(':').map(Number)
   if(mins<=tgt)return 100; const over=mins-tgt; return clamp(100-Math.round(over/3),0,100)}
 function journalDone(d){return!!(d.journal.win||d.journal.lose||d.journal.improve||d.journal.diary||d.journal.thanks)}
 
+// その日にまだ何も入力していないか（朝など）。未入力をE判定・赤で見せないために使う
+function todayBlank(k){k=k||todayKey();const d=S.days[k];if(!d)return true;return DAILY.every(m=>m.score(day(k))===0)&&!d.missions.wake&&!num(d.body.sleepH)}
 function egoScore(k){const d=day(k);let sum=0;for(const m of DAILY)sum+=m.score(d);return Math.round(sum/DAILY.length)}
 function missionsComplete(k){const d=day(k);return DAILY.every(m=>m.score(d)>=100)}
 
@@ -972,7 +1003,7 @@ function dayXp(d){
   x+=tideXp(d);                       // 心の型（加点のみ。思い出したことで減ることはない）
   return Math.round(x);
 }
-function totalXp(){let t=0;for(const k in S.days)t+=dayXp(S.days[k]);return t}
+function totalXp(){return memo('xp',()=>{let t=0;for(const k in S.days)t+=dayXp(S.days[k]);return t})}
 function levelInfo(xp){
   let lvl=1,need=120,floor=0;
   while(lvl<100){if(xp<floor+need)break;floor+=need;lvl++;need=Math.round(need*1.08)}
@@ -981,7 +1012,11 @@ function levelInfo(xp){
 }
 
 /* ---------- AGGREGATES ---------- */
-function aggregate(){
+/* 1回の描画の中で何度も呼ばれる重い集計は、データが変わるまで使い回す（save/再描画/採点で破棄） */
+function memo(k,f){return Object.prototype.hasOwnProperty.call(MEMO,k)?MEMO[k]:(MEMO[k]=f())}
+function memoReset(){MEMO={}}
+function aggregate(){return memo('agg',_aggregate)}
+function _aggregate(){
   const a={totalDeepMin:0,deepDays:0,totalImpr:0,trainDays:0,earlyDays:0,
     totalRev:0,maxRevDay:0,journalDays:0,perfectDays:0,active:0,
     totalSales:0,totalMeetings:0,maxContracts:0,deepStreak:0,perfectStreak:0,
@@ -997,7 +1032,7 @@ function aggregate(){
     if(missionsComplete(k)){a.perfectDays++}
     a.totalSales+=num(d.missions.sales);
     a.totalMeetings+=num(d.kpi.meetings);
-    a.maxContracts=Math.max(a.maxContracts,num(d.kpi.contracts));
+    a.maxContracts+=num(d.kpi.contracts); // シート同期で日ごとの契約数が入るので累計（名前は互換のため据え置き）
     if(num(d.kpi.contracts)||num(d.kpi.mrr)||Object.keys(d.kpi).length)touched=true;
     if(touched)a.active++;
   }
@@ -1097,7 +1132,7 @@ function coach(){
   const weak=scored.filter(x=>x.s<60).slice(0,3);
   const score=egoScore(k);
   // まだ今日の入力が何もない（朝など）なら、未入力を「負け」と判定しない
-  const blank=DAILY.every(m=>m.score(d)===0)&&!d.missions.wake&&!num(d.body.sleepH);
+  const blank=todayBlank(k);
   const early=new Date().getHours()<18;
   // weakness text (生活/規律のみ。営業等は月次なので日次では詰めない)
   let weakTxt;
@@ -1143,43 +1178,50 @@ function minToWake(t){return t}
 /* ============================================================
    CHARTS (dependency-free SVG)
    ============================================================ */
-function svgLine(vals,{h=150,color='#4D8BFF',color2='#00E5FF',labels=null,fmtv=fmt,target=null}={}){
+/* グラフ: 図形はSVG（伸縮OK）、文字はHTMLで重ねる。文字が潰れない・端で切れない・目盛りが読める */
+function chartX(labels){if(!labels||!labels.length)return'';const n=labels.length;const skip=Math.max(1,Math.ceil(n/5));
+  let h='';labels.forEach((l,i)=>{const last=i===n-1;if(!last&&(i%skip!==0||n-1-i<skip*0.7))return;
+    const x=n>1?(i/(n-1))*100:50;
+    const pos=i===0&&n>1?'left:0':last&&n>1?'right:0':`left:${x}%;transform:translateX(-50%)`;
+    h+=`<span style="${pos}">${l}</span>`});
+  return `<div class="cx">${h}</div>`}
+function chartXBars(items){const n=items.length;const skip=Math.max(1,Math.ceil(n/6));let h='';
+  items.forEach((it,i)=>{const last=i===n-1;if(!last&&(i%skip!==0||n-1-i<skip*0.7))return;
+    const x=(i+.5)/n*100;h+=`<span style="left:${x}%;transform:translateX(-50%)">${it.l}</span>`});
+  return `<div class="cx">${h}</div>`}
+function svgLine(vals,{h=150,color='#4D8BFF',labels=null,fmtv=fmt,target=null,zero=true}={}){
   vals=vals.filter(v=>v!=null);
   if(!vals.length||vals.every(v=>v===0))return '<div class="empty">データ蓄積中 — 入力すると推移が表示される</div>';
-  const w=480,pad=8,bottom=labels?22:8;const innerH=h-pad-bottom;
-  let max=Math.max(...vals,target||0),min=Math.min(...vals,0);
-  if(max===min)max=min+1;const rng=max-min;
-  const n=vals.length;const step=n>1?(w-pad*2)/(n-1):0;
-  const X=i=>pad+i*step, Y=v=>pad+innerH-((v-min)/rng)*innerH;
-  let d='',area='';
-  vals.forEach((v,i)=>{const x=X(i),y=Y(v);d+=(i?'L':'M')+x.toFixed(1)+' '+y.toFixed(1)+' '});
-  area=d+`L${X(n-1).toFixed(1)} ${(pad+innerH).toFixed(1)} L${pad} ${(pad+innerH).toFixed(1)} Z`;
+  let max=Math.max(...vals,target||0),min=zero?Math.min(...vals,0):Math.min(...vals);
+  if(!zero){const pad=(max-min)*0.15||1;max+=pad;min-=pad}
+  if(max===min)max=min+1;const rng=max-min;const n=vals.length;
+  const X=i=>n>1?2+i/(n-1)*96:50, Y=v=>4+(1-(v-min)/rng)*92;
+  let d='';vals.forEach((v,i)=>{d+=(i?'L':'M')+X(i).toFixed(2)+' '+Y(v).toFixed(2)+' '});
+  const area=d+`L${X(n-1).toFixed(2)} 100 L${X(0).toFixed(2)} 100 Z`;
   const id='g'+Math.random().toString(36).slice(2,7);
-  let tline='';if(target!=null&&target>=min&&target<=max){const ty=Y(target).toFixed(1);
-    tline=`<line x1="${pad}" y1="${ty}" x2="${w-pad}" y2="${ty}" stroke="#FFD23F" stroke-width="1" stroke-dasharray="4 4" opacity=".55"/>`}
-  let pts='';vals.forEach((v,i)=>{pts+=`<circle cx="${X(i).toFixed(1)}" cy="${Y(v).toFixed(1)}" r="${i===n-1?3.5:0}" fill="#fff"/>`});
-  if(n<=14)vals.forEach((v,i)=>{pts+=`<circle cx="${X(i).toFixed(1)}" cy="${Y(v).toFixed(1)}" r="2.4" fill="${color2}"/>`});
-  let lab='';if(labels){const skip=Math.ceil(labels.length/6);labels.forEach((l,i)=>{if(i%skip===0||i===labels.length-1)
-    lab+=`<text x="${X(i).toFixed(1)}" y="${h-6}" fill="#5A6890" font-size="9" text-anchor="middle" font-family="monospace">${l}</text>`})}
-  return `<div class="chart-wrap"><svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" style="height:${h}px">
-    <defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0" stop-color="${color}" stop-opacity=".32"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></linearGradient></defs>
-    ${tline}<path d="${area}" fill="url(#${id})"/>
-    <path d="${d}" fill="none" stroke="${color}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>
-    ${pts}${lab}</svg></div>`;
+  const tl=target!=null&&target>=min&&target<=max?`<line x1="0" x2="100" y1="${Y(target).toFixed(2)}" y2="${Y(target).toFixed(2)}" stroke="#FFD23F" stroke-width="1" stroke-dasharray="4 4" opacity=".6" vector-effect="non-scaling-stroke"/>`:'';
+  const lv=vals[n-1];
+  return `<div class="chart"><div class="cplot" style="height:${h}px">
+    <svg viewBox="0 0 100 100" preserveAspectRatio="none"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="${color}" stop-opacity=".3"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></linearGradient></defs>
+      ${tl}<path d="${area}" fill="url(#${id})"/>
+      <path d="${d}" fill="none" stroke="${color}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>
+    <i class="cdot" style="left:${X(n-1)}%;top:${Y(lv)}%;background:${color}"></i>
+    <span class="cy top">${fmtv(zero?Math.max(...vals,target||0):Math.max(...vals))}</span>
+    ${zero?'':`<span class="cy bot">${fmtv(Math.min(...vals))}</span>`}
+  </div>${chartX(labels)}</div>`;
 }
 function svgBar(items,{h=150,color='#2D6BFF',target=null,fmtv=fmt}={}){
   if(!items.length||items.every(it=>!it.v))return '<div class="empty">データ蓄積中</div>';
-  const w=480,pad=8,bottom=22,top=8;const innerH=h-bottom-top;
-  let max=Math.max(...items.map(i=>i.v),target||0,1);
-  const n=items.length;const bw=(w-pad*2)/n;const gap=bw*0.28;
-  let bars='',lab='';
-  items.forEach((it,i)=>{const bh=(it.v/max)*innerH;const x=pad+i*bw+gap/2;const y=top+innerH-bh;
-    const cur=it.cur;bars+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${(bw-gap).toFixed(1)}" height="${Math.max(bh,1).toFixed(1)}" rx="3" fill="${cur?'#00E5FF':color}" opacity="${cur?1:.85}"/>`;
-    const skip=Math.ceil(n/7);if(i%skip===0||i===n-1)lab+=`<text x="${(x+(bw-gap)/2).toFixed(1)}" y="${h-6}" fill="#5A6890" font-size="9" text-anchor="middle" font-family="monospace">${it.l}</text>`});
-  let tline='';if(target!=null){const ty=(top+innerH-(target/max)*innerH).toFixed(1);
-    tline=`<line x1="${pad}" y1="${ty}" x2="${w-pad}" y2="${ty}" stroke="#FFD23F" stroke-width="1" stroke-dasharray="4 4" opacity=".5"/>`}
-  return `<div class="chart-wrap"><svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" style="height:${h}px">${tline}${bars}${lab}</svg></div>`;
+  const max=Math.max(...items.map(i=>i.v),target||0,1);const n=items.length;const bw=100/n,gap=bw*0.3;
+  let bars='';items.forEach((it,i)=>{const bh=Math.max(it.v/max*96,it.v>0?1.2:0);
+    bars+=`<rect x="${(i*bw+gap/2).toFixed(2)}" y="${(100-bh).toFixed(2)}" width="${(bw-gap).toFixed(2)}" height="${bh.toFixed(2)}" fill="${it.cur?'#22ECFF':color}" opacity="${it.cur?1:.8}"/>`});
+  const tl=target!=null?`<line x1="0" x2="100" y1="${(100-target/max*96).toFixed(2)}" y2="${(100-target/max*96).toFixed(2)}" stroke="#FFD23F" stroke-width="1" stroke-dasharray="4 4" opacity=".6" vector-effect="non-scaling-stroke"/>`:'';
+  const cur=items[n-1];
+  return `<div class="chart"><div class="cplot" style="height:${h}px">
+    <svg viewBox="0 0 100 100" preserveAspectRatio="none">${tl}${bars}</svg>
+    <span class="cy top">${fmtv(max)}</span>${cur&&cur.cur?`<span class="cy tr">${cur.l} ${fmtv(cur.v)}</span>`:''}
+  </div>${chartXBars(items)}</div>`;
 }
 function heatmap(weeks=13){
   // last weeks*7 days grid, colored by ego score
@@ -1745,6 +1787,8 @@ function viewMind(){
        <div class="num" style="flex:0 0 auto;font-size:22px;white-space:nowrap;color:var(--ice)">${lc}<span style="font-size:11px;color:var(--dim)"> 日</span></div></div>
     </div>`:''}
 
+   ${tideNotesHtml()}
+
    <div class="grid2 mt16">
      <button class="btn" onclick="openRedLine()">RED LINE</button>
      <button class="btn" onclick="openNameCall()">名前を口にした</button>
@@ -1762,6 +1806,29 @@ function mindTog(id,t,sub,warn){
    <div><div style="font-size:13.5px">${t}</div>${sub?`<div class="sub" style="margin-top:1px">${sub}</div>`:''}</div>
   </div>`;
 }
+/* ---------- 送らない言葉（波の画面で書いた言葉＋ここで書き置いたメモ） ---------- */
+function tideNotes(){const t=tideCache();if(!Array.isArray(t.notes))t.notes=[];
+  const a=t.notes.map(n=>({kind:'n',id:String(n.id),ts:n.ts,text:n.text}));
+  (t.waves||[]).forEach(w=>{if((w.letter||'').trim())a.push({kind:'w',id:String(w.id),ts:w.ts,text:w.letter})});
+  return a.sort((x,y)=>(y.ts||0)-(x.ts||0))}
+function tideNotesHtml(){const list=tideNotes();const open=uiOpen('letters');
+  return `<div class="section-title mt20"><h2>送らない言葉</h2><div class="line"></div></div>
+   <div class="sub" style="margin-bottom:10px">伝えたくなったら、送らずにここへ置いていく。時間をおいて読み返すと、本当に伝えたいことだけが残っている。端末の中にだけ保存される。</div>
+   <div class="card" style="padding:14px 16px">
+    <textarea id="tideNote" placeholder="送らない。書いて置いていくだけでいい。"></textarea>
+    <button class="btn block tide-btn mt10" onclick="addTideNote()">置いておく</button>
+    ${list.length?`<button class="fold-btn" style="color:var(--tide)" onclick="uiToggle('letters')">${open?'閉じる':`これまでの言葉を読む（${list.length}）›`}</button>`:''}
+    ${open?list.map(n=>{const dt=new Date(n.ts||0);return `<div class="tnote"><div class="between"><span class="tn-d num">${fmtDate(dateKey(dt))} ${hmOf(n.ts||0)}${n.kind==='w'?' · 波の中で':''}</span>
+      <button class="jedit" onclick="delTideNote('${n.kind}','${n.id}')">消す</button></div><div class="tn-t">${tkEsc(n.text)}</div></div>`}).join(''):''}
+   </div>`}
+function addTideNote(){const el=$('#tideNote');const v=el?el.value.trim():'';if(!v){if(el)el.focus();return}
+  const t=tideCache();if(!Array.isArray(t.notes))t.notes=[];t.notes.push({id:Date.now(),ts:Date.now(),date:todayKey(),text:v.slice(0,4000)});
+  const sc=soulCache(),wk=weekKey(todayKey());sc.letters[wk]=true;sc.weekly[wk]=sc.weekly[wk]||{};sc.weekly[wk].letter=true;soulStartIfNeeded(); // 魂の型「別れの手紙」にも合流
+  tideStartIfNeeded();SFX.success();checkProgress();save();render();showMsg('MIND','置いておいた。送らなくていい。')}
+function delTideNote(kind,id){if(!confirm('この言葉を消す？元に戻せない。'))return;const t=tideCache();
+  if(kind==='n')t.notes=(t.notes||[]).filter(n=>String(n.id)!==id);
+  else{const w=(t.waves||[]).find(x=>String(x.id)===id);if(w)w.letter=''}
+  SFX.tap();save(true);render()}
 function toggleMind(id){const m=mind();m[id]=m[id]?0:1;SFX.on();checkProgress();save();render()}
 
 
@@ -2089,7 +2156,7 @@ function calSettingsHtml(){const c=calCfg(),s=sheetCfg(),cc=calCache();
      ${dwCfg().dw?`<label class="fld mt12"><span class="lab">対象カレンダー <span class="dim">名前の一部。書き込み先は常に対象</span></span>
        <input value="${tkEsc(dwCfg().dwCal)}" placeholder="X1_九之池" onchange="dwSet('dwCal',this.value)"></label>
      <label class="fld mt12"><span class="lab">Deep Work に数えない予定名 <span class="dim">カンマ区切り・部分一致</span></span>
-       <textarea style="min-height:64px" onchange="dwSet('dwSkip',this.value)">${tkEsc(dwCfg().dwSkip)}</textarea></label>
+       <textarea style="min-height:92px" onchange="dwSet('dwSkip',this.value)">${tkEsc(dwCfg().dwSkip)}</textarea></label>
      <div class="dim" style="font-size:11.5px;margin-top:6px">上の「無視する予定名」（${tkEsc(c.ignore||'なし')}）も数えない。</div>`:''}
      ${(tkState().outbox.length||c.lastErr)?`<div class="dim mt12" style="font-size:11.5px">${tkState().outbox.length?`送信待ち ${tkState().outbox.length}件 `:''}${c.lastErr?`<span style="color:var(--red)">${tkEsc(c.lastErr)}</span>`:''}</div>`:''}
      <div class="row mt12" style="gap:8px"><button class="btn ghost sm" style="flex:1;white-space:nowrap" onclick="calTest()">接続テスト</button><button class="btn cyan sm" style="flex:1;white-space:nowrap" onclick="calSync(true)">今すぐ同期</button></div>
@@ -2264,8 +2331,8 @@ function renderNav(){const cur=route.tab==='kpi'?'log':route.tab;$('#nav').inner
    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">${n.svg}</svg>
    <span>${n.label}</span></div>`).join('')}
 
-function renderHeader(){
-  const lv=levelInfo(totalXp());const sc=egoScore();const rk=rankOf(sc);const a=aggregate();
+function renderHeader(){memoReset();
+  const lv=levelInfo(totalXp());const sc=egoScore();const rk=rankOf(sc);const blank=todayBlank()&&!isRest();const a=aggregate();
   const st=Math.max(a.deepStreak,a.perfectStreak);
   $('#hdr').innerHTML=`
    <div class="lvchip" onclick="goSub('levels');route.tab='log';render()">
@@ -2273,7 +2340,7 @@ function renderHeader(){
      <div class="meta"><span class="t">LV ${lv.level}</span><span class="n">${lv.title}</span></div>
    </div>
    <div class="streak" title="連続日数"><svg viewBox="0 0 24 24" fill="${st>0?'#FF8A3D':'#3A4660'}" stroke="none"><path d="M12 2c1 4 5 5 5 9a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 3 3-1-3 0-6 0-8z"/></svg>${st}</div>
-   <div class="rankpill"><span class="t">RANK</span><span class="g" style="color:${rk.color};text-shadow:0 0 12px ${rk.color}88">${rk.grade}</span></div>
+   <div class="rankpill"><span class="t">RANK</span>${blank?'<span class="g" style="color:var(--dim)">—</span>':`<span class="g" style="color:${rk.color};text-shadow:0 0 12px ${rk.color}88">${rk.grade}</span>`}</div>
    <div class="wavebtn" onclick="openTide()" role="button" aria-label="いま、波が来ている" title="いま、波が来ている"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 8c2.5 0 2.5-3 5-3s2.5 3 5 3 2.5-3 5-3 2.5 3 5 3"/><path d="M2 14c2.5 0 2.5-3 5-3s2.5 3 5 3 2.5-3 5-3 2.5 3 5 3"/><path d="M2 20c2.5 0 2.5-3 5-3s2.5 3 5 3 2.5-3 5-3 2.5 3 5 3"/></svg></div>
    <div class="gear" onclick="goSub('settings');route.tab='log';render()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 0 1-4 0v-.2a1.6 1.6 0 0 0-2.7-1.1l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.6 1.6 0 0 0 4.6 15H4a2 2 0 0 1 0-4h.2a1.6 1.6 0 0 0 1.1-2.7l-.1-.1A2 2 0 1 1 8 5.4l.1.1A1.6 1.6 0 0 0 10 5.6V5a2 2 0 0 1 4 0v.2a1.6 1.6 0 0 0 2.7 1.1l.1-.1A2 2 0 1 1 19.6 9l-.1.1a1.6 1.6 0 0 0-1.1 2.7V12a2 2 0 0 1 0 4z"/></svg></div>`;
 }
@@ -2293,34 +2360,52 @@ function afterRender(){const fns=afterFns;afterFns=[];fns.forEach(f=>{try{f()}ca
 function liveRefresh(){
   renderHeader();
   $$('[data-bar]').forEach(el=>{const id=el.dataset.bar;const m=MISSIONS.find(x=>x.id===id);
-    if(m){const s=m.score(day(selKey));el.style.width=s+'%';el.style.background=barColor(s)}});
+    if(m){const s=m.score(day(selKey));el.style.width=s+'%';el.style.background=barColor(s,dayPace())}});
   $$('[data-pct]').forEach(el=>{const id=el.dataset.pct;const m=MISSIONS.find(x=>x.id===id);if(m)el.textContent=m.score(day(selKey))+'%'});
   const eg=$('[data-ego]');if(eg){const sc=egoScore();eg.textContent=sc;const rg=$('[data-egoring]');
     if(rg)rg.querySelectorAll('circle')[1].style.strokeDashoffset=ringOffset(sc);
     const rkel=$('[data-egorank]');if(rkel){const r=rankOf(sc);rkel.textContent='RANK '+r.grade;rkel.style.color=r.color}}
   $$('[data-egochip]').forEach(el=>el.textContent=egoScore(selKey));
   $$('[data-monpct]').forEach(el=>{const id=el.dataset.monpct;const st=monthlyStat(id);el.textContent=st.pct+'%'});
-  $$('[data-monbar]').forEach(el=>{const id=el.dataset.monbar;const st=monthlyStat(id);el.style.width=st.pct+'%';el.style.background=barColor(st.pct)});
+  $$('[data-monbar]').forEach(el=>{const id=el.dataset.monbar;const st=monthlyStat(id);el.style.width=st.pct+'%';el.style.background=barColor(st.pct,monthPace())});
   $$('[data-moncur]').forEach(el=>{const id=el.dataset.moncur;const st=monthlyStat(id);el.textContent=monthlyFmt(id,st.cur)});
 }
 function ringOffset(pct){const r=(220-16)/2;const c=2*Math.PI*r;return (c*(1-clamp(pct,0,100)/100)).toFixed(1)}
-function barColor(s){return s>=100?'linear-gradient(90deg,#00E68A,#00E5FF)':s>=60?'linear-gradient(90deg,#2D6BFF,#4D8BFF)':s>=30?'linear-gradient(90deg,#FFB020,#FFD23F)':'linear-gradient(90deg,#FF3358,#FF6B5B)'}
+// 進捗の色: 100%で緑。目安(pace)があればそれとの差で、遅れている時だけ金→赤。目安が無い時は青（赤を出さない）
+function barColor(s,pace){
+  if(s>=100)return 'linear-gradient(90deg,#00E68A,#00E5FF)';
+  if(pace==null||s>=pace-5)return 'linear-gradient(90deg,#2D6BFF,#4D8BFF)';
+  if(s>=pace*0.7)return 'linear-gradient(90deg,#FFB020,#FFD23F)';
+  return 'linear-gradient(90deg,#FF3358,#FF6B5B)'}
+// 今月の経過に対する目安（%）
+function monthPace(){const n=new Date();const dim=new Date(n.getFullYear(),n.getMonth()+1,0).getDate();
+  return clamp(Math.round((n.getDate()-1+n.getHours()/24)/dim*100),0,100)}
+// 日次の目安: 今日は20時まで判定しない（null）。20時以降と過去日は100%が目安
+function dayPace(k){k=k||selKey;if(k!==todayKey())return 100;return new Date().getHours()>=20?100:null}
+function paceMark(p){return p==null||p<=0||p>=100?'':`<b class="pace" style="left:${p}%"></b>`}
 
 let updTimer=null,prevLevel=null;
 function upd(el,mod,field){
   const d=day(selKey);const val=el.value;
   if(mod==='mission')d.missions[field]=val;
   else if(mod==='kpi')d.kpi[field]=val;
-  else if(mod==='body'){d.body[field]=val;if(field==='sleepH'){/*affects mission*/}}
+  else if(mod==='body'){d.body[field]=val;if(field==='sleepH')d.body.sleepAuto=false}
   else if(mod==='journal')d.journal[field]=val;
   else if(mod==='rest')d.restNote=val;
+  if(mod==='mission'&&field==='wake'&&recalcSleep(d)){checkProgress();save();render();return}
   liveRefresh();
   clearTimeout(updTimer);updTimer=setTimeout(()=>{checkProgress();save(true)},500);
 }
-function wakeNow(){const n=new Date();day(selKey).missions.wake=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+/* 睡眠時間を「昨夜の就寝」と「起床」から自動で出す。手で睡眠を入れた日はそちらを優先 */
+function recalcSleep(d){if(!d.body.bed||!d.missions.wake)return false;if(d.body.sleepH&&!d.body.sleepAuto)return false;
+  const[bh,bm]=d.body.bed.split(':').map(Number),[wh,wm]=String(d.missions.wake).split(':').map(Number);
+  let mins=(wh*60+wm)-(bh*60+bm);if(mins<=0)mins+=1440;if(mins>16*60)return false;
+  const h=String(Math.round(mins/6)/10);if(d.body.sleepH===h&&d.body.sleepAuto)return false;d.body.sleepH=h;d.body.sleepAuto=true;return true}
+function setBed(v){const d=day(selKey);d.body.bed=v||'';if(!v&&d.body.sleepAuto){d.body.sleepH='';d.body.sleepAuto=false}recalcSleep(d);SFX.on();checkProgress();save();render()}
+function wakeNow(){const n=new Date();day(selKey).missions.wake=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');recalcSleep(day(selKey));
   SFX.on();checkProgress();save();render()}
 function toggleMission(id){SFX.on();const d=day(selKey);d.missions[id]=!bool(d.missions[id]);checkProgress();save();render()}
-function checkProgress(){
+function checkProgress(){memoReset();
   // level up detection
   const lv=levelInfo(totalXp());
   if(prevLevel===null)prevLevel=S.cache.level||lv.level;
@@ -2369,7 +2454,7 @@ function viewHome(){
           <div class="lab">EGO SCORE</div>
           <div class="val" data-ego>0</div>
           <div class="max">/ 100</div>
-          <div class="rk" data-egorank style="color:${rk.color};text-shadow:0 0 14px ${rk.color}88">RANK ${rk.grade}</div>
+          ${todayBlank(k)?'<div class="rk" data-egorank style="color:var(--dim)">まだ採点前</div>':`<div class="rk" data-egorank style="color:${rk.color};text-shadow:0 0 14px ${rk.color}88">RANK ${rk.grade}</div>`}
         </div>
       </div>
     </div>
@@ -2407,10 +2492,8 @@ function viewHome(){
       </div><div class="wt-arrow">›</div>
      </div>`})()}
 
-   <div class="section-title"><h2>Today</h2><div class="line"></div></div>
+   <div class="section-title"><h2>記録する</h2><div class="line"></div></div>
    <div class="grid2">
-    <div class="hub-c" onclick="go('mission')"><div class="hi" style="background:rgba(0,229,255,.12);border:1px solid var(--line);color:var(--cyan)"><svg viewBox="0 0 24 24" width="20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg></div><div class="ht">ミッション</div><div class="hs">${rest?'休日メニュー':`${done}/${DAILY.length} 達成 · 採点する`}</div></div>
-    <div class="hub-c" onclick="go('focus')"><div class="hi" style="background:rgba(45,120,255,.12);border:1px solid var(--line);color:var(--blue2)"><svg viewBox="0 0 24 24" width="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg></div><div class="ht">Deep Work</div><div class="hs">90分の勝負を始める</div></div>
     <div class="hub-c" onclick="go('kpi')"><div class="hi" style="background:rgba(0,230,138,.12);border:1px solid var(--line);color:var(--green)"><svg viewBox="0 0 24 24" width="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18M7 14l3-3 3 3 5-6"/></svg></div><div class="ht">経営KPI</div><div class="hs">今日の数字を入力</div></div>
     <div class="hub-c" onclick="openJournal()"><div class="hi" style="background:rgba(155,107,255,.12);border:1px solid var(--line);color:var(--purple)"><svg viewBox="0 0 24 24" width="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 3h11l3 3v15H5zM9 8h6M9 12h6"/></svg></div><div class="ht">日記 / ジャーナル</div><div class="hs">日記・勝ち負け・改善を書く</div></div>
    </div>
@@ -2441,14 +2524,14 @@ function goalsCard(){
   const ad=sumMonthKpi('adCount');
   const line=sumMonthKpi('lineAdds');
   const revPct=clamp(Math.round(rev/(g.revenue||1)*100),0,100);
-  const ml=monthRange(0).label;
+  const ml=monthRange(0).label;const pace=monthPace();
   const syncTxt=s.url?(s.lastErr?`⚠ 同期失敗`:(s.lastSync?`🔄 同期 ${syncAgo()}`:'🔄 未同期')):'シート未接続';
   // 今月の3指標は横並びでコンパクトに（ホームの1画面目にタスクまで入るように）
   const mini=(label,cur,tgt,unit,color)=>{const pct=clamp(Math.round(cur/(tgt||1)*100),0,100);const diff=tgt-cur;
     return `<div>
       <div class="gl">${label}</div>
       <div class="gv"><b style="color:${color}">${fmt(cur)}</b><span> / ${fmt(tgt)}</span></div>
-      <div class="lgauge mt6" style="height:5px"><i style="width:${pct}%;background:${barColor(pct)}"></i></div>
+      <div class="lgauge mt6" style="height:5px"><i style="width:${pct}%;background:${barColor(pct,monthPace())}"></i>${paceMark(monthPace())}</div>
       <div class="gd">${diff>0?`あと ${fmt(diff)}${unit}`:`<span style="color:var(--green)">達成 ✓</span>`}</div>
     </div>`};
   return `<div class="card goal-card" style="padding:16px">
@@ -2460,8 +2543,9 @@ function goalsCard(){
       <div class="gh-num num">${fmtY(rev)}<span class="gh-max">/ ${fmtMan(g.revenue)}</span></div>
       <div class="gh-pct num" style="color:${revPct>=100?'var(--green)':'var(--gold)'}">${revPct}%</div>
     </div>
-    <div class="lgauge mt8" style="height:11px"><i style="width:${revPct}%;background:linear-gradient(90deg,var(--gold),#FFE27A)"></i></div>
-    <div class="gr-d" style="margin-top:6px">${ml}の月商回収 · ${rev>=g.revenue?`<b style="color:var(--green)">目標達成</b>`:`あと <b>${fmtY(g.revenue-rev)}</b>`}</div>
+    <div class="lgauge mt8" style="height:11px"><i style="width:${revPct}%;background:linear-gradient(90deg,var(--gold),#FFE27A)"></i>${paceMark(pace)}</div>
+    <div class="gr-d" style="margin-top:6px">${ml}の月商回収 · ${rev>=g.revenue?`<b style="color:var(--green)">目標達成</b>`:`あと <b>${fmtY(g.revenue-rev)}</b>`}
+      ${rev<g.revenue?` · 目安${pace}%に対して <b style="color:${revPct>=pace-5?'var(--green)':revPct>=pace*0.7?'var(--gold)':'var(--red)'}">${revPct-pace>=0?'+':''}${revPct-pace}%</b>`:''}</div>
 
     <div class="sdiv" style="margin:14px 0 0">今月の目標 · ${ml}</div>
     <div class="gmini">
@@ -2500,8 +2584,6 @@ function viewMission(){
    <!-- 魂の型 SOUL PROTOCOL -->
    ${soulCard()}
 
-   <!-- 90日プロトコル -->
-   ${protocolCard()}
 
    <div class="card mt12">
      <div class="between"><div><div class="eyebrow">睡眠 / 水分 / 体組成</div><div class="sub mt8" style="font-size:12px">睡眠・運動・筋トレは身体管理と連動している</div></div>
@@ -2533,7 +2615,7 @@ function monthlyCard(){
       <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">${ICONS[meta.icon]}</svg></div>
       <div class="info"><div class="nm">${meta.name}<span class="dim" style="font-size:11px;font-weight:400;margin-left:6px">${ml}: <b data-moncur="${id}" class="num" style="color:var(--ice)">${monthlyFmt(id,st.cur)}</b> / ${monthlyFmt(id,st.target)}</span></div>
         <div class="meta">${id==='ai'?'今日の入力はAI改善ログから':'今日の数字を入力 →'}</div>
-        <div class="lgauge mt8"><i data-monbar="${id}" style="width:${st.pct}%;background:${barColor(st.pct)}"></i></div>
+        <div class="lgauge mt8"><i data-monbar="${id}" style="width:${st.pct}%;background:${barColor(st.pct,monthPace())}"></i>${paceMark(monthPace())}</div>
       </div>
       <div class="ctrl">${ctrl}<span class="pct" data-monpct="${id}">${st.pct}%</span></div>
     </div>`};
@@ -2564,22 +2646,33 @@ function soulCard(){
     return `<div class="sitem wk ${on?'on':''}" onclick="toggleSoulMonthly('${r.id}')">
       <div class="sbox">${on?'✓':`<span class="sico">${r.ico}</span>`}</div>
       <div class="stx"><div class="stt">${r.t}<span class="speriod mo">今月</span></div><div class="std">${r.d}</div></div></div>`};
-  return `<div class="card soul-card mt12" style="padding:14px 16px 8px">
+  // 普段は日次6つを2列のチェックだけにして、説明・週次/月次・90日プロトコルは「開く」でまとめて出す
+  const open=uiOpen('soul');
+  const chip=(r)=>{const on=!!(d.soul&&d.soul[r.id]);
+    return `<div class="schip ${on?'on':''}" onclick="toggleSoul('${r.id}')"><span class="sbox sm">${on?'✓':`<span class="sico">${r.ico}</span>`}</span><span>${r.t}</span></div>`};
+  const wkN=SOUL_WEEKLY.filter(r=>wkS[r.id]).length,moN=SOUL_MONTHLY.filter(r=>moS[r.id]).length;const p=protocolInfo();
+  return `<div class="card soul-card mt12" style="padding:14px 16px ${open?'8px':'14px'}">
     <div class="sheen soul"></div>
     <div class="between"><div class="eyebrow soul">🔮 魂の型 · SOUL PROTOCOL</div>
       <div class="num" style="font-size:12px;color:var(--muted)">${st>0?`🔥${st}日 · `:''}<b style="color:var(--soul);font-size:17px">${scr}</b>%</div></div>
-    <div class="sub" style="font-size:11.5px;margin:6px 0 4px">別れは、魂が次のステージへ上がる神聖なきっかけだ。手相は変化を恐れない者に幸運を呼ぶ。まず生活の“型”を固めろ。EGO SCOREとは別枠のボーナスとして積む。</div>
+    ${open?`<div class="sub" style="font-size:12px;margin:6px 0 4px">別れは、魂が次のステージへ上がる神聖なきっかけだ。手相は変化を恐れない者に幸運を呼ぶ。まず生活の“型”を固めろ。EGO SCOREとは別枠のボーナスとして積む。</div>
     ${SOUL_DAILY.map(drow).join('')}
     <div class="sdiv">週次・月次の型</div>
     ${SOUL_WEEKLY.map(wrow).join('')}
     ${SOUL_MONTHLY.map(mrow).join('')}
+    ${protocolCard()}`
+    :`<div class="sgrid">${SOUL_DAILY.map(chip).join('')}</div>`}
+    <button class="fold-btn" onclick="uiToggle('soul')">${open?'閉じる':`説明・週次 ${wkN}/${SOUL_WEEKLY.length}・月次 ${moN}/${SOUL_MONTHLY.length}・90日プロトコル${p?` DAY ${p.dayN}`:''} を開く ›`}</button>
   </div>`;
 }
+/* 画面の開閉状態（端末に保存。開いたままにしておける） */
+function uiOpen(k){const u=S.settings.ui||{};return !!u[k]}
+function uiToggle(k){const u=S.settings.ui||(S.settings.ui={});u[k]=!u[k];SFX.tap();save(true);render()}
 
 /* ---------- 90日集中プロトコル ---------- */
 function protocolCard(){
   const sc=soulCache();const p=protocolInfo();
-  if(!p){return `<div class="card mt12" style="padding:14px 16px">
+  if(!p){return `<div class="proto-in">
     <div class="eyebrow soul">🗺 90日プロトコル</div>
     <div class="sub mt8" style="font-size:12px">魂を加速させる3ヶ月集中プログラム。上の「魂の型」を1つ実行すると自動で開始する。公開成果物・体脂肪-5%・別れの手紙の3本柱で“輝く自分”を作れ。</div>
   </div>`}
@@ -2587,7 +2680,7 @@ function protocolCard(){
   const fatGoal=p.fatStart?+(p.fatStart-5).toFixed(1):0;
   const fatPct=p.fatStart&&p.fatNow?clamp(Math.round((p.fatStart-p.fatNow)/5*100),0,100):0;
   const letterPct=clamp(Math.round(p.letters/12*100),0,100);
-  return `<div class="card mt12 proto-card" style="padding:14px 16px">
+  return `<div class="proto-in proto-card">
     <div class="between"><div class="eyebrow soul">🗺 90日プロトコル</div>
       <div class="num" style="font-size:12px;color:var(--muted)">DAY <b style="color:var(--soul);font-size:16px">${p.dayN}</b> / 90</div></div>
     <div class="lgauge mt8" style="height:7px"><i style="width:${p.pct}%;background:linear-gradient(90deg,var(--soul),var(--purple))"></i></div>
@@ -2678,16 +2771,17 @@ function missionRow(m,d){
     let cur='';if(m.id==='deep')cur=d.deepwork.totalMin+'分';
     else if(m.id==='jrnl')cur=journalDone(d)?'記録済':'未記録';
     ctrl=`<span class="num" style="font-size:13px;color:${s>=100?'var(--green)':'var(--muted)'}">${cur}</span>`}
-  const meta0=m.kind==='bool'?'':m.kind==='auto'?(m.id==='deep'?`目標 ${m.t}分`:m.id==='jrnl'?'タップで日記へ':'自動連携'):
+  const dwc=m.id==='deep'?d.deepwork.sessions.filter(x=>x.cal).reduce((a,x)=>a+x.min,0):0;
+  const meta0=m.kind==='bool'?'':m.kind==='auto'?(m.id==='deep'?`目標 ${m.t}分${dwc?` · 予定 ${dwc} / 集中 ${d.deepwork.totalMin-dwc}`:''}`:m.id==='jrnl'?'タップで日記へ':'自動連携'):
     m.kind==='time'?`目標 ${m.t} まで`:`目標 ${m.t}${m.unit||''}`;
-  let meta=m.id==='sleep'?meta0+' · 身体管理と連動':meta0;
+  let meta=m.id==='sleep'?meta0+`${d.body.sleepAuto&&d.body.sleepH?' · 自動計算':''}<div class="bedrow">就寝 <input type="time" class="bed-in" value="${d.body.bed||''}" onchange="setBed(this.value)" aria-label="昨夜の就寝時刻"></div>`:meta0;
   if(m.id==='wake'&&!d.missions.wake&&selKey===todayKey())meta+=` · <button class="lk" onclick="wakeNow()">今起きた ›</button>`;
   const clickable=m.id==='jrnl'?` onclick="openJournal()" style="cursor:pointer"`:'';
   return `<div class="mrow"${clickable}>
     <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">${ICONS[m.icon]}</svg></div>
     <div class="info"><div class="nm">${m.name}</div>
       <div class="meta">${meta}</div>
-      <div class="lgauge mt8"><i data-bar="${m.id}" style="width:${s}%;background:${barColor(s)}"></i></div>
+      <div class="lgauge mt8"><i data-bar="${m.id}" style="width:${s}%;background:${barColor(s,dayPace())}"></i></div>
     </div>
     <div class="ctrl">${ctrl}<span class="pct" data-pct="${m.id}">${s}%</span></div>
   </div>`;
@@ -2705,7 +2799,7 @@ function fmtDate(k){const[y,m,dd]=k.split('-').map(Number);const W=['日','月',
 const KPI=[
  {id:'revenue', name:'売上',      unit:'¥', agg:'sum',  yen:true},
  {id:'mrr',     name:'MRR',       unit:'¥', agg:'last', yen:true},
- {id:'contracts',name:'契約数',    unit:'件', agg:'last'},
+ {id:'contracts',name:'契約数',    unit:'件', agg:'sum'},
  {id:'churned', name:'解約数',     unit:'件', agg:'sum'},
  {id:'meetings',name:'面談数',     unit:'件', agg:'sum'},
  {id:'bookings',name:'予約数',     unit:'件', agg:'sum'},
@@ -2878,7 +2972,7 @@ function kpiSeries(id,period){
   const m=KPI.find(x=>x.id===id);
   if(period==='day'){const keys=lastDays(14);
     return{vals:keys.map(k=>{const d=S.days[k];return d?num(d.kpi[id]):0}),
-      labels:keys.map(k=>{const p=k.split('-');return p[1]+'/'+p[2]}),type:'line'}}
+      labels:keys.map(k=>{const p=k.split('-');return (+p[1])+'/'+(+p[2])}),type:m.agg==='sum'?'bar':'line'}} // 合計系(売上など)は日ごとの棒、残高系は線
   if(period==='week'){const vals=[],labels=[];
     for(let i=7;i>=0;i--){vals.push(aggMetric(weekRange(i),id,m.agg));labels.push(i===0?'今週':'-'+i+'w')}
     return{vals,labels,type:'bar'}}
@@ -2898,12 +2992,13 @@ function kpiSeries(id,period){
 /* ============================================================
    VIEW: KPI
    ============================================================ */
-let kpiSel='revenue',kpiPer='day';
+let kpiSel='revenue',kpiPer='day',kpiAll=false;
 function setKpiMetric(id){SFX.tap();kpiSel=id;render();const r=$('#metricRow');if(r){const a=$('#m_'+id);if(a)a.scrollIntoView({inline:'center',block:'nearest'})}}
 function setKpiPeriod(p){SFX.tap();kpiPer=p;render()}
 function viewKpi(){
   const d=day(selKey);const m=KPI.find(x=>x.id===kpiSel);
   const ser=kpiSeries(kpiSel,kpiPer);
+  const kfmt=v=>m.yen?'¥'+fmtMan(v):fmt(v)+(m.unit==='%'?'%':'');
   const periodTotal=(()=>{
     if(kpiPer==='day')return aggMetric(lastDays(14),kpiSel,m.agg);
     if(kpiPer==='week')return aggMetric(weekRange(0),kpiSel,m.agg);
@@ -2911,13 +3006,19 @@ function viewKpi(){
     return ser.cur;
   })();
   const chart=ser.type==='line'
-    ? svgLine(ser.vals,{labels:ser.labels,h:170,color:m.yen?'#00E68A':'#4D8BFF',color2:'#00E5FF'})
-    : svgBar(ser.vals.map((v,i)=>({l:ser.labels[i],v,cur:i===ser.vals.length-1})),{h:170,color:'#2D6BFF'});
+    ? svgLine(ser.vals,{labels:ser.labels,h:170,color:m.yen?'#00E68A':'#4D8BFF',fmtv:kfmt})
+    : svgBar(ser.vals.map((v,i)=>({l:ser.labels[i],v,cur:i===ser.vals.length-1})),{h:170,color:'#2D6BFF',fmtv:kfmt});
   const metricChips=KPI.map(x=>
     `<button id="m_${x.id}" class="mchip ${x.id===kpiSel?'on':''}" onclick="setKpiMetric('${x.id}')">${x.name}</button>`).join('');
   const field=(x)=>{const v=d.kpi[x.id]??'';
     return `<div class="kfield"><div class="kl">${x.name}<span class="u">${x.unit}</span></div>
       <input inputmode="${x.unit==='%'?'decimal':'numeric'}" placeholder="0" value="${v}" oninput="upd(this,'kpi','${x.id}')"></div>`};
+  // 入力欄の整理: シート同期の項目は読み取り専用で分け、直近60日で使っていない指標は折りたたむ
+  const sc=sheetCfg(),synced=(sc.url&&sc.lastSync)?KPI.filter(x=>['lineAdds','adCount','contracts'].includes(x.id)):[];
+  const recent=lastDays(60),used=new Set(KPI.filter(x=>recent.some(k=>S.days[k]&&num(S.days[k].kpi[x.id])>0)).map(x=>x.id));
+  const manual=KPI.filter(x=>!synced.includes(x));
+  const shown=manual.filter(x=>kpiAll||['revenue','meetings'].includes(x.id)||used.has(x.id)||String(d.kpi[x.id]??'')!=='');
+  const hiddenN=manual.length-manual.filter(x=>['revenue','meetings'].includes(x.id)||used.has(x.id)||String(d.kpi[x.id]??'')!=='').length;
   const periodLabel={day:'直近14日',week:'今週',month:'今月',yoy:'今年累計'}[kpiPer];
   let yoyNote='';
   if(ser.yoy){const diff=ser.cur-ser.prev;const up=diff>=0;const pr=ser.prev?Math.round(diff/ser.prev*100):0;
@@ -2925,8 +3026,7 @@ function viewKpi(){
   const backTo=route.prev&&route.prev!=='kpi'?route.prev:'log';
   return `<div class="view">
    <div class="between"><button class="btn ghost sm" onclick="go('${backTo}')">‹ ${{home:'ホーム',tasks:'やること',mission:'ミッション',focus:'FOCUS'}[backTo]||'記録'}</button><span class="eyebrow">BUSINESS KPI</span></div>
-   <div class="between mt12"><div class="h1">経営KPI</div>
-     <div class="num" style="font-size:12px;color:var(--dim)">${fmtDate(selKey)}</div></div>
+   <div class="h1 mt12">経営KPI</div>
    ${dateBar()}
 
    <div class="card mt16">
@@ -2948,7 +3048,10 @@ function viewKpi(){
 
    <div class="section-title mt20"><h2>${selKey===todayKey()?'今日の数字を入力':fmtDate(selKey)+'の数字を入力'}</h2><div class="line"></div></div>
    <div class="sub" style="margin-bottom:12px">毎日入力するほど、推移と弱点が鮮明になる。空欄は0として扱われる。</div>
-   <div class="kgrid">${KPI.map(field).join('')}</div>
+   ${synced.length?`<div class="kgrid">${synced.map(x=>`<div class="kfield ro"><div class="kl">${x.name}<span class="u">シート</span></div><div class="kv num">${fmt(num(d.kpi[x.id]))}</div></div>`).join('')}</div>
+   <div class="sub" style="margin:8px 2px 14px;font-size:12px">この${synced.length}つはシートから自動で入る（ここでは編集しない）。</div>`:''}
+   <div class="kgrid">${shown.map(field).join('')}</div>
+   ${hiddenN?`<button class="fold-btn" style="color:var(--blue2)" onclick="kpiAll=!kpiAll;SFX.tap();render()">${kpiAll?'使っていない指標を隠す':`ほかの指標を表示（${hiddenN}）›`}</button>`:''}
 
    <div class="section-title mt24"><h2>EGOヒートマップ</h2><div class="line"></div></div>
    <div class="sub" style="margin-bottom:12px">直近13週のEGO SCORE。色が濃いほど、その日勝っている。</div>
@@ -3046,7 +3149,9 @@ function viewFocus(){
      </div>
    </div>
 
-   ${calReady()?(dwCfg().dw?`<div class="sub mt10" style="font-size:12px;color:var(--tide)">📅 カレンダーの仕事予定から 今日 ${dwCalToday()}分 を自動で計上中（タイマーと重なった分は除く）</div>`
+   ${calReady()?(dwCfg().dw?(()=>{const c=dwCalToday(),avg=Math.round(lastDays(7).reduce((a,k)=>a+((S.days[k]&&S.days[k].deepwork.totalMin)||0),0)/7);
+     return `<div class="dwsplit mt12"><div><b class="num" style="color:var(--tide)">${c}</b><span>分 予定から</span></div><div><b class="num" style="color:var(--cyan)">${todayMin-c}</b><span>分 集中・手動</span></div></div>
+     ${avg>=tgt*1.2?`<div class="sub mt8" style="font-size:12px">直近7日の平均は ${avg}分で、目標 ${tgt}分 を大きく超えている。予定も数えるようになったので、目標を上げるなら <button class="lk-inline" style="margin:0" onclick="route={tab:'log',sub:'settings'};render();window.scrollTo(0,0)">設定 ›</button></div>`:''}`})()
      :`<div class="sub mt10" style="font-size:12px">カレンダーの予定を Deep Work に数える設定はOFF（設定 › カレンダー連携）</div>`):''}
    <div class="chips mt12">
     <div class="chip"><div class="cv" style="color:var(--cyan)">${Math.floor(todayMin/60)}<span style="font-size:11px">h</span>${todayMin%60}<span style="font-size:11px">m</span></div><div class="cl">今日合計</div></div>
@@ -3056,7 +3161,7 @@ function viewFocus(){
 
    <div class="card mt12">
      <div class="between"><div class="eyebrow">今日の集中率</div><div class="num" style="color:${focusPct>=100?'var(--green)':'var(--ice)'};font-weight:700">${focusPct}%</div></div>
-     <div class="lgauge mt12" style="height:10px"><i style="width:${focusPct}%;background:${barColor(focusPct)}"></i></div>
+     <div class="lgauge mt12" style="height:10px"><i style="width:${focusPct}%;background:${barColor(focusPct,dayPace(todayKey()))}"></i></div>
      <div class="dim mt8" style="font-size:11px">${todayMin}分 / 目標 ${tgt}分 · 本日 ${dw.sessions.length}セッション</div>
    </div>
 
@@ -3275,7 +3380,7 @@ function viewBody(){
   const d=day(selKey);
   const wkeys=lastDays(30).filter(k=>S.days[k]&&S.days[k].body&&S.days[k].body.weight);
   const wVals=wkeys.map(k=>num(S.days[k].body.weight));
-  const wLabels=wkeys.map(k=>{const p=k.split('-');return p[1]+'/'+p[2]});
+  const wLabels=wkeys.map(k=>{const p=k.split('-');return (+p[1])+'/'+(+p[2])});
   const fVals=wkeys.map(k=>num(S.days[k].body.fat));
   const exMin=d.missions.exercise??'';
   const field=(b)=>{const v=d.body[b.id]??'';
@@ -3295,10 +3400,10 @@ function viewBody(){
    <div class="kgrid mt12">${BODY.map(field).join('')}</div>
 
    <div class="section-title mt24"><h2>体重の推移</h2><div class="line"></div></div>
-   <div class="card">${svgLine(wVals,{labels:wLabels,h:170,color:'#00E68A',color2:'#00E5FF'})}</div>
+   <div class="card">${svgLine(wVals,{labels:wLabels,h:170,color:'#00E68A',zero:false,fmtv:v=>(Math.round(v*10)/10)+'kg'})}</div>
 
    <div class="section-title mt20"><h2>体脂肪の推移</h2><div class="line"></div></div>
-   <div class="card">${svgLine(fVals,{labels:wLabels,h:150,color:'#FFB020',color2:'#FFD23F'})}</div>
+   <div class="card">${svgLine(fVals,{labels:wLabels,h:150,color:'#FFB020',zero:false,fmtv:v=>(Math.round(v*10)/10)+'%'})}</div>
    <div class="tabbar-spacer"></div>
   </div>`;
 }
@@ -3368,7 +3473,7 @@ function viewLevels(){
   const achRow=(x)=>{const un=!!S.cache.unlocked[x.id];let prog='';
     if(!un&&x.p){const[c,t]=x.p(a);const pct=clamp(Math.round(c/t*100),0,100);
       prog=`<div class="ap"><div class="lgauge"><i style="width:${pct}%;background:linear-gradient(90deg,#2D6BFF,#00E5FF)"></i></div>
-        <div class="dim" style="font-size:10px;margin-top:4px;font-family:var(--mono)">${fmt(Math.min(c,t))} / ${fmt(t)}</div></div>`}
+        <div class="dim" style="font-size:11px;margin-top:4px;font-family:var(--mono)">${fmt(Math.min(c,t))} / ${fmt(t)}</div></div>`}
     return `<div class="ach ${un?'un':''}"><div class="am">${x.ico}</div>
       <div class="ai"><div class="an">${x.n}</div><div class="ad">${x.d}</div>${prog}</div>
       <div class="lock">${un?'✓':'🔒'}</div></div>`};
@@ -3553,6 +3658,45 @@ function exportData(){try{const blob=new Blob([JSON.stringify(S)],{type:'applica
   document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
   SFX.success()}catch(e){alert('書き出しに失敗した: '+e.message)}}
 function triggerImport(){$('#importFile').click()}
+/* ---------- Googleドライブへの自動バックアップ（GAS経由） ----------
+   ・シート連携のURLと連携キーを使う。6時間に1回まで、起動時と復帰時に自動で送る（同じ日は上書き）
+   ・ドライブの「EGO LOCK バックアップ」フォルダに直近30日分が残る */
+function bkCfg(){const s=S.settings;return s.backup||(s.backup={auto:true,last:0,lastTry:0,lastErr:null,size:0})}
+function bkReady(){const s=sheetCfg();return !!((s.url||'').trim()&&(s.key||'').trim())}
+let _bkBusy=false,bkList=null,bkListErr='';
+function bkErrText(e){const m=String(e&&e.message||e);return /unknown action/.test(m)?'GASの更新が必要（gas/README.md の「バックアップ」の手順）':m}
+async function backupNow(manual){
+  if(!bkReady()){if(manual)showMsg('BACKUP','設定のシート連携に GAS URL と連携キーを入れてください');return false}
+  if(_bkBusy)return false;_bkBusy=true;const b=bkCfg();b.lastTry=Date.now();
+  try{const data=JSON.stringify(S);const d=await calPost({action:'backup',day:todayKey(),data});
+    b.last=Date.now();b.size=d.size||data.length;b.lastErr=null;save(true);
+    if(manual){SFX.success();showMsg('BACKUP',`Googleドライブに保存した（${Math.round(b.size/1024)}KB）`)}
+    return true}
+  catch(e){b.lastErr=bkErrText(e);save(true);if(manual)showMsg('BACKUP 失敗',b.lastErr);return false}
+  finally{_bkBusy=false;if(route.sub==='settings')calRerender()}}
+function backupAuto(){const b=bkCfg();if(!b.auto||!bkReady()||!navigator.onLine)return;
+  if(Date.now()-Math.max(b.last||0,b.lastTry||0)<6*3600000)return;backupNow(false)}
+async function bkLoadList(){bkList=[];bkListErr='読み込み中…';render();
+  try{const d=await calPost({action:'backupList'});bkList=d.files||[];bkListErr=bkList.length?'':'まだバックアップがありません'}
+  catch(e){bkList=null;bkListErr=bkErrText(e)}render()}
+async function bkRestore(id,day){
+  if(!confirm(`${day} のバックアップで、この端末のデータを上書きする。実行する？（今のデータは先にファイルへ書き出しておくと安心）`))return;
+  try{const d=await calPost({action:'restore',id});const obj=JSON.parse(d.data);
+    if(!obj||!obj.days)throw new Error('EGO LOCKのデータではありません');
+    S=migrate(obj);save();prevLevel=levelInfo(totalXp()).level;bkList=null;render();SFX.success();showMsg('BACKUP',`${day} の状態に戻した`)}
+  catch(e){showMsg('復元 失敗',bkErrText(e))}}
+function bkHtml(){const b=bkCfg();const ok=bkReady();
+  const st=!ok?'<span style="color:var(--gold)">シート連携の URL と連携キーが必要</span>'
+    :b.lastErr?`<span style="color:var(--red)">${tkEsc(b.lastErr)}</span>`
+    :b.last?`最終 ${calAgo(b.last)} · ${Math.max(1,Math.round((b.size||0)/1024))}KB`:'まだ保存していない';
+  return `<div class="srow"><div><div class="sl">Googleドライブに自動バックアップ</div><div class="sd">${st}</div></div>
+      <div class="sw ${b.auto?'on':''}" onclick="bkCfg().auto=!bkCfg().auto;SFX.tap();save(true);render();backupAuto()"><i></i></div></div>
+    <div class="row mt12" style="gap:8px"><button class="btn cyan sm" style="flex:1;white-space:nowrap" onclick="backupNow(true)">今すぐバックアップ</button>
+      <button class="btn ghost sm" style="flex:1;white-space:nowrap" onclick="bkLoadList()">ドライブから復元</button></div>
+    ${bkList||bkListErr?`<div class="bk-list mt10">${bkListErr?`<div class="dim" style="font-size:12px;padding:6px 0">${tkEsc(bkListErr)}</div>`:''}
+      ${(bkList||[]).slice(0,10).map(f=>`<div class="srow"><div><div class="sl num">${f.day}</div><div class="sd">${Math.max(1,Math.round(f.size/1024))}KB</div></div>
+        <button class="btn ghost sm" onclick="bkRestore('${tkEsc(f.id)}','${f.day}')">この日に戻す</button></div>`).join('')}</div>`:''}
+    <div class="dim" style="font-size:11.5px;margin-top:10px;line-height:1.6">ドライブの「EGO LOCK バックアップ」フォルダに1日1ファイル、直近30日分が残る。機種変更したら、新しい端末でシート連携を入れて「ドライブから復元」。</div>`}
 function handleImport(input){const f=input.files&&input.files[0];if(!f)return;
   const r=new FileReader();r.onload=()=>{try{const obj=JSON.parse(r.result);
     if(!obj||!obj.days){alert('このファイルはEGO LOCKのバックアップではない。');return}
@@ -3566,7 +3710,7 @@ const TARGET_FIELDS=[
  {k:'sleepH',  n:'睡眠 目標',      u:'h',  t:'number'},
  {k:'wake',    n:'起床 目標時刻',  u:'',   t:'time'},
  {k:'exerciseMin',n:'筋トレ・運動 目標',u:'分', t:'number'},
- {k:'deepMin', n:'Deep Work 目標', u:'分', t:'number'},
+ {k:'deepMin', n:'Deep Work 目標（予定の時間も含む）', u:'分', t:'number'},
  {k:'readingMin',n:'読書 目標',    u:'分', t:'number'},
  {k:'waterMl', n:'水 目標',        u:'ml', t:'number'},
  {k:'proteinG',n:'タンパク質 目標',u:'g',  t:'number'}
@@ -3645,6 +3789,9 @@ function viewSettings(){
 
    <div class="section-title mt20"><h2>データ</h2><div class="line"></div></div>
    <div class="card">
+     ${bkHtml()}
+   </div>
+   <div class="card mt12">
      <div class="srow"><div><div class="sl">記録日数</div><div class="sd">${days}日分のデータを保存中</div></div>
        <div class="num" style="font-size:20px;font-weight:700;color:var(--cyan)">${days}</div></div>
      <div style="display:flex;gap:9px;margin-top:14px">
@@ -3653,7 +3800,7 @@ function viewSettings(){
      </div>
      <input id="importFile" type="file" accept="application/json,.json" style="display:none" onchange="handleImport(this)">
      <button class="btn red block mt12" onclick="resetData()">全データを削除</button>
-     <div class="dim" style="font-size:11px;margin-top:10px;line-height:1.5">データはこの端末内（localStorage）にのみ保存される。機種変更やブラウザ削除に備え、定期的に書き出しておけ。複数端末で同期したい場合は、Supabase連携を後から追加できる。</div>
+     <div class="dim" style="font-size:11px;margin-top:10px;line-height:1.5">データ本体はこの端末内（localStorage）に保存される。上の自動バックアップとは別に、手元にファイルで残したい時は書き出す。</div>
    </div>
 
    <div class="card mt16" style="text-align:center;background:rgba(45,120,255,.05)">
@@ -3662,15 +3809,15 @@ function viewSettings(){
    </div>
    <div class="section-title mt20"><h2>心の型</h2><div class="line"></div></div>
    <div class="card" style="padding:4px 16px">
-    <div class="row"><div><div style="font-size:13.5px">最後に自分から連絡した日</div>
+    <div class="srow"><div><div style="font-size:13.5px">最後に自分から連絡した日</div>
       <div class="sub">経過日数の表示に使う。空欄でもいい。</div></div>
       <input type="date" style="width:150px" value="${tideCache().lastContact||''}"
         onchange="tideCache().lastContact=this.value;save();render()"></div>
-    <div class="row"><div><div style="font-size:13.5px">1日のメール確認 上限</div>
+    <div class="srow"><div><div style="font-size:13.5px">1日のメール確認 上限</div>
       <div class="sub">ゼロは目指さない。決めた回数に収まっているかだけ見る。</div></div>
       <input type="number" inputmode="numeric" style="width:90px;text-align:right" value="${tideCache().mailLimit}"
         onchange="tideCache().mailLimit=clamp(num(this.value),0,20);save();render()"></div>
-    <div class="row"><div><div style="font-size:13.5px">記録した波</div>
+    <div class="srow" style="border-bottom:0"><div><div style="font-size:13.5px">記録した波</div>
       <div class="sub">端末内にのみ保存。外には出ない。</div></div>
       <div class="num" style="font-size:17px">${tideCache().waves.length}</div></div>
    </div>
@@ -3703,7 +3850,7 @@ function dailyGreeting(){
 function unlockAudio(){if(!S.settings.sound)return;const a=ac();if(a&&a.state==='running'&&!a._primed){try{const b=a.createBuffer(1,1,22050),s=a.createBufferSource();s.buffer=b;s.connect(a.destination);s.start(0);a._primed=true}catch(e){}}}
 ['pointerdown','touchstart','touchend','click'].forEach(ev=>addEventListener(ev,unlockAudio,{passive:true,capture:true}));
 // keep deep-work timer alive when returning to the tab
-document.addEventListener('visibilitychange',()=>{if(!document.hidden){if(AC&&S.settings.sound)ac();if(dwCalApply())calRerender();restoreTide();const tk=todayKey();if(tk!==_curBootDay){_curBootDay=tk;selKey=tk;render()}if(route.tab==='focus')ensureDwTimer();renderHeader();if(sheetCfg().auto&&sheetCfg().url)syncSheet(false)}});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){if(AC&&S.settings.sound)ac();setTimeout(backupAuto,2500);if(dwCalApply())calRerender();restoreTide();const tk=todayKey();if(tk!==_curBootDay){_curBootDay=tk;selKey=tk;render()}if(route.tab==='focus')ensureDwTimer();renderHeader();if(sheetCfg().auto&&sheetCfg().url)syncSheet(false)}});
 // install hint (iOS / not standalone)
 function maybeInstallHint(){
   const standalone=window.navigator.standalone===true||matchMedia('(display-mode:standalone)').matches;
@@ -3730,6 +3877,7 @@ maybeInstallHint();
 restoreTide();       // 保留中だった波を引き継ぐ
 checkAchievements(); // silently sync any already-earned (no toast spam on first migrate)
 save(true);
+setTimeout(backupAuto,4000); // 起動後に裏でバックアップ（6時間に1回まで）
 </script>
 </body>
 </html>

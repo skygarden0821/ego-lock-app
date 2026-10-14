@@ -13,6 +13,11 @@
  *   - ops   … タスクの予定を作成・更新・削除（EGO LOCKが作った予定だけ）
  *   - probe … 書き込み先カレンダーに書けるかを確認
  *
+ *  バックアップ（doPost / KEY必須）:
+ *   - backup     … アプリの全データを Googleドライブ「EGO LOCK バックアップ」フォルダに日付ごとに保存（直近30件を残す）
+ *   - backupList … 保存済みバックアップの一覧
+ *   - restore    … 指定したバックアップの中身を返す
+ *
  *  デプロイ手順は gas/README.md 参照（種類:ウェブアプリ / 実行:自分 / アクセス:全員）。
  */
 
@@ -44,6 +49,12 @@ var CONFIG = {
     readIds: ['xector1.kunoike@gmail.com'], // 空き時間の計算に読む予定（複数可）
     tagKey: 'egolock',                      // EGO LOCKが作った予定の目印。これが無い予定には一切触らない
     maxRangeDays: 40
+  },
+
+  // ④ バックアップ（アプリの全データを自分のGoogleドライブに保存）
+  BACKUP: {
+    folder: 'EGO LOCK バックアップ', // マイドライブ直下に自動で作られる
+    keep: 30                         // 新しい順に何日分残すか
   }
 };
 
@@ -175,6 +186,14 @@ function doPost(e) {
     if (body.key !== key) return _json({ ok: false, error: 'bad key' });
     var a = body.action;
     if (a === 'probe') return _json(_calProbe());
+    if (a === 'backup') {
+      var bl = LockService.getScriptLock();
+      bl.waitLock(20000);
+      try { return _json(_backup(body)); }
+      finally { bl.releaseLock(); }
+    }
+    if (a === 'backupList') return _json(_backupList());
+    if (a === 'restore') return _json(_restore(body));
     if (a === 'read') return _json(_calRead(body));
     if (a === 'ops') {
       var lock = LockService.getScriptLock();
@@ -324,6 +343,57 @@ function _calProbe() {
   return out;
 }
 
+/* ================================================================
+ *  バックアップ（Googleドライブ）
+ * ================================================================ */
+var BK_RE = /^egolock-\d{4}-\d{2}-\d{2}\.json$/;
+
+function _bkFolder() {
+  var name = CONFIG.BACKUP.folder;
+  var it = DriveApp.getFoldersByName(name);
+  return it.hasNext() ? it.next() : DriveApp.createFolder(name);
+}
+
+function _bkFiles(f) {
+  var out = [], all = f.getFiles();
+  while (all.hasNext()) { var x = all.next(); if (BK_RE.test(x.getName())) out.push(x); }
+  out.sort(function (a, b) { return a.getName() < b.getName() ? 1 : -1; }); // 新しい日付が先
+  return out;
+}
+
+/** 1日1ファイル（同じ日は上書き）。古いものは keep 件を超えたらゴミ箱へ */
+function _backup(b) {
+  var data = String(b.data || '');
+  if (data.length < 10) return { ok: false, error: 'データが空です' };
+  try { var o = JSON.parse(data); if (!o || !o.days) throw 'x'; } catch (x) { return { ok: false, error: 'EGO LOCKのデータではありません' }; }
+  var day = /^\d{4}-\d{2}-\d{2}$/.test(String(b.day || '')) ? String(b.day)
+    : Utilities.formatDate(new Date(), Session.getScriptTimeZone() || 'Asia/Tokyo', 'yyyy-MM-dd');
+  var f = _bkFolder(), name = 'egolock-' + day + '.json';
+  var it = f.getFilesByName(name);
+  if (it.hasNext()) it.next().setContent(data);
+  else f.createFile(name, data, MimeType.PLAIN_TEXT);
+  var files = _bkFiles(f);
+  for (var i = CONFIG.BACKUP.keep; i < files.length; i++) files[i].setTrashed(true);
+  return { ok: true, name: name, size: data.length, kept: Math.min(files.length, CONFIG.BACKUP.keep), folder: f.getName() };
+}
+
+function _backupList() {
+  var f = _bkFolder();
+  return { ok: true, folder: f.getName(), files: _bkFiles(f).slice(0, CONFIG.BACKUP.keep).map(function (x) {
+    return { id: x.getId(), name: x.getName(), day: x.getName().slice(8, 18), size: x.getSize(), updated: x.getLastUpdated().getTime() };
+  }) };
+}
+
+/** バックアップフォルダの中のファイルだけを返す（それ以外のファイルIDは拒否） */
+function _restore(b) {
+  var id = String(b.id || '');
+  if (!id) return { ok: false, error: 'ファイルが指定されていません' };
+  var f = _bkFolder(), file = null;
+  _bkFiles(f).forEach(function (x) { if (x.getId() === id) file = x; });
+  if (!file) return { ok: false, error: 'バックアップが見つかりません' };
+  return { ok: true, name: file.getName(), data: file.getBlob().getDataAsString('UTF-8') };
+}
+
 function _findCol(header, needle) {
   needle = String(needle).trim();
   var i = header.indexOf(needle);
@@ -364,4 +434,7 @@ function _test() {
   // カレンダー連携の確認（初回はカレンダーの権限許可が出る）
   var p = doPost({ postData: { contents: JSON.stringify({ key: key, action: 'probe' }) } });
   Logger.log(p.getContent());
+  // バックアップの確認（初回はGoogleドライブの権限許可が出る）
+  var l = doPost({ postData: { contents: JSON.stringify({ key: key, action: 'backupList' }) } });
+  Logger.log(l.getContent());
 }
