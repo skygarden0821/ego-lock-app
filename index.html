@@ -512,6 +512,9 @@ textarea.tall{min-height:130px}
 .pillar .pd{font-size:11px;color:var(--dim);margin-top:8px;line-height:1.6}
 .pillar .lk{background:none;border:none;color:var(--cyan);font-size:11px;cursor:pointer;padding:0 0 0 4px;font-weight:600}
 .mrow .lk{background:none;border:none;color:var(--cyan);font-size:12px;cursor:pointer;padding:4px 0;font-weight:700;font-family:var(--font)}
+.lk-inline{display:inline-block;margin-left:8px;background:none;border:none;color:var(--cyan);font-size:12px;font-weight:700;cursor:pointer;padding:2px 0;font-family:var(--font)}
+.dw-cal{border-color:rgba(95,214,200,.3)!important}
+.dw-cal .ct{color:var(--tide);font-size:11px}
 
 
 @media (min-width:560px){
@@ -985,7 +988,7 @@ function aggregate(){
     revStreak:0, sessions:0};
   const keys=Object.keys(S.days).sort();
   for(const k of keys){const d=S.days[k];let touched=false;
-    if(d.deepwork.totalMin>0){a.totalDeepMin+=d.deepwork.totalMin;a.deepDays++;a.sessions+=d.deepwork.sessions.length;touched=true}
+    if(d.deepwork.totalMin>0){a.totalDeepMin+=d.deepwork.totalMin;a.deepDays++;a.sessions+=d.deepwork.sessions.filter(s=>!s.cal).length;touched=true}
     if(d.improvements.length){a.totalImpr+=d.improvements.length;touched=true}
     if(bool(d.missions.training)||num(d.missions.exercise)>=T().exerciseMin){a.trainDays++;touched=true}
     if(d.missions.wake&&wakeScore(d.missions.wake)>=100){a.earlyDays++;touched=true}
@@ -1216,7 +1219,14 @@ function ringSVG(pct,{size=240,stroke=14,color='#2D6BFF',color2='#00E5FF',track=
    ============================================================ */
 let AC=null,MASTER=null;
 const SFX_GAIN=2.7; // SE全体の音量ブースト（音割れ防止に下のceilingあり）
-function ac(){if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)();MASTER=AC.createGain();MASTER.gain.value=0.9;MASTER.connect(AC.destination)}catch(e){}}if(AC&&AC.state==='suspended')AC.resume();return AC}
+// iPhone対策: 背景から戻ると AudioContext が "interrupted"/"suspended" のまま止まることがあるので、毎回起こし直す。
+// "closed" になっていたら作り直す。マナーモード中は iPhone が Web の効果音を消すので、設定でオーバーライドできる。
+function applyAudioSession(){try{if(navigator.audioSession)navigator.audioSession.type=S.settings.soundSilent?'playback':'auto'}catch(e){}}
+function ac(){
+  if(AC&&AC.state==='closed'){AC=null;MASTER=null}
+  if(!AC){try{applyAudioSession();AC=new(window.AudioContext||window.webkitAudioContext)();MASTER=AC.createGain();MASTER.gain.value=0.9;MASTER.connect(AC.destination)}catch(e){}}
+  if(AC&&AC.state!=='running'){try{const p=AC.resume();if(p&&p.catch)p.catch(()=>{})}catch(e){}}
+  return AC}
 function tone(freq,dur,type='sine',vol=0.15,delay=0){const a=ac();if(!a||!S.settings.sound)return;
   const o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.value=freq;
   const v=Math.min(vol*SFX_GAIN,0.55); // boost then clamp so stacked tones don't distort
@@ -1878,6 +1888,60 @@ function freeSlots(date,now,busy){ // busy: [{s,e}]（余白込み）
 function calFreeMin(date,now){const buf=calCfg().buf*60000;
   return freeSlots(date,now,calFixedOn(date).map(e=>({s:e.s-buf,e:e.e+buf}))).reduce((a,x)=>a+(x.e-x.s),0)/60000}
 
+/* ---------- カレンダーの仕事予定 → Deep Work に自動計上 ----------
+   ・対象: 書き込み先カレンダー（X1_九之池）か、設定した名前を含むカレンダーの予定
+   ・除外: 終日／12時間以上／5分未満／「数えない予定名」「無視する予定名」に当たる予定
+   ・EGO LOCK が作ったタスクの予定は、タスクが完了したものだけ数える
+   ・タイマーで測った時間・予定どうしの重なりは二重に数えない。今日は「今」までの分だけ
+   ・取得範囲（直近7日〜今日）の日だけを毎回作り直すので、予定を動かしたり消したりしても追従する */
+const DW_SKIP_DEFAULT='休憩,昼食,ランチ,ご飯,食事,移動,ジム,筋トレ,散歩,睡眠,仮眠,休み,休日,プライベート,私用,通院,病院,美容院';
+function dwCfg(){const c=calCfg();if(c.dw===undefined)c.dw=true;if(c.dwCal===undefined)c.dwCal='X1_九之池';if(c.dwSkip===undefined)c.dwSkip=DW_SKIP_DEFAULT;return c}
+function wordsRe(str){const w=String(str||'').split(/[,、，]+/).map(s=>s.trim()).filter(Boolean);
+  return w.length?new RegExp(w.map(s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|'),'i'):null}
+function dwIsWork(e,byTag,byCal){const c=dwCfg();
+  if(e.ad||(e.e-e.s)>=12*3600000||(e.e-e.s)<5*60000)return false;
+  const nm=String(c.dwCal||'').trim().toLowerCase();
+  if(!(e.own||(nm&&String(e.cal||'').toLowerCase().includes(nm))))return false;
+  const tk=(e.tag&&byTag[e.tag])||byCal[e.id];
+  if(e.tag||tk)return !!(tk&&tk.done);
+  const title=String(e.t||'').replace(/^\s*(✅|✔|✓|☑|済)\s*/,'');
+  const skip=wordsRe(c.dwSkip),ign=calIgnoreRe();
+  return !((skip&&skip.test(title))||(ign&&ign.test(title)));
+}
+function ivSubtract(seg,cov){let out=[seg];cov.forEach(([a,b])=>{const nx=[];
+  out.forEach(([x,y])=>{if(b<=x||a>=y){nx.push([x,y]);return}if(a>x)nx.push([x,a]);if(b<y)nx.push([b,y])});out=nx});return out}
+function dwCalApply(){
+  if(!calReady())return false;const cc=calCache();if(!cc.fetched)return false;
+  const c=dwCfg(),tk=todayKey(),now=Date.now();
+  let first=dateKey(new Date(cc.from||atMs(addDays(tk,-1),'00:00')));if(first>tk)first=tk;
+  const keys=[];for(let k=first,g=0;k<=tk&&g<45;k=addDays(k,1),g++)keys.push(k);
+  const byTag={},byCal={};tkState().list.forEach(x=>{byTag[x.id]=x;if(x.calId)byCal[x.calId]=x});
+  const evs=c.dw?(cc.events||[]).filter(e=>dwIsWork(e,byTag,byCal)).sort((a,b)=>a.s-b.s):[];
+  let changed=false;
+  keys.forEach(k=>{
+    const d0=atMs(k,'00:00'),d1=Math.min(atMs(addDays(k,1),'00:00'),now);
+    const dayEv=evs.filter(e=>e.s<d1&&e.e>d0);
+    if(!S.days[k]&&!dayEv.length)return;
+    const dw=day(k).deepwork;
+    const oldCal=dw.sessions.filter(s=>s.cal),keep=dw.sessions.filter(s=>!s.cal);
+    const cov=keep.filter(s=>s.start&&s.end).map(s=>[s.start,s.end]);
+    if(k===tk&&dw.active&&dw.active.start)cov.push([dw.active.start,now]);
+    const add=[];
+    dayEv.forEach(e=>{const s=Math.max(e.s,d0),en=Math.min(e.e,d1);if(en<=s)return;
+      const ms=ivSubtract([s,en],cov).reduce((a,[x,y])=>a+(y-x),0);cov.push([s,en]);
+      const min=Math.round(ms/60000);if(min>=1)add.push({cal:true,evId:e.id,t:String(e.t||'').slice(0,80),start:s,end:en,min})});
+    const same=oldCal.length===add.length&&oldCal.every((s,i)=>s.evId===add[i].evId&&s.min===add[i].min&&s.start===add[i].start&&s.t===add[i].t);
+    if(same)return;
+    const oldSum=oldCal.reduce((a,s)=>a+(s.min||0),0),newSum=add.reduce((a,s)=>a+s.min,0);
+    dw.sessions=keep.concat(add);dw.totalMin=Math.max(0,(dw.totalMin||0)-oldSum+newSum);changed=true;
+  });
+  if(changed)save(true);
+  return changed;
+}
+function dwCalToday(){const d=S.days[todayKey()];return d?d.deepwork.sessions.filter(s=>s.cal).reduce((a,s)=>a+s.min,0):0}
+function dwSet(f,v){const c=dwCfg();if(f==='dw')c.dw=!!v;else c[f]=String(v||'').slice(0,300);SFX.tap();
+  dwCalApply();checkProgress();save(true);render()}
+
 /* ---------- 空き時間に並べる ---------- */
 let tkPlanView=null;
 function tkPlan(now){
@@ -1933,7 +1997,7 @@ async function calFlush(){
   return true;
 }
 async function calPull(){
-  const tk=todayKey(),from=atMs(addDays(tk,-1),'00:00'),to=atMs(addDays(tk,15),'00:00');
+  const tk=todayKey(),from=atMs(addDays(tk,-7),'00:00'),to=atMs(addDays(tk,15),'00:00'); // 直近7日分はDeep Workの自動計上にも使う
   const ids=tkState().list.filter(x=>x.calId).map(x=>x.calId);
   const d=await calPost({action:'read',from,to,ids});
   const cc=calCache();cc.events=(d.events||[]).map(e=>({id:String(e.id),t:String(e.t||''),s:+e.s,e:+e.e,ad:!!e.ad,tag:e.tag||'',cal:e.cal||'',own:!!e.own}));
@@ -1973,6 +2037,7 @@ async function calSync(manual){
   _calSyncing=true;_calLastTry=now;const c=calCfg();
   try{
     await calFlush();await calPull();
+    if(dwCalApply())checkProgress();
     c.lastSync=Date.now();c.lastErr=null;save(true);
     if(manual){calSnd('success');calMsg('CALENDAR',`${calCache().name||'カレンダー'}と同期した`)}
     return true;
@@ -2019,6 +2084,13 @@ function calSettingsHtml(){const c=calCfg(),s=sheetCfg(),cc=calCache();
        <input value="${tkEsc(c.ignore)}" placeholder="予約NG" onchange="calSetCfg('ignore',this.value)"></label>
      <div class="srow mt12"><div><div class="sl">完了時刻で予定を締める</div><div class="sd">早く終わったら、その分カレンダーの枠を空ける</div></div>
        <div class="sw ${c.shrink?'on':''}" onclick="calSetCfg('shrink',!calCfg().shrink)"><i></i></div></div>
+     <div class="srow mt12"><div><div class="sl">仕事の予定を Deep Work に数える</div><div class="sd">終わった予定の時間を自動で計上（直近7日分まで追従）。タイマーと重なった分は二重に数えない。EGO LOCKのタスク予定は完了したものだけ</div></div>
+       <div class="sw ${dwCfg().dw?'on':''}" onclick="dwSet('dw',!dwCfg().dw)"><i></i></div></div>
+     ${dwCfg().dw?`<label class="fld mt12"><span class="lab">対象カレンダー <span class="dim">名前の一部。書き込み先は常に対象</span></span>
+       <input value="${tkEsc(dwCfg().dwCal)}" placeholder="X1_九之池" onchange="dwSet('dwCal',this.value)"></label>
+     <label class="fld mt12"><span class="lab">Deep Work に数えない予定名 <span class="dim">カンマ区切り・部分一致</span></span>
+       <textarea style="min-height:64px" onchange="dwSet('dwSkip',this.value)">${tkEsc(dwCfg().dwSkip)}</textarea></label>
+     <div class="dim" style="font-size:11.5px;margin-top:6px">上の「無視する予定名」（${tkEsc(c.ignore||'なし')}）も数えない。</div>`:''}
      ${(tkState().outbox.length||c.lastErr)?`<div class="dim mt12" style="font-size:11.5px">${tkState().outbox.length?`送信待ち ${tkState().outbox.length}件 `:''}${c.lastErr?`<span style="color:var(--red)">${tkEsc(c.lastErr)}</span>`:''}</div>`:''}
      <div class="row mt12" style="gap:8px"><button class="btn ghost sm" style="flex:1;white-space:nowrap" onclick="calTest()">接続テスト</button><button class="btn cyan sm" style="flex:1;white-space:nowrap" onclick="calSync(true)">今すぐ同期</button></div>
    </div>`;
@@ -2889,16 +2961,16 @@ function viewKpi(){
    VIEW: FOCUS (Deep Work)
    ============================================================ */
 let dwTimer=null;
-function startDeep(){const d=day();if(d.deepwork.active)return;ac();d.deepwork.active={start:Date.now()};
+function startDeep(){const d=day();if(d.deepwork.active)return;ac();d.deepwork.active={start:Date.now()};dwCalApply();
   save(true);SFX.deep();showMsg('DEEP WORK',pick(MSG.deepStart));render()}
 function endDeep(){const d=day();const a=d.deepwork.active;if(!a)return;
   const min=Math.max(1,Math.round((Date.now()-a.start)/60000));
   d.deepwork.sessions.push({start:a.start,end:Date.now(),min});
-  d.deepwork.totalMin+=min;d.deepwork.active=null;
+  d.deepwork.totalMin+=min;d.deepwork.active=null;dwCalApply();
   SFX.success();showMsg('DEEP WORK',pick(MSG.deepEnd));checkProgress();save();render()}
 function cancelDeep(){const d=day();if(!d.deepwork.active)return;
   if(!confirm('このセッションを破棄する？記録されない。'))return;
-  d.deepwork.active=null;save();render()}
+  d.deepwork.active=null;dwCalApply();save();render()}
 /* つけ忘れた集中時間を後から追加（日付指定OK） */
 function dwQuick(n){const el=$('#dwManMin');if(el){el.value=n;el.focus()}}
 function addDeepManual(){
@@ -2909,7 +2981,7 @@ function addDeepManual(){
   const mm=Math.min(min,720);
   const d=day(k);
   d.deepwork.sessions.push({start:null,end:null,min:mm,manual:true,ts:Date.now()});
-  d.deepwork.totalMin+=mm;
+  d.deepwork.totalMin+=mm;dwCalApply();
   if(mEl)mEl.value='';
   SFX.success();showMsg('DEEP WORK',`${k===todayKey()?'今日':fmtDate(k)}に +${mm}分 追加した`);
   checkProgress();save();render();
@@ -2974,6 +3046,8 @@ function viewFocus(){
      </div>
    </div>
 
+   ${calReady()?(dwCfg().dw?`<div class="sub mt10" style="font-size:12px;color:var(--tide)">📅 カレンダーの仕事予定から 今日 ${dwCalToday()}分 を自動で計上中（タイマーと重なった分は除く）</div>`
+     :`<div class="sub mt10" style="font-size:12px">カレンダーの予定を Deep Work に数える設定はOFF（設定 › カレンダー連携）</div>`):''}
    <div class="chips mt12">
     <div class="chip"><div class="cv" style="color:var(--cyan)">${Math.floor(todayMin/60)}<span style="font-size:11px">h</span>${todayMin%60}<span style="font-size:11px">m</span></div><div class="cl">今日合計</div></div>
     <div class="chip"><div class="cv">${Math.floor(wkMin/60)}<span style="font-size:11px">h</span></div><div class="cl">今週</div></div>
@@ -3001,7 +3075,9 @@ function viewFocus(){
    </div>
 
    ${dw.sessions.length?`<div class="section-title mt20"><h2>今日のセッション</h2><div class="line"></div></div>
-   <div>${dw.sessions.map((s,i)=>{
+   <div>${dw.sessions.map((s,i)=>[s,i]).sort((a,b)=>(a[0].start||9e15)-(b[0].start||9e15)).map(([s,i])=>{
+     if(s.cal)return `<div class="li dw-cal"><div class="lh"><div style="min-width:0"><b style="font-size:15px">${s.min}分</b> <span class="ct">📅 ${tkEsc(s.t||'予定')}</span></div>
+       <span class="when">${hmOf(s.start)}–${hmOf(s.end)}</span></div></div>`;
      const when=s.start?(()=>{const t=new Date(s.start);return String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0')+' 開始'})():'手動追加';
      return `<div class="li"><div class="lh"><div><b style="font-size:15px">${s.min}分</b> <span class="dim" style="font-size:11px">SESSION ${i+1}${s.manual?' · 手動':''}</span></div>
        <div style="display:flex;align-items:center;gap:8px"><span class="when">${when}</span>${s.manual?`<button class="jedit" onclick="delDeepSession('${tk}',${i})">削除</button>`:''}</div></div></div>`}).join('')}</div>`:''}
@@ -3461,6 +3537,11 @@ function monthVerdict(g,rate,perfect,ai,active){
    VIEW: SETTINGS
    ============================================================ */
 function toggleSound(){S.settings.sound=!S.settings.sound;if(S.settings.sound){ac();SFX.on()}save(true);render()}
+function toggleSoundSilent(){S.settings.soundSilent=!S.settings.soundSilent;applyAudioSession();
+  if(AC){try{AC.close()}catch(e){}AC=null;MASTER=null} // セッションの種類を反映させるため作り直す
+  save(true);render();if(S.settings.sound){ac();setTimeout(()=>SFX.success(),60)}}
+function testSound(){if(!S.settings.sound){S.settings.sound=true;save(true)}const a=ac();SFX.success();
+  setTimeout(()=>{const st=a?a.state:'なし';if(st!=='running')showMsg('SOUND',`音声が止まっている状態です（${st}）。もう一度押してください。`);render()},400)}
 function updTarget(el,key){const v=key==='wake'?el.value:num(el.value);S.settings.targets[key]=v;
   liveRefresh();clearTimeout(updTimer);updTimer=setTimeout(()=>save(true),400)}
 function updName(el){S.settings.name=el.value.slice(0,20);clearTimeout(updTimer);updTimer=setTimeout(()=>save(true),400)}
@@ -3511,8 +3592,10 @@ function viewSettings(){
 
    <div class="section-title mt20"><h2>基本</h2><div class="line"></div></div>
    <div class="card">
-     <div class="srow"><div><div class="sl">サウンド</div><div class="sd">演出・効果音のON / OFF</div></div>
+     <div class="srow"><div><div class="sl">サウンド</div><div class="sd">演出・効果音のON / OFF<button class="lk-inline" onclick="testSound()">▶ 鳴らしてみる</button></div></div>
        <div class="sw ${s.sound?'on':''}" onclick="toggleSound()"><i></i></div></div>
+     <div class="srow"><div><div class="sl">マナーモード中も鳴らす</div><div class="sd">iPhoneはマナーモードだとアプリの効果音を消す。ONにすると鳴る（iOS 17以降。再生中の音楽が一時止まることがある）</div></div>
+       <div class="sw ${s.soundSilent?'on':''}" onclick="toggleSoundSilent()"><i></i></div></div>
      <div class="srow"><div style="flex:1"><div class="sl">名前</div><div class="sd">HUDやレポートで使われる</div></div>
        <input style="width:140px" value="${(s.name||'').replace(/"/g,'&quot;')}" oninput="updName(this)" placeholder="YOSHI"></div>
    </div>
@@ -3615,12 +3698,12 @@ function dailyGreeting(){
     },650);
   }
 }
-// audio unlock on first interaction
-function unlockAudioOnce(){ac();removeEventListener('pointerdown',unlockAudioOnce);removeEventListener('touchstart',unlockAudioOnce)}
-addEventListener('pointerdown',unlockAudioOnce,{passive:true});
-addEventListener('touchstart',unlockAudioOnce,{passive:true});
+// audio unlock: iPhone は touchend / click でしか音の再生を許可しないので、そこでも起こす。
+// 一度で外さず、止まっていたら次のタップで毎回起こし直す（復帰後に無音になるのを防ぐ）
+function unlockAudio(){if(!S.settings.sound)return;const a=ac();if(a&&a.state==='running'&&!a._primed){try{const b=a.createBuffer(1,1,22050),s=a.createBufferSource();s.buffer=b;s.connect(a.destination);s.start(0);a._primed=true}catch(e){}}}
+['pointerdown','touchstart','touchend','click'].forEach(ev=>addEventListener(ev,unlockAudio,{passive:true,capture:true}));
 // keep deep-work timer alive when returning to the tab
-document.addEventListener('visibilitychange',()=>{if(!document.hidden){restoreTide();const tk=todayKey();if(tk!==_curBootDay){_curBootDay=tk;selKey=tk;render()}if(route.tab==='focus')ensureDwTimer();renderHeader();if(sheetCfg().auto&&sheetCfg().url)syncSheet(false)}});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){if(AC&&S.settings.sound)ac();if(dwCalApply())calRerender();restoreTide();const tk=todayKey();if(tk!==_curBootDay){_curBootDay=tk;selKey=tk;render()}if(route.tab==='focus')ensureDwTimer();renderHeader();if(sheetCfg().auto&&sheetCfg().url)syncSheet(false)}});
 // install hint (iOS / not standalone)
 function maybeInstallHint(){
   const standalone=window.navigator.standalone===true||matchMedia('(display-mode:standalone)').matches;
@@ -3640,6 +3723,7 @@ if('serviceWorker' in navigator){
 prevLevel=levelInfo(totalXp()).level;
 S.cache.level=prevLevel;
 day(); // ensure today exists
+dwCalApply(); // キャッシュ済みの予定から Deep Work を更新（通信なし）
 render();
 dailyGreeting();
 maybeInstallHint();
