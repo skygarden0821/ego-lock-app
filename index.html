@@ -178,6 +178,7 @@ select{appearance:none;-webkit-appearance:none;background-image:url("data:image/
 .tnote{padding:12px 0;border-top:1px solid var(--line);margin-top:10px}
 .tnote .tn-d{font-size:11.5px;color:var(--dim)}
 .tnote .tn-t{font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;font-size:14.5px;line-height:1.9;color:#EAF4F2;white-space:pre-wrap;word-break:break-word;margin-top:6px}
+.mon-sum{font-size:12.5px;color:var(--muted);line-height:1.9}
 .kfield.ro{background:rgba(18,26,46,.35);border-style:dashed}
 .kfield.ro .kv{font-size:18px;font-weight:600;padding-top:5px;color:var(--ice)}
 .kfield.ro .kl .u{color:var(--tide)}
@@ -207,12 +208,32 @@ select{appearance:none;-webkit-appearance:none;background-image:url("data:image/
 .chip .cl{font-size:11px;color:var(--dim);letter-spacing:.05em;margin-top:2px}
 
 /* coach */
+.dwh{padding:16px}
+.dwh.on{border-color:rgba(34,236,255,.45)}
+.dwh-main{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px}
+.dwh-time{font-size:42px;font-weight:800;line-height:1;letter-spacing:.01em;white-space:nowrap}
+.dwh-time small{font-size:16px;color:var(--dim);font-weight:600;margin:0 3px 0 2px}
+.dwh-sub{font-size:12.5px;color:var(--muted);margin-top:7px}
+.dwh-go{padding:14px 22px;font-size:16px;flex:0 0 auto}
+.dwh-act{display:flex;gap:8px;align-items:center;flex:0 0 auto}
+.dwh-tg{font-size:12px;color:var(--dim)}
+.tstrip{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.tstrip>div{background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:10px 4px 9px;text-align:center;cursor:pointer;min-width:0}
+.tstrip>div:active{transform:scale(.96)}
+.tstrip b{display:block;font-size:19px;font-weight:700;line-height:1.2}
+.tstrip b small{font-size:11px;color:var(--dim);font-weight:500;margin-left:1px}
+.tstrip span{display:block;font-size:11px;color:var(--dim);margin-top:3px;white-space:nowrap}
+.restbar{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:var(--rs);border:1px solid rgba(72,235,204,.35);background:var(--teal-soft);margin-bottom:12px;cursor:pointer}
+.restbar b{font:800 12px var(--mono);letter-spacing:.16em;color:var(--teal)}
+.restbar span{flex:1;font-size:12.5px;color:var(--ice);line-height:1.5}
+.restbar i{color:var(--dim);font-style:normal}
 .coach{background:linear-gradient(135deg,rgba(20,28,52,.8),rgba(12,16,32,.8));
   border:1px solid var(--line2);border-radius:var(--r);padding:15px;position:relative;overflow:hidden}
 .coach::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(var(--cyan),var(--blue))}
 .coach .ch{display:flex;align-items:center;gap:9px;margin-bottom:10px}
 .coach .av{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;
   background:linear-gradient(135deg,#0E3A6B,#061B33);border:1px solid var(--line2);color:var(--cyan)}
+.coach>.bx{font-size:14px;line-height:1.65;color:var(--text)}
 .coach .ct{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--cyan);font-weight:700}
 .coach .cs{font-size:11px;color:var(--dim)}
 .coach .block{margin-top:11px}
@@ -1302,7 +1323,7 @@ function burst(x,y,n=80,colors=['#00E5FF','#4D8BFF','#fff','#2D6BFF']){
 function loopFx(){fctx.clearRect(0,0,innerWidth,innerHeight);let alive=false;
   for(const p of parts){if(p.life<=0)continue;alive=true;p.vy+=p.g;p.x+=p.vx;p.y+=p.vy;p.vx*=0.99;p.life-=0.016;
     fctx.globalAlpha=Math.max(p.life,0);fctx.fillStyle=p.col;fctx.shadowColor=p.col;fctx.shadowBlur=8;
-    fctx.beginPath();fctx.arc(p.x,p.y,p.size*p.life,0,7);fctx.fill()}
+    if(p.life<=0)continue;fctx.beginPath();fctx.arc(p.x,p.y,Math.max(0,p.size*p.life),0,7);fctx.fill()}
   fctx.shadowBlur=0;fctx.globalAlpha=1;
   if(alive){fxRaf=requestAnimationFrame(loopFx)}else{fxRaf=null;parts=[];fxc.style.display='none'}}
 
@@ -2219,10 +2240,11 @@ function tasksCard(){
   tkRoll();
   const k=todayKey(),mo=todayMode(k),all=tkOn(k);
   const open=all.filter(x=>!x.done),done=all.filter(x=>x.done);
-  let shown=all,note='';
+  // ホームでは未完了の先頭3件だけ。残りと完了分は「やること」タブで見る
+  let shown=open.slice(0,3),note='';
   if(mo==='RECOVERY'){
     const pr=open.filter(x=>x.pri),keep=pr.length?pr:open.slice(0,1);
-    shown=keep.concat(done);
+    shown=keep;
     note=open.length>keep.length?`回復モード。残り${open.length-keep.length}件は今日は見なくていい。`:'回復モード。最重要だけでいい。';
   }
   const b=tkBudget(k,open),over=b.over&&mo!=='RECOVERY';
@@ -2238,7 +2260,8 @@ function tasksCard(){
     <button class="btn ghost sm" onclick="openTasks()">一覧 ›</button></div>
    ${next}
    ${note?`<div class="sub mt8">${note}</div>`:''}
-   <div class="mt8">${shown.length?shown.map(x=>tkRow(x,false)).join(''):`<div class="sub">まだ入っていません。下の欄から1行で追加できます。</div>`}</div>
+   <div class="mt8">${shown.length?shown.map(x=>tkRow(x,false)).join(''):`<div class="sub">${all.length?'今日のタスクはすべて完了。':'まだ入っていません。下の欄から1行で追加できます。'}</div>`}</div>
+   ${open.length>shown.length&&mo!=='RECOVERY'?`<button class="fold-btn" style="color:var(--cyan);margin-top:6px" onclick="openTasks()">ほか ${open.length-shown.length}件を見る ›</button>`:''}
    <div class="tk-quick">
     <input id="tkQuick" enterkeyhint="done" autocomplete="off" placeholder="＋ 今日やることを1行で追加" onkeydown="tkQuickKey(event)">
     <button class="btn primary sm" onclick="tkQuickAdd()">追加</button>
@@ -2339,9 +2362,7 @@ function renderHeader(){memoReset();
      <div class="lvring">${ringSVG(lv.pct,{size:34,stroke:3,glow:false,track:'rgba(120,150,255,.15)'})}<b>${lv.level}</b></div>
      <div class="meta"><span class="t">LV ${lv.level}</span><span class="n">${lv.title}</span></div>
    </div>
-   <div class="streak" title="連続日数"><svg viewBox="0 0 24 24" fill="${st>0?'#FF8A3D':'#3A4660'}" stroke="none"><path d="M12 2c1 4 5 5 5 9a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 3 3-1-3 0-6 0-8z"/></svg>${st}</div>
-   <div class="rankpill"><span class="t">RANK</span>${blank?'<span class="g" style="color:var(--dim)">—</span>':`<span class="g" style="color:${rk.color};text-shadow:0 0 12px ${rk.color}88">${rk.grade}</span>`}</div>
-   <div class="wavebtn" onclick="openTide()" role="button" aria-label="いま、波が来ている" title="いま、波が来ている"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 8c2.5 0 2.5-3 5-3s2.5 3 5 3 2.5-3 5-3 2.5 3 5 3"/><path d="M2 14c2.5 0 2.5-3 5-3s2.5 3 5 3 2.5-3 5-3 2.5 3 5 3"/><path d="M2 20c2.5 0 2.5-3 5-3s2.5 3 5 3 2.5-3 5-3 2.5 3 5 3"/></svg></div>
+   <div class="wavebtn" style="margin-left:auto" onclick="openTide()" role="button" aria-label="いま、波が来ている" title="いま、波が来ている"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 8c2.5 0 2.5-3 5-3s2.5 3 5 3 2.5-3 5-3 2.5 3 5 3"/><path d="M2 14c2.5 0 2.5-3 5-3s2.5 3 5 3 2.5-3 5-3 2.5 3 5 3"/><path d="M2 20c2.5 0 2.5-3 5-3s2.5 3 5 3 2.5-3 5-3 2.5 3 5 3"/></svg></div>
    <div class="gear" onclick="goSub('settings');route.tab='log';render()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 0 1-4 0v-.2a1.6 1.6 0 0 0-2.7-1.1l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.6 1.6 0 0 0 4.6 15H4a2 2 0 0 1 0-4h.2a1.6 1.6 0 0 0 1.1-2.7l-.1-.1A2 2 0 1 1 8 5.4l.1.1A1.6 1.6 0 0 0 10 5.6V5a2 2 0 0 1 4 0v.2a1.6 1.6 0 0 0 2.7 1.1l.1-.1A2 2 0 1 1 19.6 9l-.1.1a1.6 1.6 0 0 0-1.1 2.7V12a2 2 0 0 1 0 4z"/></svg></div>`;
 }
 
@@ -2421,96 +2442,64 @@ function checkProgress(){memoReset();
    VIEW: HOME
    ============================================================ */
 function viewHome(){
-  const k=todayKey();const sc=egoScore(k);const rk=rankOf(sc);const lv=levelInfo(totalXp());
-  const a=aggregate();const d=day(k);const co=coach();
-  const done=DAILY.filter(m=>m.score(d)>=100).length;
-  const dxp=dayXp(d);const rest=isRest(k);const st=Math.max(a.deepStreak,a.perfectStreak);
-  if(!S._quote)S._quote=pick(QUOTES);
-  // 疲労が高い日は詰めない。回復を優先する言葉に差し替える
-  const _mo=todayMode(k);
-  const _hq=(_mo==='RECOVERY')
-    ? pick(['今日は回復も仕事だ。整えた分だけ、明日が動く。','削るべきは気力じゃない。今日の予定のほうだ。','休めるのも能力だ。基準は明日また上げろ。'])
-    : S._quote;
-  if(!S._restQuote)S._restQuote=pick(REST_MSG);
-
-  // ----- REST DAY hero -----
-  const hero = rest ? `
-   <div class="card rest-hero" style="padding:22px 16px 20px">
-    <div class="sheen rest"></div>
-    <div class="center"><span class="eyebrow rest">${fmtDate(k)} · REST DAY</span></div>
-    <div class="rest-badge">REST</div>
-    <div class="rest-line">${S._restQuote}</div>
-    <div class="rest-streak num">連続記録 ${st}日 は休んでも途切れない</div>
-    <button class="btn block mt16 cyan" onclick="go('mission')">休日メニューを開く</button>
-   </div>`
-  : `
-   <div class="card glow" style="padding:20px 16px 18px">
-    <div class="sheen"></div>
-    <div class="center"><span class="eyebrow">${fmtDate(k)} · TODAY'S VERDICT</span></div>
-    <div class="egowrap">
-      <div class="ego">
-        <div data-egoring>${ringSVG(sc,{size:220,stroke:16})}</div>
-        <div class="core">
-          <div class="lab">EGO SCORE</div>
-          <div class="val" data-ego>0</div>
-          <div class="max">/ 100</div>
-          ${todayBlank(k)?'<div class="rk" data-egorank style="color:var(--dim)">まだ採点前</div>':`<div class="rk" data-egorank style="color:${rk.color};text-shadow:0 0 14px ${rk.color}88">RANK ${rk.grade}</div>`}
-        </div>
-      </div>
-    </div>
-    <div class="quote"><span class="q">「</span>${_hq}<span class="q">」</span></div>
-   </div>`;
-  if(!rest)onMount(()=>animateNumber('[data-ego]',sc));
+  const k=todayKey();const rest=isRest(k);const co=coach();
   if(sheetCfg().auto&&sheetCfg().url)onMount(()=>syncSheet(false));
-
-  // 並び: 回復モード（その日の前提）→ 目標 → 今日のタスク → 判定 → 心の型。開いてすぐ「やること」が見える順
+  if(!S._restQuote)S._restQuote=pick(REST_MSG);
+  // ホームは「今日」だけ: Deep Work → 今日のまとめ1行 → 月の目標 → 次のタスク → コーチ1行。
+  // ほかの仕組み（心の型・WEALTH・ステージ等）は各タブと「記録」の中に置く
   return `<div class="view">
    ${recoveryCard(k).replace('class="recov"','class="recov" style="margin-top:0;margin-bottom:12px"')}
-   ${goalsCard()}
+   ${rest?`<div class="restbar" onclick="go('mission')"><b>REST</b><span>${S._restQuote}</span><i>›</i></div>`:''}
+   ${dwHero()}
+   ${todayStrip(k)}
+   <div class="mt12">${goalsCard()}</div>
    ${tasksCard()}
-   <div class="mt12">${hero}</div>
-   ${tideCard()}
-
-   <div class="chips mt12">
-    <div class="chip"><div class="cv" style="color:var(--cyan)">${done}<span style="font-size:12px;color:var(--dim)">/${DAILY.length}</span></div><div class="cl">規律ミッション</div></div>
-    <div class="chip"><div class="cv">${Math.floor(d.deepwork.totalMin/60)}<span style="font-size:11px">h</span>${d.deepwork.totalMin%60}<span style="font-size:11px">m</span></div><div class="cl">Deep Work</div></div>
-    <div class="chip"><div class="cv" style="color:var(--gold)">+${fmt(dxp)}</div><div class="cl">今日のXP</div></div>
-   </div>
-
    ${rest?'':coachCard(co)}
-
-   ${(()=>{const rev=monthRevenue();const wt=wealthTierIdx(rev);const tier=WEALTH_TIERS[wt];
-     const next=WEALTH_TIERS[wt+1];const net=netIncome(rev);
-     const span=next?next.min-tier.min:1;const pctN=next?clamp(Math.round((rev-tier.min)/span*100),0,100):100;
-     return `<div class="card wteaser mt12" onclick="openWealth()">
-      <div class="wt-ch">${wealthChar(wt,62)}</div>
-      <div class="wt-i">
-        <div class="eyebrow" style="color:${tier.c}">WEALTH · ${tier.n}</div>
-        <div class="wt-n num mt8">月商 <b style="color:var(--ice)">${fmtY(rev)}</b><span class="dim" style="font-size:11px"> / 手取り目安 ${fmtY(net)}</span></div>
-        <div class="lgauge mt8" style="height:6px"><i style="width:${pctN}%;background:${barColor(pctN)}"></i></div>
-        <div class="dim" style="font-size:11px;margin-top:5px">${next?`「${next.n}」まで あと${fmtMan(next.min-rev)}`:'最上位。この景色を守れ。'}</div>
-      </div><div class="wt-arrow">›</div>
-     </div>`})()}
-
-   <div class="section-title"><h2>記録する</h2><div class="line"></div></div>
-   <div class="grid2">
-    <div class="hub-c" onclick="go('kpi')"><div class="hi" style="background:rgba(0,230,138,.12);border:1px solid var(--line);color:var(--green)"><svg viewBox="0 0 24 24" width="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18M7 14l3-3 3 3 5-6"/></svg></div><div class="ht">経営KPI</div><div class="hs">今日の数字を入力</div></div>
-    <div class="hub-c" onclick="openJournal()"><div class="hi" style="background:rgba(155,107,255,.12);border:1px solid var(--line);color:var(--purple)"><svg viewBox="0 0 24 24" width="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 3h11l3 3v15H5zM9 8h6M9 12h6"/></svg></div><div class="ht">日記 / ジャーナル</div><div class="hs">日記・勝ち負け・改善を書く</div></div>
-   </div>
    <div class="tabbar-spacer"></div>
   </div>`;
 }
+/* Deep Work をホームの主役に: 開始・経過・今日の合計がここだけで完結する */
+function dwHero(){
+  const dw=day().deepwork;const active=!!dw.active;const tgt=T().deepMin;
+  const tot=dw.totalMin;const cal=dw.sessions.filter(s=>s.cal).reduce((a,s)=>a+s.min,0);
+  const pct=clamp(Math.round(tot/(tgt||1)*100),0,100);
+  onMount(ensureDwTimer);
+  if(active){const ms=Date.now()-dw.active.start;const t=Math.floor(ms/1000);const p=clamp(ms/60000/90*100,0,100);
+    return `<div class="card glow dwh on">
+      <div class="between"><span class="eyebrow" style="color:var(--cyan)">DEEP WORK · 集中中</span><span class="dwh-tg num">今日 ${tkFmt(tot)}</span></div>
+      <div class="dwh-main"><div class="dwh-time num" id="dwTime">${String(Math.floor(t/60)).padStart(2,'0')}:${String(t%60).padStart(2,'0')}</div>
+        <div class="dwh-act"><button class="btn ghost sm" onclick="cancelDeep()">破棄</button><button class="btn red dwh-go" onclick="endDeep()">終了</button></div></div>
+      <div class="lgauge mt12" style="height:8px"><i id="dwBar" style="width:${p}%;background:linear-gradient(90deg,#2D6BFF,#22ECFF)"></i></div>
+      <div class="dwh-sub" id="dwPct">${Math.floor(p)}% / 90分</div>
+    </div>`}
+  return `<div class="card glow dwh">
+    <div class="between"><span class="eyebrow">DEEP WORK · 今日</span><span class="dwh-tg num">目標 ${tkFmt(tgt)}</span></div>
+    <div class="dwh-main"><div style="min-width:0"><div class="dwh-time num">${Math.floor(tot/60)}<small>h</small>${tot%60}<small>m</small></div>
+      <div class="dwh-sub">${cal?`予定 ${cal}分 · 集中 ${tot-cal}分`:pct>=100?'今日の目標は達成':'目標まで あと '+tkFmt(tgt-tot)}</div></div>
+      <button class="btn primary dwh-go" onclick="startDeep()">▶ 集中</button></div>
+    <div class="lgauge mt12" style="height:8px"><i style="width:${pct}%;background:${barColor(pct,dayPace())}"></i></div>
+  </div>`;
+}
+/* 今日のまとめ1行（EGO・ミッション・やること・連続）。タップでそれぞれの画面へ */
+function todayStrip(k){const d=day(k);const sc=egoScore(k);const blank=todayBlank(k)&&!isRest(k);const rk=rankOf(sc);
+  const done=DAILY.filter(m=>m.score(d)>=100).length;const tl=tkOn(k);const tdone=tl.filter(x=>x.done).length;
+  const a=aggregate();const st=Math.max(a.deepStreak,a.perfectStreak);
+  return `<div class="tstrip mt12">
+   <div onclick="go('mission')"><b class="num" style="color:${blank?'var(--dim)':rk.color}">${blank?'—':rk.grade}</b><span>${blank?'採点前':'EGO '+sc}</span></div>
+   <div onclick="go('mission')"><b class="num">${done}<small>/${DAILY.length}</small></b><span>ミッション</span></div>
+   <div onclick="go('tasks')"><b class="num">${tdone}<small>/${tl.length}</small></b><span>やること</span></div>
+   <div onclick="route={tab:'log',sub:'levels'};SFX.tap();render();window.scrollTo(0,0)"><b class="num" style="color:${st>0?'#FF8A3D':'var(--dim)'}">${st}<small>日</small></b><span>連続</span></div>
+  </div>`}
 function coachCard(co){
   return `<div class="coach mt12">
-    <div class="ch"><div class="av"><svg viewBox="0 0 24 24" width="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v3M12 19v3M5 12H2M22 12h-3"/><circle cx="12" cy="12" r="3.5"/></svg></div>
-      <div><div class="ct">EGO COACH</div><div class="cs">数字でしか語らない</div></div></div>
-    <div class="block"><div class="bt">今日の弱点</div><div class="bx">${co.weak}</div></div>
-    <div class="block"><div class="bt">改善案</div><div class="bx">${co.fix}</div></div>
+    <div class="ct">EGO COACH</div>
+    <div class="bx mt6">${co.weak}</div>
     ${coachOpen?`
+    <div class="block"><div class="bt">改善案</div><div class="bx">${co.fix}</div></div>
     <div class="block"><div class="bt">明日の優先順位</div><div class="bx">${co.prio}</div></div>
     <div class="block"><div class="bt">今月の数字</div><div class="bx">${co.month}</div></div>
     <div class="block"><div class="bt">今週のボトルネック</div><div class="bx">${co.bottle}</div></div>`:''}
-    <button class="coach-more" onclick="coachOpen=!coachOpen;SFX.tap();render()">${coachOpen?'閉じる':'優先順位・今月・今週のボトルネックを見る ›'}</button>
+    <button class="coach-more" onclick="coachOpen=!coachOpen;SFX.tap();render()">${coachOpen?'閉じる':'改善案・優先順位・今週のボトルネック ›'}</button>
   </div>`;
 }
 let coachOpen=false;
@@ -2585,14 +2574,9 @@ function viewMission(){
    ${soulCard()}
 
 
-   <div class="card mt12">
-     <div class="between"><div><div class="eyebrow">睡眠 / 水分 / 体組成</div><div class="sub mt8" style="font-size:12px">睡眠・運動・筋トレは身体管理と連動している</div></div>
-     <button class="btn cyan sm" onclick="goSub('body');route.tab='log';render()">身体管理へ</button></div>
-   </div>
-
-   <div class="card mt12 rest-toggle">
-     <div class="between"><div><div class="sl">今日を休日にする</div><div class="sd">採点をオフにして休日モードへ。連続記録は途切れない。</div></div>
-       <button class="btn ${isRest(selKey)?'cyan':'ghost'} sm" onclick="toggleRest()">${isRest(selKey)?'休日 ON':'休日にする'}</button></div>
+   <div class="row mt12" style="gap:8px">
+     <button class="btn ghost sm" style="flex:1" onclick="goSub('body');route.tab='log';render()">身体管理（体重・水分）›</button>
+     <button class="btn ${isRest(selKey)?'cyan':'ghost'} sm" style="flex:1" onclick="toggleRest()">${isRest(selKey)?'休日 ON':'今日を休日にする'}</button>
    </div>
    <div class="tabbar-spacer"></div>
   </div>`;
@@ -2619,6 +2603,14 @@ function monthlyCard(){
       </div>
       <div class="ctrl">${ctrl}<span class="pct" data-monpct="${id}">${st.pct}%</span></div>
     </div>`};
+  // 普段は1行のサマリーだけ。入力するときに開く
+  if(!uiOpen('month')){const sm=Object.keys(MONTHLY_META).map(id=>{const st=monthlyStat(id);const m=MONTHLY_META[id];
+      return `${m.name} <b class="num" style="color:var(--ice)">${m.yen?fmtMan(st.cur):fmt(st.cur)}</b><span class="dim">/${m.yen?fmtMan(st.target):fmt(st.target)}</span>`}).join(' · ');
+    return `<div class="card mt12 mon-card" style="padding:14px 16px">
+      <div class="between"><div class="eyebrow" style="color:var(--gold)">今月の数字 · ${ml}</div>
+        <div class="num" style="font-size:12px;color:var(--muted)">達成率 <b style="color:var(--gold);font-size:16px">${avg}</b>%</div></div>
+      <div class="mon-sum mt8">${sm}</div>
+      <button class="fold-btn" style="color:var(--gold)" onclick="uiToggle('month')">今日の営業・面談・売上を入力する ›</button></div>`}
   return `<div class="card mt12 mon-card" style="padding:6px 16px 12px">
     <div class="between" style="padding:12px 0 4px">
       <div class="eyebrow" style="color:var(--gold)">今月の数字 · ${ml}</div>
@@ -2626,6 +2618,7 @@ function monthlyCard(){
     </div>
     <div class="sub" style="font-size:11.5px;padding-bottom:6px">営業・面談・売上・AI改善は<b>月次</b>で評価。日次のEGO SCOREには影響しないから、未達でも気にせず数字だけ積み上げろ。</div>
     ${Object.keys(MONTHLY_META).map(row).join('')}
+    <button class="fold-btn" style="color:var(--gold)" onclick="uiToggle('month')">閉じる</button>
   </div>`;
 }
 
@@ -3106,6 +3099,7 @@ function tickDw(){const a=day().deepwork.active;if(!a){clearInterval(dwTimer);dw
   const pct=clamp(ms/60000/90*100,0,100);
   const rEl=$('#dwProg');if(rEl)rEl.style.strokeDashoffset=(DW_C*(1-pct/100)).toFixed(1);
   const pEl=$('#dwPct');if(pEl)pEl.textContent=Math.floor(pct)+'% / 90分';
+  const bEl=$('#dwBar');if(bEl)bEl.style.width=pct+'%';
 }
 function viewFocus(){
   const d=day();const dw=d.deepwork;const active=!!dw.active;
