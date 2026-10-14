@@ -511,6 +511,7 @@ textarea.tall{min-height:130px}
 .pillar .pv{font-family:var(--mono);font-size:11px;color:var(--soul);font-weight:600}
 .pillar .pd{font-size:11px;color:var(--dim);margin-top:8px;line-height:1.6}
 .pillar .lk{background:none;border:none;color:var(--cyan);font-size:11px;cursor:pointer;padding:0 0 0 4px;font-weight:600}
+.mrow .lk{background:none;border:none;color:var(--cyan);font-size:12px;cursor:pointer;padding:4px 0;font-weight:700;font-family:var(--font)}
 
 
 @media (min-width:560px){
@@ -523,17 +524,13 @@ textarea.tall{min-height:130px}
 .tide-quiet{font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
   letter-spacing:.05em;line-height:1.95}
 
-/* 常時表示のフローティングボタン */
-#tidebtn{position:fixed;right:14px;bottom:calc(88px + var(--safe-b));z-index:45;
-  display:flex;align-items:center;gap:8px;padding:12px 18px;border-radius:999px;
+/* 常時表示の「波」ボタン（ヘッダー内。本文の入力欄を隠さない） */
+.wavebtn{width:38px;height:38px;flex:0 0 38px;display:grid;place-items:center;border-radius:12px;cursor:pointer;
   background:linear-gradient(135deg,rgba(24,60,76,.95),rgba(16,34,54,.95));
-  border:1px solid rgba(95,214,200,.4);color:var(--tide);
-  font-size:13.5px;font-weight:700;letter-spacing:.02em;
-  box-shadow:0 10px 30px rgba(0,0,0,.5),0 0 20px rgba(95,214,200,.18);
-  cursor:pointer;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
-#tidebtn:active{transform:scale(.97)}
-#tidebtn svg{opacity:.95}
-#tidebtn.hide{display:none}
+  border:1px solid rgba(95,214,200,.45);color:var(--tide);box-shadow:0 0 14px rgba(95,214,200,.18)}
+.wavebtn svg{width:19px;height:19px}
+.wavebtn:active{transform:scale(.92)}
+@media (max-width:370px){header{gap:6px;padding-left:10px;padding-right:10px}.lvchip .meta .n{max-width:72px}.streak{padding:6px 7px}}
 
 /* フルスクリーン・プロトコル */
 #tide{position:fixed;inset:0;z-index:95;display:none;overflow-y:auto;
@@ -642,10 +639,31 @@ textarea.tall{min-height:130px}
 .tk-c.tk-w{color:var(--red);border-color:rgba(255,77,106,.45);font-family:var(--font)}
 .tk-c.tk-cal{border-color:rgba(95,214,200,.35);color:var(--tide)}
 .tk-c.tk-cal.p{font-family:var(--font);color:var(--dim)}
-.tk-ctl{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;align-items:center}
-.tk-ctl input{width:auto;padding:8px 9px;font-size:13px;border-radius:10px}
-.tk-ctl input[type=time]{min-width:100px}
-.tk-ctl input.num-in{width:64px}
+.tk-ctl{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;align-items:center;cursor:default}
+.tk-ctl input{width:auto;padding:8px 9px;font-size:14px;border-radius:10px}
+.tk-ctl input[type=time]{min-width:96px;padding:8px 7px}
+.tk-ctl input.num-in{width:70px}
+.tk-fl{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--dim)}
+.tk-ctl-row{display:flex;flex-wrap:wrap;gap:6px;width:100%}
+.tk-tg.on.star{color:var(--gold);border-color:rgba(255,216,77,.55);background:rgba(255,216,77,.08)}
+.tk-tg.on.judge{color:var(--purple);border-color:rgba(169,124,255,.55);background:rgba(169,124,255,.1)}
+.tk-del{color:var(--red);border-color:rgba(255,77,106,.35)}
+.tk-more{flex:0 0 auto;align-self:flex-start;min-width:34px;height:28px;padding:0 8px;border-radius:9px;border:1px solid var(--line);
+  background:transparent;color:var(--dim);font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font)}
+.tk-row.open{background:rgba(45,120,255,.05);margin:0 -8px;padding-left:8px;padding-right:8px;border-radius:12px}
+.tk-quick{display:flex;gap:8px;margin-top:12px}
+.tk-quick input{flex:1;min-width:0;padding:10px 12px;font-size:15px}
+.tk-quick .btn{flex:0 0 auto}
+.gmini{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.gmini>div{border:1px solid var(--line);border-radius:12px;padding:9px 9px 8px;background:rgba(18,26,46,.45);min-width:0}
+.gmini .gl{font-size:10.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gmini .gv{font-family:var(--mono);font-size:17px;font-weight:700;margin-top:2px;white-space:nowrap}
+.gmini .gv span{font-size:10.5px;color:var(--dim);font-weight:500}
+.gmini .gd{font-size:10px;color:var(--dim);margin-top:5px;white-space:nowrap}
+.coach-more{display:block;width:100%;margin-top:12px;padding:8px 0 0;border:0;border-top:1px solid var(--line);background:none;
+  color:var(--cyan);font-size:12.5px;font-weight:650;cursor:pointer;font-family:var(--font);text-align:left}
+#msg .mbar.run{animation:mbar var(--mdur,3s) linear forwards}
+@keyframes mbar{from{width:60px}to{width:0}}
 .tk-foot{margin-top:10px;font-size:12px;color:var(--dim);font-family:var(--mono)}
 .tk-foot.over{color:var(--gold)}
 .tk-cap{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin:12px 2px 0}
@@ -682,7 +700,6 @@ textarea.tall{min-height:130px}
 
 <canvas id="fxc"></canvas>
 
-<div id="tidebtn" onclick="openTide()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M2 8c2.5 0 2.5-3 5-3s2.5 3 5 3 2.5-3 5-3 2.5 3 5 3"/><path d="M2 14c2.5 0 2.5-3 5-3s2.5 3 5 3 2.5-3 5-3 2.5 3 5 3"/><path d="M2 20c2.5 0 2.5-3 5-3s2.5 3 5 3 2.5-3 5-3 2.5 3 5 3"/></svg>波が来ている</div>
 <div id="tide"><div class="tin" id="tin"></div></div>
 <div id="lvup" onclick="this.classList.remove('show')"><div class="lt">LEVEL UP</div><div class="ln" id="lvNum">2</div><div class="ld" id="lvTitle"></div><div class="lq" id="lvQuote"></div></div>
 
@@ -1076,9 +1093,13 @@ function coach(){
   const scored=DAILY.map(m=>({m,s:m.score(d)})).sort((x,y)=>x.s-y.s);
   const weak=scored.filter(x=>x.s<60).slice(0,3);
   const score=egoScore(k);
+  // まだ今日の入力が何もない（朝など）なら、未入力を「負け」と判定しない
+  const blank=DAILY.every(m=>m.score(d)===0)&&!d.missions.wake&&!num(d.body.sleepH);
+  const early=new Date().getHours()<18;
   // weakness text (生活/規律のみ。営業等は月次なので日次では詰めない)
   let weakTxt;
-  if(weak.length===0){weakTxt=`規律項目は全部及第点。${score}点。だが満足した瞬間に落ちる。基準を上げろ。`}
+  if(blank){weakTxt=`まだ今日の記録がない。まず睡眠と起床だけ入れろ。採点はそこから始まる。`}
+  else if(weak.length===0){weakTxt=`規律項目は全部及第点。${score}点。だが満足した瞬間に落ちる。基準を上げろ。`}
   else{const top=weak[0];const lines={
     sleep:`睡眠${num(d.body.sleepH)||0}h。脳が回らなければ全部崩れる。`,
     wake:`起床が遅い。朝の${minToWake(T().wake)}前を死守しろ。`,
@@ -1106,7 +1127,9 @@ function coach(){
   else if(tw.rev<lw.rev){bottle=`今週の売上が先週を下回っている(${fmtY(tw.rev)} < ${fmtY(lw.rev)})。失速の兆候だ。原因を1つ特定しろ。`}
   else{bottle=`今週は数字が動いている。だが油断は禁物。来週も同じ水準を“当たり前”にできるかが勝負だ。`}
   // fix
-  const fix=score<50?`今日は負けだ。明日の朝、まず机に座って90分。それができれば流れは変わる。`
+  const fix=blank?`判定は夜でいい。今は一番重い仕事を1つ、${new Date().getHours()<12?'午前中に':'今から'}片付けろ。`
+    :(score<50&&early)?`まだ途中だ。一番低い項目を1つ、今日のうちに埋めろ。それで流れは変わる。`
+    :score<50?`今日は負けだ。明日の朝、まず机に座って90分。それができれば流れは変わる。`
     :score<80?`悪くないが、まだ二流だ。一番低い項目を1つ、明日100%にしろ。それだけでいい。`
     :`このレベルを“例外”にするな。毎日が今日と同じ基準になった時、お前は本物になる。`;
   return{score,weak:weakTxt,prio:prioTxt,month,bottle,fix};
@@ -1231,11 +1254,18 @@ function loopFx(){fctx.clearRect(0,0,innerWidth,innerHeight);let alive=false;
   fctx.shadowBlur=0;fctx.globalAlpha=1;
   if(alive){fxRaf=requestAnimationFrame(loopFx)}else{fxRaf=null;parts=[];fxc.style.display='none'}}
 
-let msgQueue=[],msgShowing=false;
+let msgQueue=[],msgShowing=false,msgTimer=null;
 function showMsg(line,txt){msgQueue.push([line,txt]);if(!msgShowing)nextMsg()}
-function nextMsg(){if(!msgQueue.length){msgShowing=false;return}msgShowing=true;
-  const[line,txt]=msgQueue.shift();$('#msgLine').textContent=line;$('#msgTxt').textContent=txt;$('#msg').classList.add('show')}
-function hideMsg(){$('#msg').classList.remove('show');setTimeout(nextMsg,250)}
+// 全画面メッセージは読み終わる頃に自動で閉じる（タップでも閉じる）。失敗・エラーは長めに出す
+function msgDuration(line,txt){const err=/失敗|エラー|ERROR/i.test(line+txt);
+  return clamp(1800+String(txt||'').length*70,2400,err?7000:5200)+(err?1500:0)}
+function nextMsg(){clearTimeout(msgTimer);if(!msgQueue.length){msgShowing=false;return}msgShowing=true;
+  const[line,txt]=msgQueue.shift();$('#msgLine').textContent=line;$('#msgTxt').textContent=txt;
+  const dur=msgDuration(line,txt);const bar=$('#msg .mbar');
+  if(bar){bar.classList.remove('run');void bar.offsetWidth;bar.style.setProperty('--mdur',dur+'ms');bar.classList.add('run')}
+  $('#msg').classList.add('show');msgTimer=setTimeout(hideMsg,dur)}
+function hideMsg(){clearTimeout(msgTimer);msgTimer=null;if(!$('#msg').classList.contains('show'))return;
+  $('#msg').classList.remove('show');setTimeout(nextMsg,250)}
 
 function showLevelUp(lv){SFX.levelup();
   $('#lvNum').textContent=lv.level;$('#lvTitle').textContent=lv.title;
@@ -1258,7 +1288,8 @@ function nextToast(){if(!toastQ.length){toastBusy=false;return}toastBusy=true;co
 let route={tab:'home',sub:null};
 let selKey=todayKey();        // 編集中の日付（過去日も記録できる）
 let _curBootDay=todayKey();   // 日跨ぎ検知用
-function go(tab){if(route.tab===tab&&!route.sub){return}SFX.tap();route={tab,sub:null};render();$('#main').scrollTo?.(0,0);window.scrollTo(0,0)}
+function go(tab){if(route.tab===tab&&!route.sub){return}SFX.tap();route={tab,sub:null,prev:route.tab};render();$('#main').scrollTo?.(0,0);window.scrollTo(0,0);
+  if(tab==='tasks')calSync(false)}
 function restoreTide(){ // 保留中に閉じた／アプリを離れた場合
   const t=S.tide;if(!t||!Array.isArray(t.waves))return;
   const live=t.waves.find(w=>w.open);if(!live)return;
@@ -1496,7 +1527,7 @@ function renderTide(){
       <button class="btn block tide-btn" onclick="tideClose()">閉じる</button>`;
   }
   $('#tin').innerHTML=h;$('#tide').classList.add('show');
-  document.body.style.overflow='hidden';$('#tidebtn').classList.add('hide');
+  document.body.style.overflow='hidden';
   if(st===2)startTideTick();
 }
 function thead(t){return `<div class="thead"><div class="tt">${t}</div><div class="tx" onclick="tideBail()">閉じる</div></div>`}
@@ -1533,7 +1564,6 @@ function tideBail(){
 function closeTide(){
   if(TTick){clearInterval(TTick);TTick=null}
   $('#tide').classList.remove('show');document.body.style.overflow='';
-  $('#tidebtn').classList.remove('hide');
 }
 function startTideTick(){
   if(TTick)clearInterval(TTick);
@@ -1561,7 +1591,7 @@ function openNameCall(){
    <div class="tide-quiet center mt20" style="font-size:18px;color:var(--ice)">思い出してもいい。でも、今日を生きる。</div>
    <button class="btn block tide-btn mt20" onclick="closeTide();render()">戻る</button>
    <button class="btn block mt10" onclick="closeTide();openTide()">波が強いので、保留を始める</button>`;
-  $('#tide').classList.add('show');document.body.style.overflow='hidden';$('#tidebtn').classList.add('hide');
+  $('#tide').classList.add('show');document.body.style.overflow='hidden';
 }
 function openRedLine(){
   $('#tin').innerHTML=thead('RED LINE')+`
@@ -1572,7 +1602,7 @@ function openRedLine(){
      <div class="why">${RED_WHY.replace(/\n\n/g,'<br><br>')}</div></div>
    <div class="tide-quiet center mt20" style="font-size:18px;color:var(--ice)">失いたくない。でも、自分を失わない。</div>
    <button class="btn block tide-btn mt20" onclick="closeTide();render()">わかった</button>`;
-  $('#tide').classList.add('show');document.body.style.overflow='hidden';$('#tidebtn').classList.add('hide');
+  $('#tide').classList.add('show');document.body.style.overflow='hidden';
 }
 
 /* ---------- ホームのカード ---------- */
@@ -1592,7 +1622,10 @@ function tideCard(){
      <div><div class="v" style="color:${a.redline+a.contacted?'var(--red)':'var(--green)'}">${a.redline+a.contacted}</div><div class="k">今週の越境</div></div>
    </div>
    <div class="tide-quiet center mt16" style="font-size:15.5px;color:var(--ice)">${S._tideQ}</div>
-   <button class="btn block mt14" onclick="goSub('mind');route.tab='log';render()">心の型をひらく</button>
+   <div class="row mt14" style="gap:8px">
+     <button class="btn tide-btn" style="flex:1.4" onclick="openTide()">いま、波が来ている</button>
+     <button class="btn" style="flex:1" onclick="route={tab:'log',sub:'mind'};SFX.tap();render();window.scrollTo(0,0)">記録をみる</button>
+   </div>
   </div>`;
 }
 function recoveryCard(k){
@@ -1626,9 +1659,8 @@ function viewMind(){
     <div class="num" style="flex:0 0 auto;font-size:17px;line-height:1.5;white-space:nowrap;color:${col||'var(--muted)'}">${v}</div></div>`;
 
   return `<div class="view">
-   <div class="row"><span class="eyebrow tide">MIND · 心の型</span>
-     <span class="sub" style="cursor:pointer" onclick="back()">← 戻る</span></div>
-   <div class="h1 mt8">心の型</div>
+   <div class="between"><button class="btn ghost sm" onclick="back()">‹ 記録</button><span class="eyebrow tide">MIND · 心の型</span></div>
+   <div class="h1 mt12">心の型</div>
    <div class="sub mt8">精神的に強いとは、何も感じなくなることじゃない。感情があっても、行動を自分で選べることだ。</div>
 
    <div class="card glow tide-card mt16" style="padding:20px 16px">
@@ -1690,8 +1722,9 @@ function viewMind(){
       <input type="range" min="0" max="10" step="1" value="${num(m.selfCrit)}"
         oninput="mind().selfCrit=+this.value;document.getElementById('msc').textContent=this.value"
         onchange="save(true);render()"></div>
-    <div class="row" style="gap:14px"><div style="flex:1;min-width:0;font-size:13.5px">メール確認 回数</div>
-      <input style="width:90px;flex:0 0 90px;text-align:right" type="number" inputmode="numeric"
+    <div class="row" style="gap:10px"><div style="flex:1;min-width:0;font-size:13.5px">メール確認 回数<div class="sub" style="margin-top:1px">確認したら +1 を押すだけ</div></div>
+      <button class="btn ghost sm" style="flex:0 0 auto" onclick="mind().mail=num(mind().mail)+1;SFX.tap();save(true);render()">+1</button>
+      <input style="width:70px;flex:0 0 70px;text-align:right" type="number" inputmode="numeric"
         value="${num(m.mail)||''}" oninput="mind().mail=num(this.value)" onchange="save(true)"></div>
    </div>
 
@@ -1805,7 +1838,7 @@ function tkSet(id,f,v){const x=tkFind(id);if(!x)return;
   else if(f==='at'){x.at=v||'';if(x.at&&!x.date)x.date=todayKey();x.calGone=0}
   calQueue(x);save();render()}
 function tkCap(v){const t=tkState();t.cap=clamp(Math.round(num(v))||360,60,900);save();render()}
-function openTasks(){route.sub='tasks';SFX.tap();render();window.scrollTo(0,0);calSync(false)}
+function openTasks(){go('tasks')}
 
 /* ---------- 並び・集計 ---------- */
 function tkSort(a,b){
@@ -2007,22 +2040,28 @@ function tkMeta(x){
   }
   return c.join('');
 }
+let tkOpenId=null; // やることリストで編集パネルを開いているタスク（1件だけ）
+function tkOpen(id){tkOpenId=tkOpenId===id?null:id;SFX.tap();render()}
 function tkRow(x,edit){
-  const id=x.id;
-  return `<div class="tk-row ${x.done?'done':''}">
+  const id=x.id;const open=edit&&tkOpenId===id;
+  const mv=(x.date||'')===todayKey()?'明日へ':((x.date||'')===tkTomorrow()?'あとで':'今日へ');
+  return `<div class="tk-row ${x.done?'done':''} ${open?'open':''}">
    <button class="tk-ck" onclick="tkToggle('${id}')" aria-label="完了">${x.done?'✓':''}</button>
-   <div class="tk-b">
+   <div class="tk-b"${edit?` onclick="tkOpen('${id}')" style="cursor:pointer"`:''}>
     <div class="tk-t">${x.pri?'<span class="tk-star">★</span>':''}${tkEsc(x.t)}</div>
     <div class="tk-m">${tkMeta(x)}</div>
-    ${edit?`<div class="tk-ctl">
-      <input type="time" value="${x.at||''}" onchange="tkSet('${id}','at',this.value)" aria-label="開始時刻">
-      <input type="number" class="num-in" inputmode="numeric" min="0" max="600" step="5" value="${x.est||''}" placeholder="分" onchange="tkSet('${id}','est',this.value)" aria-label="所要分">
-      <button class="btn ghost sm" onclick="tkPri('${id}')" aria-label="最重要">${x.pri?'★':'☆'}</button>
-      <button class="btn ghost sm" onclick="tkLane('${id}')">${x.lane==='j'?'判断':'量'}</button>
-      <button class="btn ghost sm" onclick="tkMove('${id}')">${(x.date||'')===todayKey()?'明日へ':((x.date||'')===tkTomorrow()?'あとへ':'今日へ')}</button>
-      <button class="btn ghost sm" onclick="tkDel('${id}')" aria-label="削除">✕</button>
+    ${open?`<div class="tk-ctl" onclick="event.stopPropagation()">
+      <label class="tk-fl"><span>開始</span><input type="time" value="${x.at||''}" onchange="tkSet('${id}','at',this.value)" aria-label="開始時刻"></label>
+      <label class="tk-fl"><span>所要</span><input type="number" class="num-in" inputmode="numeric" min="0" max="600" step="5" value="${x.est||''}" placeholder="分" onchange="tkSet('${id}','est',this.value)" aria-label="所要分"></label>
+      <div class="tk-ctl-row">
+       <button class="btn ghost sm tk-tg ${x.pri?'on star':''}" onclick="tkPri('${id}')">${x.pri?'★':'☆'} 最重要</button>
+       <button class="btn ghost sm tk-tg ${x.lane==='j'?'on judge':''}" onclick="tkLane('${id}')">判断が要る</button>
+       <button class="btn ghost sm" onclick="tkMove('${id}')">${mv}</button>
+       <button class="btn ghost sm tk-del" onclick="tkDel('${id}')">削除</button>
+      </div>
      </div>`:''}
    </div>
+   ${edit?`<button class="tk-more" onclick="tkOpen('${id}')" aria-label="編集">${open?'閉じる':'⋯'}</button>`:''}
   </div>`;
 }
 function evRow(e){
@@ -2057,13 +2096,25 @@ function tasksCard(){
   }
   return `<div class="card tk-card mt12">
    <div class="between"><span class="eyebrow" style="color:var(--cyan)">TODAY'S TASKS</span>
-    <button class="btn ghost sm" onclick="openTasks()">編集 ›</button></div>
+    <button class="btn ghost sm" onclick="openTasks()">一覧 ›</button></div>
    ${next}
    ${note?`<div class="sub mt8">${note}</div>`:''}
-   <div class="mt8">${shown.length?shown.map(x=>tkRow(x,false)).join(''):`<div class="sub">まだ入っていません。「編集」からまとめて追加できます。</div>`}</div>
+   <div class="mt8">${shown.length?shown.map(x=>tkRow(x,false)).join(''):`<div class="sub">まだ入っていません。下の欄から1行で追加できます。</div>`}</div>
+   <div class="tk-quick">
+    <input id="tkQuick" enterkeyhint="done" autocomplete="off" placeholder="＋ 今日やることを1行で追加" onkeydown="tkQuickKey(event)">
+    <button class="btn primary sm" onclick="tkQuickAdd()">追加</button>
+   </div>
    <div class="tk-foot ${over?'over':''}">${done.length}/${all.length} 完了 · ${b.txt}${over?'（入りきらない）':''}</div>
   </div>`;
 }
+/* ホームから1行で今日のタスクを追加（書式はやることリストと同じ） */
+function tkQuickKey(e){if(e.key!=='Enter'||e.isComposing||e.keyCode===229)return;e.preventDefault();tkQuickAdd()}
+function tkQuickAdd(){const el=$('#tkQuick');if(!el)return;const v=el.value.trim();if(!v){el.focus();return}
+  const p=tkParse(v);if(!p.t){el.focus();return}
+  const t=tkState();const x={id:tkNewId(),t:p.t,est:p.est,at:p.at,pri:p.pri,lane:p.lane,date:todayKey(),done:false,created:Date.now()};
+  t.list.push(x);calQueue(x);SFX.on();save();
+  onMount(()=>{const q=$('#tkQuick');if(q)q.focus()}); // 続けて追加できるようにフォーカスを戻す
+  render()}
 function tkSection(title,list,sub){
   return `<div class="section-title"><h2>${title}</h2><div class="line"></div></div>
    ${sub?`<div class="sub" style="margin:-4px 2px 6px">${sub}</div>`:''}
@@ -2109,11 +2160,11 @@ function viewTasks(){
   const today=tkOn(k),tomo=tkOn(tkTomorrow()),later=tkOn('');
   const stars=today.filter(x=>x.pri&&!x.done).length;
   return `<div class="view">
-   <div class="between"><button class="btn ghost sm" onclick="back()">‹ 戻る</button><span class="eyebrow">TASKS</span></div>
-   <div class="h1 mt12">やることリスト</div>
+   <span class="eyebrow">TASKS</span>
+   <div class="h1 mt8">やることリスト</div>
    <div class="sub mt8">1行1タスクで貼り付けOK。書き方は「タイトル 10:00 45分 ! 判」。時刻・分数・！（最重要）・判（判断が要る仕事）は省略できる。${calReady()?'時刻を入れたタスクはカレンダーにも入る。':''}</div>
    <div class="card mt16">
-    <textarea id="tkIn" class="tall" oninput="tkDraft=this.value" placeholder="例）&#10;企画書を仕上げる 10:00 90分 ! 判&#10;請求書の確認 30分&#10;返信をまとめて返す 17:00 30分">${tkEsc(tkDraft)}</textarea>
+    <textarea id="tkIn" oninput="tkDraft=this.value" placeholder="例）企画書を仕上げる 10:00 90分 ! 判&#10;請求書の確認 30分">${tkEsc(tkDraft)}</textarea>
     <div class="row mt10" style="gap:8px"><button class="btn primary sm" style="flex:1" onclick="tkAdd('today')">今日に追加</button>
      <button class="btn sm" onclick="tkAdd('tomorrow')">明日</button><button class="btn ghost sm" onclick="tkAdd('later')">あとで</button></div>
    </div>
@@ -2128,15 +2179,16 @@ function viewTasks(){
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&calReady())calSync(false)});
 window.addEventListener('online',()=>{if(calReady())calFlush().then(ok=>{if(ok)calRerender()})});
 
+// やることリストは毎日使うので下タブへ。経営KPIは「記録」の中へ移動（シート連携で手入力が減ったため）
 const NAV=[
  {id:'home', label:'ホーム', svg:'<path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10"/>'},
+ {id:'tasks',label:'やること',svg:'<rect x="4" y="3" width="16" height="18" rx="2.5"/><path d="M8 9l1.6 1.6L12.5 7.8M8 15.5l1.6 1.6 2.9-2.8M15 9.5h2M15 16h2"/>'},
  {id:'mission',label:'ミッション',svg:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/>'},
- {id:'kpi',  label:'KPI',  svg:'<path d="M3 3v18h18M7 14l3-3 3 3 5-6"/>'},
  {id:'focus',label:'FOCUS',svg:'<path d="M13 2L3 14h7l-1 8 10-12h-7z"/>'},
  {id:'log',  label:'記録',  svg:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>'}
 ];
-function renderNav(){$('#nav').innerHTML=NAV.map(n=>
-  `<div class="nav-i ${route.tab===n.id?'on':''}" onclick="go('${n.id}')">
+function renderNav(){const cur=route.tab==='kpi'?'log':route.tab;$('#nav').innerHTML=NAV.map(n=>
+  `<div class="nav-i ${cur===n.id?'on':''}" onclick="go('${n.id}')">
    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">${n.svg}</svg>
    <span>${n.label}</span></div>`).join('')}
 
@@ -2150,11 +2202,12 @@ function renderHeader(){
    </div>
    <div class="streak" title="連続日数"><svg viewBox="0 0 24 24" fill="${st>0?'#FF8A3D':'#3A4660'}" stroke="none"><path d="M12 2c1 4 5 5 5 9a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 3 3-1-3 0-6 0-8z"/></svg>${st}</div>
    <div class="rankpill"><span class="t">RANK</span><span class="g" style="color:${rk.color};text-shadow:0 0 12px ${rk.color}88">${rk.grade}</span></div>
+   <div class="wavebtn" onclick="openTide()" role="button" aria-label="いま、波が来ている" title="いま、波が来ている"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 8c2.5 0 2.5-3 5-3s2.5 3 5 3 2.5-3 5-3 2.5 3 5 3"/><path d="M2 14c2.5 0 2.5-3 5-3s2.5 3 5 3 2.5-3 5-3 2.5 3 5 3"/><path d="M2 20c2.5 0 2.5-3 5-3s2.5 3 5 3 2.5-3 5-3 2.5 3 5 3"/></svg></div>
    <div class="gear" onclick="goSub('settings');route.tab='log';render()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 0 1-4 0v-.2a1.6 1.6 0 0 0-2.7-1.1l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.6 1.6 0 0 0 4.6 15H4a2 2 0 0 1 0-4h.2a1.6 1.6 0 0 0 1.1-2.7l-.1-.1A2 2 0 1 1 8 5.4l.1.1A1.6 1.6 0 0 0 10 5.6V5a2 2 0 0 1 4 0v.2a1.6 1.6 0 0 0 2.7 1.1l.1-.1A2 2 0 1 1 19.6 9l-.1.1a1.6 1.6 0 0 0-1.1 2.7V12a2 2 0 0 1 0 4z"/></svg></div>`;
 }
 
 function render(){renderHeader();renderNav();
-  const v={home:viewHome,mission:viewMission,kpi:viewKpi,focus:viewFocus,log:viewLog}[route.tab];
+  const v={home:viewHome,tasks:viewTasks,mission:viewMission,kpi:viewKpi,focus:viewFocus,log:viewLog}[route.tab]||viewHome;
   if(route.sub){const sv={journal:viewJournal,body:viewBody,ailog:viewAiLog,levels:viewLevels,stages:viewStages,boss:viewBoss,wealth:viewWealth,settings:viewSettings,mind:viewMind,tasks:viewTasks}[route.sub];
     $('#main').innerHTML=sv?sv():v();}
   else $('#main').innerHTML=v();
@@ -2192,6 +2245,8 @@ function upd(el,mod,field){
   liveRefresh();
   clearTimeout(updTimer);updTimer=setTimeout(()=>{checkProgress();save(true)},500);
 }
+function wakeNow(){const n=new Date();day(selKey).missions.wake=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+  SFX.on();checkProgress();save();render()}
 function toggleMission(id){SFX.on();const d=day(selKey);d.missions[id]=!bool(d.missions[id]);checkProgress();save();render()}
 function checkProgress(){
   // level up detection
@@ -2251,11 +2306,12 @@ function viewHome(){
   if(!rest)onMount(()=>animateNumber('[data-ego]',sc));
   if(sheetCfg().auto&&sheetCfg().url)onMount(()=>syncSheet(false));
 
+  // 並び: 回復モード（その日の前提）→ 目標 → 今日のタスク → 判定 → 心の型。開いてすぐ「やること」が見える順
   return `<div class="view">
+   ${recoveryCard(k).replace('class="recov"','class="recov" style="margin-top:0;margin-bottom:12px"')}
    ${goalsCard()}
-   ${hero}
-   ${recoveryCard(k)}
    ${tasksCard()}
+   <div class="mt12">${hero}</div>
    ${tideCard()}
 
    <div class="chips mt12">
@@ -2294,12 +2350,15 @@ function coachCard(co){
     <div class="ch"><div class="av"><svg viewBox="0 0 24 24" width="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v3M12 19v3M5 12H2M22 12h-3"/><circle cx="12" cy="12" r="3.5"/></svg></div>
       <div><div class="ct">EGO COACH</div><div class="cs">数字でしか語らない</div></div></div>
     <div class="block"><div class="bt">今日の弱点</div><div class="bx">${co.weak}</div></div>
+    <div class="block"><div class="bt">改善案</div><div class="bx">${co.fix}</div></div>
+    ${coachOpen?`
     <div class="block"><div class="bt">明日の優先順位</div><div class="bx">${co.prio}</div></div>
     <div class="block"><div class="bt">今月の数字</div><div class="bx">${co.month}</div></div>
-    <div class="block"><div class="bt">今週のボトルネック</div><div class="bx">${co.bottle}</div></div>
-    <div class="block"><div class="bt">改善案</div><div class="bx">${co.fix}</div></div>
+    <div class="block"><div class="bt">今週のボトルネック</div><div class="bx">${co.bottle}</div></div>`:''}
+    <button class="coach-more" onclick="coachOpen=!coachOpen;SFX.tap();render()">${coachOpen?'閉じる':'優先順位・今月・今週のボトルネックを見る ›'}</button>
   </div>`;
 }
+let coachOpen=false;
 
 /* ---------- HOME: 今年/今月の目標 ---------- */
 function goalsCard(){
@@ -2312,12 +2371,13 @@ function goalsCard(){
   const revPct=clamp(Math.round(rev/(g.revenue||1)*100),0,100);
   const ml=monthRange(0).label;
   const syncTxt=s.url?(s.lastErr?`⚠ 同期失敗`:(s.lastSync?`🔄 同期 ${syncAgo()}`:'🔄 未同期')):'シート未接続';
+  // 今月の3指標は横並びでコンパクトに（ホームの1画面目にタスクまで入るように）
   const mini=(label,cur,tgt,unit,color)=>{const pct=clamp(Math.round(cur/(tgt||1)*100),0,100);const diff=tgt-cur;
-    return `<div class="grow-row">
-      <div class="gr-top"><span class="gr-l">${label}</span>
-        <span class="gr-v"><b style="color:${color}">${fmt(cur)}</b><span class="gr-t">/ ${fmt(tgt)}${unit}</span></span></div>
-      <div class="lgauge mt6" style="height:7px"><i style="width:${pct}%;background:${barColor(pct)}"></i></div>
-      <div class="gr-d">${diff>0?`目標まで あと <b>${fmt(diff)}</b>${unit}`:`<b style="color:var(--green)">達成 ✓</b> +${fmt(-diff)}${unit}`}</div>
+    return `<div>
+      <div class="gl">${label}</div>
+      <div class="gv"><b style="color:${color}">${fmt(cur)}</b><span> / ${fmt(tgt)}</span></div>
+      <div class="lgauge mt6" style="height:5px"><i style="width:${pct}%;background:${barColor(pct)}"></i></div>
+      <div class="gd">${diff>0?`あと ${fmt(diff)}${unit}`:`<span style="color:var(--green)">達成 ✓</span>`}</div>
     </div>`};
   return `<div class="card goal-card" style="padding:16px">
     <div class="between">
@@ -2331,10 +2391,12 @@ function goalsCard(){
     <div class="lgauge mt8" style="height:11px"><i style="width:${revPct}%;background:linear-gradient(90deg,var(--gold),#FFE27A)"></i></div>
     <div class="gr-d" style="margin-top:6px">${ml}の月商回収 · ${rev>=g.revenue?`<b style="color:var(--green)">目標達成</b>`:`あと <b>${fmtY(g.revenue-rev)}</b>`}</div>
 
-    <div class="sdiv" style="margin:16px 0 4px">今月の目標 · ${ml}</div>
+    <div class="sdiv" style="margin:14px 0 0">今月の目標 · ${ml}</div>
+    <div class="gmini">
     ${mini('契約数', contracts, g.contracts, '名', 'var(--cyan)')}
     ${mini('AD数',   ad,        g.ad,        '名', 'var(--ice)')}
     ${mini('LINE追加',line,     g.line,      '',   'var(--green)')}
+    </div>
   </div>`;
 }
 function viewMission(){
@@ -2546,7 +2608,8 @@ function missionRow(m,d){
     ctrl=`<span class="num" style="font-size:13px;color:${s>=100?'var(--green)':'var(--muted)'}">${cur}</span>`}
   const meta0=m.kind==='bool'?'':m.kind==='auto'?(m.id==='deep'?`目標 ${m.t}分`:m.id==='jrnl'?'タップで日記へ':'自動連携'):
     m.kind==='time'?`目標 ${m.t} まで`:`目標 ${m.t}${m.unit||''}`;
-  const meta=m.id==='sleep'?meta0+' · 身体管理と連動':meta0;
+  let meta=m.id==='sleep'?meta0+' · 身体管理と連動':meta0;
+  if(m.id==='wake'&&!d.missions.wake&&selKey===todayKey())meta+=` · <button class="lk" onclick="wakeNow()">今起きた ›</button>`;
   const clickable=m.id==='jrnl'?` onclick="openJournal()" style="cursor:pointer"`:'';
   return `<div class="mrow"${clickable}>
     <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">${ICONS[m.icon]}</svg></div>
@@ -2651,12 +2714,12 @@ async function syncSheet(manual){
     s.lastSync=Date.now();s.lastErr=null;s.lastCount=n;
     checkProgress();save(true);
     if(manual){SFX.success();showMsg('SHEET SYNC',`シートから ${n}日分を取り込んだ`)}
-    render();
+    manual?render():calRerender(); // 自動同期は入力中の欄を消さない
     return true;
   }catch(err){
     s.lastErr=String(err&&err.message||err);
     if(manual){SFX.error&&SFX.error();showMsg('SYNC 失敗',s.lastErr)}
-    render();
+    manual?render():calRerender();
     return false;
   }finally{_syncing=false;const b=$('#syncBtn');if(b){b.disabled=false;b.textContent='今すぐ同期'}}
 }
@@ -2787,9 +2850,10 @@ function viewKpi(){
   let yoyNote='';
   if(ser.yoy){const diff=ser.cur-ser.prev;const up=diff>=0;const pr=ser.prev?Math.round(diff/ser.prev*100):0;
     yoyNote=`<div class="sub mt12" style="font-size:13px">前年同期比 <b style="color:${up?'var(--green)':'var(--red)'}">${up?'+':''}${kpiFmt(m,diff)}${ser.prev?` (${up?'+':''}${pr}%)`:''}</b></div>`}
+  const backTo=route.prev&&route.prev!=='kpi'?route.prev:'log';
   return `<div class="view">
-   <span class="eyebrow">BUSINESS KPI</span>
-   <div class="between mt8"><div class="h1">経営KPI</div>
+   <div class="between"><button class="btn ghost sm" onclick="go('${backTo}')">‹ ${{home:'ホーム',tasks:'やること',mission:'ミッション',focus:'FOCUS'}[backTo]||'記録'}</button><span class="eyebrow">BUSINESS KPI</span></div>
+   <div class="between mt12"><div class="h1">経営KPI</div>
      <div class="num" style="font-size:12px;color:var(--dim)">${fmtDate(selKey)}</div></div>
    ${dateBar()}
 
@@ -2979,6 +3043,8 @@ function viewLog(){
     ${card('body',ai('<path d="M12 4a2 2 0 1 0 0-.01M9 9h6l-1 7h-4zM10 22l1-6M14 22l-1-6"/>'),'#00E68A','身体管理',`${bDays}日記録 · 体組成と睡眠`)}
     ${card('ailog',ai('<path d="M12 2v3M5 12H2M22 12h-3M12 19v3M6 6l2 2M16 16l2 2M18 6l-2 2M8 16l-2 2"/><circle cx="12" cy="12" r="3"/>'),'#4D8BFF','AI改善ログ',`${aiTotal}件の改善を記録`)}
     ${card('mind',ai('<path d="M2 8c2.5 0 2.5-3 5-3s2.5 3 5 3 2.5-3 5-3 2.5 3 5 3M2 14c2.5 0 2.5-3 5-3s2.5 3 5 3 2.5-3 5-3 2.5 3 5 3M2 20c2.5 0 2.5-3 5-3s2.5 3 5 3 2.5-3 5-3 2.5 3 5 3"/>'),'#5FD6C8','心の型',`精神的成長 ${mindScore()} · 保留 ${Math.round(tideAgg(7).holdRate*100)}%`)}
+    <div class="hub-c" onclick="go('kpi')"><div class="hi" style="background:#00E68A22;border:1px solid var(--line);color:#00E68A">${ai('<path d="M3 3v18h18M7 14l3-3 3 3 5-6"/>')}</div>
+      <div class="ht">経営KPI</div><div class="hs">月商 ${fmtMan(monthRevenue())} · 推移と入力</div></div>
    </div>
 
    <div class="section-title mt20"><h2>成長システム</h2><div class="line"></div></div>
